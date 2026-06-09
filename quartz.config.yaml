@@ -7,7 +7,7 @@ configuration:
   analytics:
     provider: plausible
   locale: en-US
-  baseUrl: darijagenie.github.io/quartz
+  baseUrl: mohamedmiladi777.github.io/darija-genie
   ignorePatterns:
     - private
     - templates
