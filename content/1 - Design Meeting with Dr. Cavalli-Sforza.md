@@ -7,9 +7,8 @@ Tags:
 
 ### Topics
 #### Architecture and Frameworks
-[[1 - DarijaGeni Frameworks]]
-[[2 - Darija Genie Architecture]]
-[[3 - Logo Design]]
+[[2 - DarijaGenie Frameworks]]
+[[3 - Darija Genie Architecture]]
 
 Database solution.
 There is a storage problem, where using a traditiona use Amazon S3 or microsoft azure.
