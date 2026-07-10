@@ -1,6 +1,4 @@
-<<<<<<< HEAD
-# darija-genie
-=======
+
 # shadcn/ui monorepo template
 
 This is a Next.js monorepo template with shadcn/ui.
@@ -22,4 +20,3 @@ To use the components in your app, import them from the `ui` package.
 ```tsx
 import { Button } from "@workspace/ui/components/button";
 ```
->>>>>>> 5397e9e (next.js & shadcn setup)
