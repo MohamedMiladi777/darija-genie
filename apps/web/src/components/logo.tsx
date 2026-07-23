@@ -17,16 +17,22 @@ export default function LogoMark() {
   )
 }
 
-export function LogoMarkDark() {
+export function LogoMarkDark({
+  className = "h-[84px] w-[95px]",
+}: {
+  className?: string
+}) {
   return (
-    <div className="flex h-[84px] w-[95px] shrink-0 items-center justify-center">
+    <div
+      className={`flex shrink-0 items-center justify-center ${className}`}
+    >
       <Image
         src={logoDark}
         alt="Darija Genie Logo"
         width={95}
         height={84}
         priority
-        className="h-[84px] w-[95px]"
+        className="size-full"
       />
     </div>
   )

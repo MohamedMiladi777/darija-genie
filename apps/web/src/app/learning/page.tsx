@@ -2,6 +2,7 @@ import Image from "next/image"
 
 import ContinueSessionSection from "@/components/ContinueSessionSection"
 import Header from "@/components/Header"
+import LearningSidebar from "@/components/LearningSidebar"
 import QuizSection from "@/components/QuizSection"
 import ScenarioSection from "@/components/ScenarioSection"
 
@@ -28,17 +29,21 @@ const navigationItems = [
 
 export default function LearningPage(): React.JSX.Element {
   return (
-    <main className="min-h-dvh w-full bg-[#f2efe4] text-[#162456]">
-      <div className="mx-auto min-h-dvh w-full max-w-6xl overflow-hidden bg-[#f2efe4] pb-20 sm:pb-28 md:rounded-t-lg md:shadow-[0_18px_60px_rgba(22,36,86,0.08)]">
+    <main className="min-h-dvh w-full bg-white text-[#162456] md:flex">
+      <LearningSidebar />
+
+      <div className="min-w-0 flex-1 bg-[#f2efe4] md:h-dvh md:overflow-y-auto">
         <Header />
-        <ContinueSessionSection />
-        <ScenarioSection />
-        <QuizSection />
+        <div className="mx-auto min-h-dvh w-full max-w-6xl overflow-hidden bg-[#f2efe4] pb-20 sm:pb-28 md:flex md:min-h-0 md:max-w-[896px] md:flex-col md:gap-8 md:overflow-visible md:px-8 md:py-6 md:pb-8">
+          <ContinueSessionSection />
+          <ScenarioSection />
+          <QuizSection />
+        </div>
       </div>
 
       <nav
         aria-label="Primary navigation"
-        className="fixed inset-x-0 bottom-0 z-50 border-t border-[#ded5c3] bg-[#ebe0ca] sm:bottom-4 sm:left-1/2 sm:right-auto sm:w-[min(560px,calc(100%-2rem))] sm:-translate-x-1/2 sm:rounded-xl sm:border sm:shadow-[0_10px_30px_rgba(22,36,86,0.16)]"
+        className="fixed inset-x-0 bottom-0 z-50 border-t border-[#ded5c3] bg-[#ebe0ca] sm:bottom-4 sm:left-1/2 sm:right-auto sm:w-[min(560px,calc(100%-2rem))] sm:-translate-x-1/2 sm:rounded-xl sm:border sm:shadow-[0_10px_30px_rgba(22,36,86,0.16)] md:hidden"
       >
         <div className="grid h-[55px] grid-cols-[126fr_140fr_136fr] items-center sm:grid-cols-3">
           {navigationItems.map((item) => {
