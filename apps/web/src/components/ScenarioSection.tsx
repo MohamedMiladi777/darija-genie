@@ -1,6 +1,7 @@
 import Image from "next/image"
+import Link from "next/link"
 
-import { Button } from "@workspace/ui/components/button"
+import { Button, buttonVariants } from "@workspace/ui/components/button"
 import { Card, CardContent } from "@workspace/ui/components/card"
 
 const scenarios = [
@@ -32,16 +33,19 @@ export const ScenarioSection = (): React.JSX.Element => {
           >
             Scenarios
           </h2>
-          <Button
-            type="button"
-            variant="ghost"
-            className="h-[39px] px-0 font-[family-name:var(--font-lato)] text-base leading-6 font-normal text-[#79716b] hover:bg-transparent hover:text-[#79716b] md:h-auto"
+          <Link
+            href="/learning/scenarios"
+            className={buttonVariants({
+              variant: "ghost",
+              className:
+                "h-[39px] px-0 font-[family-name:var(--font-lato)] text-base leading-6 font-normal text-[#79716b] hover:bg-transparent hover:text-[#79716b] md:h-auto",
+            })}
           >
             See All
-          </Button>
+          </Link>
         </header>
 
-        <div className="flex snap-x snap-mandatory gap-[15px] overflow-x-auto px-4 pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-6 md:mt-3 md:gap-4 md:px-0">
+        <div className="flex snap-x snap-mandatory gap-[15px] overflow-x-auto px-4 pb-0.5 [scrollbar-width:none] sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-6 md:mt-3 md:gap-4 md:px-0 [&::-webkit-scrollbar]:hidden">
           {scenarios.map((scenario, index) => (
             <Card
               key={scenario.title}
