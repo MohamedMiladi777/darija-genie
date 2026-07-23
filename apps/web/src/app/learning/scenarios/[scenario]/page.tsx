@@ -1,4 +1,5 @@
 import Image from "next/image"
+import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import LearningMobileNavigation from "@/components/LearningMobileNavigation"
@@ -7,12 +8,7 @@ import ScenarioPageChrome from "@/components/ScenarioPageChrome"
 import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
 
-const scenarioIds = [
-  "restaurant-1",
-  "shopping-1",
-  "restaurant-2",
-  "shopping-2",
-] as const
+import { isScenarioId, scenarioIds, type ScenarioId } from "../scenario-data"
 
 const learningOptions = [
   {
@@ -42,16 +38,18 @@ export function generateStaticParams(): Array<{ scenario: string }> {
 
 function LearningOptionCard({
   option,
+  scenario,
 }: {
   option: (typeof learningOptions)[number]
+  scenario: ScenarioId
 }): React.JSX.Element {
   const isFeatured = "featured" in option && option.featured
 
-  return (
+  const card = (
     <Card
-      className={`gap-0 rounded-[14px] bg-white py-0 shadow-[0_1px_2px_rgba(0,0,0,0.05)] ring-[#e5e5e5] md:rounded-2xl ${
+      className={`gap-0 rounded-[14px] bg-white py-0 shadow-[0_1px_2px_rgba(0,0,0,0.05)] ring-[#e5e5e5] transition-transform md:rounded-2xl ${
         isFeatured
-          ? "col-span-2 h-[164px] w-[300px] justify-self-center md:h-[306px] md:w-full"
+          ? "h-[164px] w-full md:h-[306px]"
           : "h-[204px] min-w-0 md:h-[271px]"
       }`}
     >
@@ -68,20 +66,32 @@ function LearningOptionCard({
             {option.description}
           </p>
         </div>
-        <Button
-          type="button"
-          size="icon-sm"
-          aria-label={`Open ${option.title}`}
-          className="size-8 rounded-xl bg-[#1e40af] p-0 shadow-xs hover:bg-[#1e40af]/85 md:bg-[#162456] md:hover:bg-[#162456]/85"
-        >
-          <Image
-            src="/assets/learning/scenario-arrow.svg"
-            alt=""
-            width={14}
-            height={14}
-            className="size-3.5"
-          />
-        </Button>
+        {isFeatured ? (
+          <span className="flex size-8 items-center justify-center rounded-xl bg-[#1e40af] shadow-xs md:bg-[#162456]">
+            <Image
+              src="/assets/learning/scenario-arrow.svg"
+              alt=""
+              width={14}
+              height={14}
+              className="size-3.5"
+            />
+          </span>
+        ) : (
+          <Button
+            type="button"
+            size="icon-sm"
+            aria-label={`Open ${option.title}`}
+            className="size-8 rounded-xl bg-[#1e40af] p-0 shadow-xs hover:bg-[#1e40af]/85 md:bg-[#162456] md:hover:bg-[#162456]/85"
+          >
+            <Image
+              src="/assets/learning/scenario-arrow.svg"
+              alt=""
+              width={14}
+              height={14}
+              className="size-3.5"
+            />
+          </Button>
+        )}
       </CardHeader>
 
       <CardContent className="px-4 pb-4">
@@ -105,6 +115,20 @@ function LearningOptionCard({
       </CardContent>
     </Card>
   )
+
+  if (isFeatured) {
+    return (
+      <Link
+        href={`/learning/scenarios/${scenario}/geniechat`}
+        aria-label="Open GenieChat"
+        className="group col-span-2 w-[300px] justify-self-center rounded-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 md:w-full md:rounded-2xl [&_[data-slot=card]]:group-hover:-translate-y-0.5"
+      >
+        {card}
+      </Link>
+    )
+  }
+
+  return card
 }
 
 function ActivityChart(): React.JSX.Element {
@@ -175,7 +199,7 @@ export default async function ScenarioHomePage({
 }): Promise<React.JSX.Element> {
   const { scenario } = await params
 
-  if (!scenarioIds.some((scenarioId) => scenarioId === scenario)) {
+  if (!isScenarioId(scenario)) {
     notFound()
   }
 
@@ -207,7 +231,11 @@ export default async function ScenarioHomePage({
 
             <div className="mt-6 grid grid-cols-2 gap-x-[10px] gap-y-4 px-[15px] md:gap-4 md:px-0">
               {learningOptions.map((option) => (
-                <LearningOptionCard key={option.id} option={option} />
+                <LearningOptionCard
+                  key={option.id}
+                  option={option}
+                  scenario={scenario}
+                />
               ))}
             </div>
           </section>
