@@ -1,38 +1,29 @@
-import LogoMark from "@/components/logo"
+import LampMark from "@/components/lamp"
 import { Button } from "@workspace/ui/components/button"
 
 function MainContent() {
   return (
-    <div className="flex flex-col items-center justify-center gap-8 overflow-visible px-16 pb-8 lg:flex-row xl:flex-row 2xl:flex-row">
-      <div className="size- flex flex-col items-center justify-center rounded-lg px-8 py-3">
-        <div className="justify-start text-base leading-6 font-medium text-neutral-50">
-          <LogoMark />
+    <div className="flex flex-col items-center justify-center gap-10 px-6 pb-8 lg:flex-row lg:items-start lg:gap-16 lg:px-16">
+      <LampMark />
+
+      <div className="flex max-w-96 flex-col gap-8">
+        <div className="space-y-3">
+          <h1 className="text-2xl font-medium tracking-wide text-blue-950">
+            Choose your theme
+          </h1>
+          <p className="max-w-sm text-sm leading-6 text-blue-950/70">
+            Select your preferred theme. You can always change this later in
+            settings.
+          </p>
         </div>
-      </div>
-      <div className="inline-flex max-w-96 flex-col md:items-start md:justify-start gap-6">
-        <div className="flex w-96 text-center font-['Lato'] text-3xl leading-10 font-bold tracking-tight text-blue-950 md:text-left">
-          Learn Moroccan Darija with DarijaGenie
-        </div>
-        <div className="flex flex-col justify-start opacity-80 md:items-start">
-          <div className="justify-start text-center font-['Open_Sans'] text-lg leading-7 font-normal text-blue-950 md:text-left">
-            A Darija Friendly learning platform to enhance your listening and
-            reading skills.
-          </div>
-        </div>
-        {/* <div className="flex flex-col items-center justify-center rounded-lg bg-blue-950 px-8 py-3"> */}
-        {/* <div className="justify-start text-center font-['Lato'] text-base leading-6 font-medium text-neutral-50">
-            Get Started
-          </div> */}
-        <div className="flex flex-col items-center">
-          <div className="flex">
-            <Button
-              className="bg-sky-950 text-white "
-              variant="default"
-              size="lg"
-            >
-              Get Started
-            </Button>
-          </div>
+
+        <div className="flex flex-col gap-3">
+          <Button className="flex items-center justify-center gap-2 rounded-full bg-blue-950 px-6 py-3 text-sm font-medium text-neutral-50 shadow-md">
+            Light Mode
+          </Button>
+          <Button className="flex items-center justify-center gap-2 rounded-full border border-neutral-200 bg-white px-6 py-3 text-sm font-medium text-blue-950 shadow-sm">
+            Dark Mode
+          </Button>
         </div>
       </div>
     </div>
@@ -42,9 +33,7 @@ function MainContent() {
 export default function WelcomeScreen() {
   return (
     <main className="flex min-h-svh items-center justify-center">
-      <div>
-        <MainContent />
-      </div>
+      <MainContent />
     </main>
   )
 }
