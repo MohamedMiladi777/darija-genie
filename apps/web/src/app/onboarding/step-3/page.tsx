@@ -1,5 +1,6 @@
 import LampMark from "@/components/lamp"
 import { Button } from "@workspace/ui/components/button"
+import { Sun, Moon } from "lucide-react"
 
 function MainContent() {
   return (
@@ -19,9 +20,11 @@ function MainContent() {
 
         <div className="flex flex-col gap-3">
           <Button className="flex items-center justify-center gap-2 rounded-full bg-blue-950 px-6 py-3 text-sm font-medium text-neutral-50 shadow-md">
+            <Sun data-icon="inline-start" />
             Light Mode
           </Button>
           <Button className="flex items-center justify-center gap-2 rounded-full border border-neutral-200 bg-white px-6 py-3 text-sm font-medium text-blue-950 shadow-sm">
+            <Moon data-icon="inline-start" />
             Dark Mode
           </Button>
         </div>
