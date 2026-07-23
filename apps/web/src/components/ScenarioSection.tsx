@@ -1,73 +1,78 @@
-import { ArrowUpRight } from "lucide-react";
-import { Button } from "@workspace/ui/components/button";
-import { Card, CardContent } from "@workspace/ui/components/card";
+import Image from "next/image"
+
+import { Button } from "@workspace/ui/components/button"
+import { Card, CardContent } from "@workspace/ui/components/card"
+
 const scenarios = [
-  {
-    title: "Restaurant",
-    description: "Learn how to order a tajine",
-    iconClassName: "bg-raw-colors-blue-800",
-  },
-  {
-    title: "Shopping",
-    description: "Become immune to scammers",
-    iconClassName: "bg-mode-base-primary",
-  },
-];
+  { title: "Restaurant", description: "Learn how to order a tajine" },
+  { title: "Shopping", description: "Become immune to scammers" },
+] as const
 
 export const ScenarioSection = (): React.JSX.Element => {
   return (
     <section
       aria-labelledby="scenarios-heading"
-      className="mt-[26px] flex w-full flex-col gap-4 overflow-hidden"
+      className="overflow-hidden border-b border-[#e5e5e5] pt-2.5"
     >
-      <header className="flex h-[46px] items-center justify-between px-4 pt-[7px]">
-        <h2
-          id="scenarios-heading"
-          className="[font-family:'Open_Sans-Bold',Helvetica] text-xl font-bold leading-[28px] tracking-[0] text-tailwindcss-colors-blue-blue-950"
-        >
-          Scenarios
-        </h2>
-        <Button
-          type="button"
-          variant="ghost"
-          className="h-auto px-0 [font-family:'Lato-Regular',Helvetica] text-base font-normal leading-[25.6px] tracking-[-0.16px] text-tailwindcss-colors-stone-stone-500 hover:bg-transparent hover:text-tailwindcss-colors-stone-stone-500"
-        >
-          See All
-        </Button>
-      </header>
-      <div className="flex w-max items-center gap-[15px] px-4">
-        {scenarios.map((scenario) => (
-          <Card
-            key={scenario.title}
-            className="w-[265px] shrink-0 rounded-[14px] border-0 bg-white shadow-none"
+      <div className="mx-auto w-full max-w-6xl pb-3.5">
+        <header className="flex h-[46px] items-center justify-between px-4 pt-[7px] sm:px-6 md:px-8">
+          <h2
+            id="scenarios-heading"
+            className="text-xl leading-7 font-bold text-[#162456]"
           >
-            <CardContent className="flex items-start gap-[var(--tailwindcss-gap-gap-1)] p-[var(--tailwindcss-padding-padding-y-py-3)]">
-              <div className="flex min-w-0 flex-1 flex-col items-start gap-[var(--tailwindcss-gap-gap-1)]">
-                <p className="w-full font-text-sm-leading-normal-medium text-[length:var(--text-sm-leading-normal-medium-font-size)] font-[number:var(--text-sm-leading-normal-medium-font-weight)] leading-[var(--text-sm-leading-normal-medium-line-height)] tracking-[var(--text-sm-leading-normal-medium-letter-spacing)] text-mode-base-foreground [font-style:var(--text-sm-leading-normal-medium-font-style)]">
-                  {scenario.title}
-                </p>
-                <p className="w-full font-text-sm-leading-normal-regular text-[length:var(--text-sm-leading-normal-regular-font-size)] font-[number:var(--text-sm-leading-normal-regular-font-weight)] leading-[var(--text-sm-leading-normal-regular-line-height)] tracking-[var(--text-sm-leading-normal-regular-letter-spacing)] text-mode-base-muted-foreground [font-style:var(--text-sm-leading-normal-regular-font-style)]">
-                  {scenario.description}
-                </p>
-              </div>
-              <Button
-                type="button"
-                size="icon"
-                aria-label={`Open ${scenario.title} scenario`}
-                className={`h-8 w-8 shrink-0 rounded-[var(--tailwindcss-border-radius-rounded-lg)] shadow-shadow-xs ${scenario.iconClassName}`}
-              >
-                <ArrowUpRight className="h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-      <div
-        aria-hidden="true"
-        className="ml-[-1px] h-[3px] w-full border border-solid border-mode-base-border"
-      />
-    </section>
-  );
-};
+            Scenarios
+          </h2>
+          <Button
+            type="button"
+            variant="ghost"
+            className="h-[39px] px-0 font-[family-name:var(--font-lato)] text-base leading-[25.6px] font-normal tracking-[-0.16px] text-[#79716b] hover:bg-transparent hover:text-[#79716b]"
+          >
+            See All
+          </Button>
+        </header>
 
-export default ScenarioSection;
+        <div className="flex snap-x snap-mandatory gap-[15px] overflow-x-auto px-4 pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-6 md:px-8 lg:grid-cols-3">
+          {scenarios.map((scenario, index) => (
+            <Card
+              key={scenario.title}
+              className="w-[265px] shrink-0 snap-start gap-0 rounded-[14px] bg-white py-0 shadow-none ring-0 sm:w-auto"
+            >
+              <CardContent className="flex min-h-[68px] items-start gap-1 p-3">
+                <div className="min-w-0 flex-1 font-[family-name:var(--font-inter)]">
+                  <h3 className="truncate text-sm leading-5 font-medium text-[#09090b]">
+                    {scenario.title}
+                  </h3>
+                  <p className="truncate text-sm leading-5 text-[#737373]">
+                    {scenario.description}
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  size="icon-sm"
+                  aria-label={`Open ${scenario.title} scenario`}
+                  className={`size-8 rounded-[10px] p-0 shadow-xs ${
+                    index === 0
+                      ? "bg-[#1e40af] hover:bg-[#1e40af]/80"
+                      : "bg-black hover:bg-black/80"
+                  }`}
+                >
+                  <span className="flex size-4 items-center justify-center">
+                    <Image
+                      src="/assets/learning/scenario-arrow.svg"
+                      alt=""
+                      width={14.667}
+                      height={14.667}
+                      className="size-[14.667px]"
+                    />
+                  </span>
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export default ScenarioSection

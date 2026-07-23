@@ -1,59 +1,75 @@
-import { FlaskConical, GraduationCap, Settings } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
-import ContinueSessionSection from "@/components/ContinueSessionSection";
-import Header from "@/components/Header";
-import QuizSection from "@/components/QuizSection"; 
-import ScenarioSection from "@/components/ScenarioSection";
+import Image from "next/image"
+
+import ContinueSessionSection from "@/components/ContinueSessionSection"
+import Header from "@/components/Header"
+import QuizSection from "@/components/QuizSection"
+import ScenarioSection from "@/components/ScenarioSection"
+
 const navigationItems = [
   {
     value: "testing",
     label: "Testing",
-    icon: FlaskConical,
+    icon: "/assets/learning/nav-testing.svg",
+    iconClassName: "h-[14.333px] w-[14.333px]",
   },
   {
     value: "learning",
     label: "Learning",
-    icon: GraduationCap,
+    icon: "/assets/learning/nav-learning.svg",
+    iconClassName: "h-[13.666px] w-[13px]",
   },
   {
     value: "settings",
     label: "Settings",
-    icon: Settings,
+    icon: "/assets/learning/nav-settings.svg",
+    iconClassName: "h-[14.333px] w-[13.023px]",
   },
-];
+] as const
 
-const LearningPage = (): React.JSX.Element => {
+export default function LearningPage(): React.JSX.Element {
   return (
-    <main className="min-h-screen w-full bg-[#f2efe4] text-black">
-      <div className="mx-auto flex min-h-screen w-full max-w-[402px] flex-col overflow-hidden rounded-t-[8.06px] bg-[#f2efe4]">
-        <div className="flex min-h-0 flex-1 flex-col">
-          <Header />
-          <ContinueSessionSection />
-          <ScenarioSection />
-          <QuizSection />
-        </div>
-        <nav
-          aria-label="Primary navigation"
-          className="sticky bottom-0 mt-auto border-t border-[#c6b89b] bg-[#ebe0ca]"
-        >
-          <Tabs defaultValue="learning" className="w-full">
-            <TabsList className="grid h-[55px] w-full grid-cols-3 rounded-none bg-transparent p-0">
-              {navigationItems.map(({ value, label, icon: Icon }) => (
-                <TabsTrigger
-                  key={value}
-                  value={value}
-                  className="h-full rounded-none px-2 font-text-base-leading-regular-medium text-[16px] leading-6 text-black data-[state=active]:bg-[#1447e6] data-[state=active]:text-white"
-                >
-                  <Icon aria-hidden="true" className="mr-1 size-4" />
-                  <span>{label}</span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-        </nav>
+    <main className="min-h-dvh w-full bg-[#f2efe4] text-[#162456]">
+      <div className="mx-auto min-h-dvh w-full max-w-6xl overflow-hidden bg-[#f2efe4] pb-20 sm:pb-28 md:rounded-t-lg md:shadow-[0_18px_60px_rgba(22,36,86,0.08)]">
+        <Header />
+        <ContinueSessionSection />
+        <ScenarioSection />
+        <QuizSection />
       </div>
-    </main>
-  );
-};
 
-export default LearningPage;
+      <nav
+        aria-label="Primary navigation"
+        className="fixed inset-x-0 bottom-0 z-50 border-t border-[#ded5c3] bg-[#ebe0ca] sm:bottom-4 sm:left-1/2 sm:right-auto sm:w-[min(560px,calc(100%-2rem))] sm:-translate-x-1/2 sm:rounded-xl sm:border sm:shadow-[0_10px_30px_rgba(22,36,86,0.16)]"
+      >
+        <div className="grid h-[55px] grid-cols-[126fr_140fr_136fr] items-center sm:grid-cols-3">
+          {navigationItems.map((item) => {
+            const isActive = item.value === "learning"
+
+            return (
+              <button
+                key={item.value}
+                type="button"
+                aria-current={isActive ? "page" : undefined}
+                className={`flex h-full min-w-0 items-center justify-center gap-1 rounded-md font-[family-name:var(--font-inter)] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-[#1447e6] ${
+                  isActive
+                    ? "bg-[#193cb8] text-base text-[#f2efe4]"
+                    : "text-sm text-[#0a0a0a] hover:bg-white/35"
+                }`}
+              >
+                <span className="flex size-4 shrink-0 items-center justify-center">
+                  <Image
+                    src={item.icon}
+                    alt=""
+                    width={16}
+                    height={16}
+                    className={item.iconClassName}
+                  />
+                </span>
+                <span className="truncate">{item.label}</span>
+              </button>
+            )
+          })}
+        </div>
+      </nav>
+    </main>
+  )
+}
