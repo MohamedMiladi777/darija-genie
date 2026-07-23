@@ -3,7 +3,7 @@ import Link from "next/link"
 
 import { Button, buttonVariants } from "@workspace/ui/components/button"
 
-function MobileStatusBar(): React.JSX.Element {
+export function MobileStatusBar(): React.JSX.Element {
   return (
     <div
       aria-hidden="true"
