@@ -4,6 +4,9 @@ import "@workspace/ui/globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@workspace/ui/lib/utils"
 
+// Shared components are coded here
+
+// Code the sidebar.
 const openSans = Open_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
