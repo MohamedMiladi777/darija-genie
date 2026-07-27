@@ -1,5 +1,7 @@
 import LogoMark from "@/components/logo"
 import { Button } from "@workspace/ui/components/button"
+import Link from "next/link"
+import { buttonVariants } from "@workspace/ui/components/button"
 
 function MainContent() {
   return (
@@ -9,7 +11,7 @@ function MainContent() {
           <LogoMark />
         </div>
       </div>
-      <div className="inline-flex max-w-96 flex-col md:items-start md:justify-start gap-6">
+      <div className="inline-flex max-w-96 flex-col gap-6 md:items-start md:justify-start">
         <div className="flex w-96 text-center font-['Lato'] text-3xl leading-10 font-bold tracking-tight text-blue-950 md:text-left">
           Learn Moroccan Darija with DarijaGenie
         </div>
@@ -25,13 +27,17 @@ function MainContent() {
           </div> */}
         <div className="flex flex-col items-center">
           <div className="flex">
-            <Button
-              className="bg-sky-950 text-white "
-              variant="default"
-              size="lg"
+            <Link
+              href="/onboarding/step-3"
+              className={buttonVariants({
+                variant: "default",
+                size: "lg",
+                className: "bg-sky-950 text-white",
+              })}
             >
-              Get Started
-            </Button>
+              {" "}
+              Get Started{" "}
+            </Link>
           </div>
         </div>
       </div>

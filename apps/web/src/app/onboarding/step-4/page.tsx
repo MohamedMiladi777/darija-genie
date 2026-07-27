@@ -1,5 +1,7 @@
 import MosqueMark from "@/components/mosque"
 import { Button } from "@workspace/ui/components/button"
+import Link from "next/link"
+import { buttonVariants } from "@workspace/ui/components/button"
 
 function MainContent() {
   return (
@@ -8,23 +10,39 @@ function MainContent() {
 
       <div className="flex max-w-96 flex-col gap-8">
         <div className="space-y-3">
-          <h1 className="text-2xl font-medium tracking-wide text-blue-950 text-center md:text-start">
+          <h1 className="text-center text-2xl font-medium tracking-wide text-blue-950 md:text-start">
             Choose your Script
           </h1>
-          <p className="max-w-sm text-sm leading-6 text-blue-950/70 text-center md:text-start">
-            Choose the script you'd like to use for learning Darija. You can switch between Latin and Arabic script anytime.
+          <p className="max-w-sm text-center text-sm leading-6 text-blue-950/70 md:text-start">
+            Choose the script you'd like to use for learning Darija. You can
+            switch between Latin and Arabic script anytime.
           </p>
         </div>
 
         <div className="flex flex-col gap-3">
-          <Button className="flex items-center justify-center gap-2 rounded-full bg-blue-950 px-6 py-3 text-sm font-medium text-neutral-50 shadow-md">
-            {/* <Sun data-icon="inline-start" /> */}
-            Latin
-          </Button>
-          <Button className="flex items-center justify-center gap-2 rounded-full border border-neutral-200 bg-white px-6 py-3 text-sm font-medium text-blue-950 shadow-sm">
-            {/* <Moon data-icon="inline-start" /> */}
-            Arabic
-          </Button>
+          <Link
+            href="/onboarding/step-5"
+            className={buttonVariants({
+              variant: null,
+              className:
+                "flex items-center justify-center gap-2 rounded-full bg-blue-950 px-6 py-3 text-sm font-medium text-neutral-50 shadow-md",
+            })}
+          >
+            {" "}
+            Latin{" "}
+          </Link>
+
+          <Link
+            href="/onboarding/step-5"
+            className={buttonVariants({
+              variant: null,
+              className:
+                "flex items-center justify-center gap-2 rounded-full border border-neutral-200 bg-white px-6 py-3 text-sm font-medium text-blue-950 shadow-sm",
+            })}
+          >
+            {" "}
+            Arabic{" "}
+          </Link>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import LampMark from "@/components/lamp"
-import { Button } from "@workspace/ui/components/button"
 import { Sun, Moon } from "lucide-react"
+import { buttonVariants } from "@workspace/ui/components/button"
+import Link from "next/link"
 
 function MainContent() {
   return (
@@ -19,14 +20,31 @@ function MainContent() {
         </div>
 
         <div className="flex flex-col gap-3">
-          <Button className="flex items-center justify-center gap-2 rounded-full bg-blue-950 px-6 py-3 text-sm font-medium text-neutral-50 shadow-md">
+          <Link
+            href="/onboarding/step-4"
+            className={buttonVariants({
+              variant: null,
+              className:
+                "flex items-center justify-center gap-2 rounded-full bg-blue-950 px-6 py-3 text-sm font-medium text-neutral-50 shadow-md hover:bg-blue-900",
+            })}
+          >
             <Sun data-icon="inline-start" />
-            Light Mode
-          </Button>
-          <Button className="flex items-center justify-center gap-2 rounded-full border border-neutral-200 bg-white px-6 py-3 text-sm font-medium text-blue-950 shadow-sm">
+            Light Mode{" "}
+          </Link>
+
+          <Link
+            href="/onboarding/step-4"
+            className={buttonVariants({
+              variant: null,
+              size: "lg",
+              className:
+                "click:bg-blue-100 flex items-center justify-center gap-2 rounded-full border border-neutral-200 bg-white px-6 py-3 text-sm font-medium text-blue-950 shadow-sm hover:bg-blue-50",
+            })}
+          >
+            {" "}
             <Moon data-icon="inline-start" />
             Dark Mode
-          </Button>
+          </Link>
         </div>
       </div>
     </div>
