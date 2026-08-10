@@ -17,6 +17,7 @@ const navigationItems: readonly NavigationItem[] = [
     value: "testing",
     label: "Testing",
     icon: "/assets/learning/nav-testing.svg",
+    href: "/testing",
     iconClassName: "h-[14.333px] w-[14.333px]",
   },
   {
@@ -66,7 +67,7 @@ export default function LearningMobileNavigation({
                   alt=""
                   width={16}
                   height={16}
-                  className={item.iconClassName}
+                  className={`${item.iconClassName} ${isActive && item.value === "testing" ? "brightness-0 invert" : ""}`}
                 />
               </span>
               <span className="truncate">{item.label}</span>

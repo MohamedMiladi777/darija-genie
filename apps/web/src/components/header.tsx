@@ -44,7 +44,7 @@ export const Header = (): React.JSX.Element => {
         </header>
       </section>
 
-      <header className="hidden min-h-[94px] items-center justify-between px-8 py-5 md:flex">
+      <header className="hidden min-h-[94px] w-full items-center justify-between px-8 py-5 md:flex">
         <div>
           <h1 className="text-2xl leading-8 font-bold text-[#162456]">
             Learn Darija!

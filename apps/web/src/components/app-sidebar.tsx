@@ -1,109 +1,44 @@
 import Image from "next/image"
 import Link from "next/link"
-import { BookCheck, LucideIcon, Settings, House, Settings2 } from "lucide-react"
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarHeader,
-} from "@workspace/ui/components/sidebar"
 
 import type { LearningNavigationItem } from "./learning-navigation"
 import { LogoMarkDark } from "./assets/logo"
 
-const SIDEBAR_WIDTH = "16rem"
-const SIDEBAR_WITH_MOBILE = "18rem"
-const SIDEBAR_KEYBOARD_SHORTCUT = "b"
-
 interface NavigationItem {
   value: LearningNavigationItem
   label: string
-  icon: LucideIcon
+  icon: string
   href?: string
   activeIcon?: string
 }
 
-/* const navigationItems: readonly NavigationItem[] = [
+const navigationItems: readonly NavigationItem[] = [
   {
     value: "testing",
     label: "Testing",
-    icon: BookCheck,
+    icon: "/assets/learning/desktop-nav-testing.svg",
+    href: "/testing",
   },
   {
     value: "learning",
     label: "Learning",
     href: "/learning",
-    icon: House,
+    icon: "/assets/learning/desktop-nav-learning.svg",
   },
   {
     value: "settings",
     label: "Settings",
     href: "/settings",
-    icon: Settings,
+    icon: "/assets/learning/desktop-nav-settings.svg",
     activeIcon: "/assets/settings/sidebar-settings-active.svg",
   },
 ]
- */
-
-const data = {
-  user: {
-    name: "Darija Learner",
-    label: "Beginner",
-  },
-  navMain: [
-    {
-      title: "Learning",
-      icon: House,
-      url: "#",
-      isActive: true,
-    },
-
-    {
-      title: "Testing",
-      icon: BookCheck,
-      url: "#",
-      isActive: false,
-    },
-
-    {
-      title: "Settings",
-      icon: Settings,
-      url: "#",
-      isActive: false,
-    },
-  ],
-}
 
 interface LearningSidebarProps {
   activeItem?: LearningNavigationItem
 }
 
-function NavMain({ items }: { items: typeof data.navMain }) {}
-
 export function AppSidebar({
-  navMain,
-}: {
-  navMain: {
-    title: string
-    icon: React.ElementType
-  }
-}) {
-  return (
-    <Sidebar variant="sidebar" collapsible="icon">
-      <SidebarHeader>
-        <SidebarContent>
-          <SidebarGroup />
-          <SidebarGroup />
-        </SidebarContent>
-      </SidebarHeader>
-    </Sidebar>
-  )
-}
-
-/** Without Shadcn */
-
-/*export default function LearningSidebar({
   activeItem = "learning",
 }: LearningSidebarProps): React.JSX.Element {
   return (
@@ -118,11 +53,7 @@ export function AppSidebar({
       >
         {navigationItems.map((item) => {
           const isActive = item.value === activeItem
-          const className = `flex items-center gap-3 rounded-xl px-4 py-3 font-[family-name:var(--font-inter)] text-[15px] leading-[22.5px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2efe4] ${
-            isActive
-              ? "bg-[#193cb8] text-[#f2efe4]"
-              : "text-[#f2efe4]/55 hover:bg-white/8 hover:text-[#f2efe4]"
-          }`
+          const className = `flex items-center gap-3 rounded-xl px-4 py-3 font-[family-name:var(--font-inter)] text-[15px] leading-[22.5px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2efe4] ${isActive ? "bg-[#193cb8] text-[#f2efe4]" : "text-[#f2efe4]/55 hover:bg-white/8 hover:text-[#f2efe4]"}`
           const content = (
             <>
               <Image
@@ -130,7 +61,7 @@ export function AppSidebar({
                 alt=""
                 width={20}
                 height={20}
-                className="size-5"
+                className={`size-5 ${isActive && item.value === "testing" ? "brightness-0 invert" : ""}`}
               />
               <span>{item.label}</span>
             </>
@@ -179,4 +110,4 @@ export function AppSidebar({
   )
 }
 
-*/
+export default AppSidebar

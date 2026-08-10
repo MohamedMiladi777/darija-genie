@@ -7,18 +7,18 @@ import ScenarioSection from "@/components/scenario-section"
 
 export default function LearningPage(): React.JSX.Element {
   return (
-    <main className="min-h-dvh w-full bg-white text-[#162456] md:flex">
+    <main className="min-h-dvh w-full bg-[#f2efe4] text-[#162456] md:flex">
       <AppSidebar />
-
       <div className="min-w-0 flex-1 bg-[#f2efe4] md:h-dvh md:overflow-y-auto">
-        <Header />
-        <div className="mx-auto min-h-dvh w-full max-w-6xl overflow-hidden bg-[#f2efe4] pb-20 sm:pb-28 md:flex md:min-h-0 md:max-w-[896px] md:flex-col md:gap-8 md:overflow-visible md:px-8 md:py-6 md:pb-8">
-          <ContinueSessionSection />
-          <ScenarioSection />
-          <QuizSection />
+        <div className="w-full">
+          <Header />
+          <div className="flex min-h-0 w-full flex-col gap-8 overflow-hidden px-4 py-6 pb-24 sm:px-6 sm:pb-28 md:px-8 md:pb-8">
+            <ContinueSessionSection />
+            <ScenarioSection />
+            <QuizSection />
+          </div>
         </div>
       </div>
-
       <LearningMobileNavigation />
     </main>
   )

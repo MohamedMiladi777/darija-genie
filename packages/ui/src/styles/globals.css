@@ -200,3 +200,15 @@
     @apply bg-background text-foreground;
     }
 }
+@keyframes quiz-card-exit-left {
+  from { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); opacity: 1; }
+  to { transform: translate3d(-112%, 7%, 0) rotate(-9deg) scale(0.98); opacity: 0; }
+}
+
+@keyframes quiz-card-exit-right {
+  from { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); opacity: 1; }
+  to { transform: translate3d(112%, 7%, 0) rotate(9deg) scale(0.98); opacity: 0; }
+}
+
+.quiz-card-exit-left { animation: quiz-card-exit-left 650ms cubic-bezier(.22, 1, .36, 1) both; }
+.quiz-card-exit-right { animation: quiz-card-exit-right 650ms cubic-bezier(.22, 1, .36, 1) both; }

@@ -1,84 +1,135 @@
-import { Button } from "@workspace/ui/components/button"
-import { Card, CardContent } from "@workspace/ui/components/card"
-import { Progress } from "@workspace/ui/components/progress"
+import Image from "next/image"
+
+import { ArrowRight, Clock3, Play } from "lucide-react"
 
 const sessions = [
-  { title: "Grammar", lessons: "5 lessons", progress: 66 },
-  { title: "Vocabulary", lessons: "7 lessons", progress: 20 },
   {
-    title: "Pronunciation",
-    lessons: "4 lessons",
-    progress: 45,
-    desktopOnly: true,
+    badge: "Scenario Quiz",
+    badgeClassName: "bg-[#fe9a00]",
+    title: "Restaurant",
+    subtitle: "Order a tajine",
+    progress: 60,
+    image: "/assets/learning/sessions/restaurant.jpg",
+    recent: true,
   },
   {
-    title: "Writing",
-    lessons: "6 lessons",
-    progress: 10,
-    desktopOnly: true,
+    badge: "Chat Session",
+    badgeClassName: "bg-[#00a86b]",
+    title: "Darija Bot",
+    subtitle: "Free conversation",
+    image: "/assets/learning/sessions/darija-bot.jpg",
+    timestamp: "3 days ago",
+  },
+  {
+    badge: "Vocabulary",
+    badgeClassName: "bg-[#1447e6]",
+    title: "Food & Drinks",
+    subtitle: "50 words · Level 2",
+    progress: 45,
+    image: "/assets/learning/sessions/food-drinks.jpg",
+  },
+  {
+    badge: "General Quiz",
+    badgeClassName: "bg-[#9333ea]",
+    title: "Grammar Basics",
+    subtitle: "Verb conjugation",
+    progress: 20,
+    image: "/assets/learning/sessions/grammar.jpg",
   },
 ] as const
 
-const ContinueSessionSection = (): React.JSX.Element => {
-  return (
-    <section
-      aria-labelledby="continue-session-heading"
-      className="border-b border-[#e5e5e5] md:border-0"
-    >
-      <div className="mx-auto w-full max-w-6xl pb-2.5 md:pb-0">
-        <header className="flex h-[46px] items-center justify-between px-4 pt-[7px] sm:px-6 md:h-auto md:px-0 md:pt-0">
-          <h2
-            id="continue-session-heading"
-            className="text-xl leading-7 font-bold text-[#162456]"
-          >
-            Continue Session
-          </h2>
-          <Button
-            type="button"
-            variant="ghost"
-            className="h-[39px] px-0 font-[family-name:var(--font-lato)] text-base leading-6 font-normal text-[#79716b] hover:bg-transparent hover:text-[#79716b] md:h-auto"
-          >
-            See All
-          </Button>
-        </header>
-
-        <div className="grid grid-cols-2 gap-[clamp(12px,5.72vw,23px)] px-4 sm:gap-5 sm:px-6 md:mt-3 md:gap-4 md:px-0 lg:grid-cols-4">
-          {sessions.map((session) => (
-            <Card
-              key={session.title}
-              className={`h-32 gap-0 rounded-[14px] border border-[#e5e5e5] bg-white py-0 shadow-xs ring-0 md:h-[120px] md:rounded-2xl ${
-                "desktopOnly" in session && session.desktopOnly
-                  ? "hidden md:flex"
-                  : ""
-              }`}
+const ContinueSessionSection = (): React.JSX.Element => (
+  <section aria-labelledby="continue-session-heading" className="w-full">
+    <div className="flex items-center justify-between">
+      <h2
+        id="continue-session-heading"
+        className="text-xl leading-7 font-bold text-[#162456]"
+      >
+        Continue Session
+      </h2>
+      <button
+        type="button"
+        className="font-[family-name:var(--font-lato)] text-base text-[#79716b]"
+      >
+        See All
+      </button>
+    </div>
+    <div className="mt-3 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {sessions.map((session) => (
+        <article
+          key={session.title}
+          className="relative h-[190px] basis-[210px] grow shrink-0 snap-start overflow-hidden rounded-2xl text-white"
+        >
+          <Image
+            src={session.image}
+            alt=""
+            fill
+            sizes="210px"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/5" />
+          <div className="absolute inset-x-3 top-3 flex items-center justify-between">
+            <span
+              className={`rounded-full px-2 py-[3px] text-[10px] leading-[10px] font-semibold ${session.badgeClassName}`}
             >
-              <CardContent className="flex h-full flex-col justify-between p-4 md:gap-3">
-                <div className="text-center">
-                  <h3 className="truncate font-[family-name:var(--font-inter)] text-base leading-6 font-medium text-[#162456]">
-                    {session.title}
-                  </h3>
-                  <p className="font-[family-name:var(--font-inter)] text-sm leading-5 text-[#737373]">
-                    {session.lessons}
-                  </p>
-                </div>
-                <div>
-                  <div className="mb-2 flex items-center justify-between font-[family-name:var(--font-inter)] text-sm leading-5 font-medium text-[#162456] md:mb-1.5">
+              {session.badge}
+            </span>
+            {"recent" in session && session.recent && (
+              <span className="flex items-center gap-1 rounded-full bg-black/30 px-1.5 py-[3px] text-[9px] leading-[10px]">
+                <Clock3 className="size-1.5" />
+                Recent
+              </span>
+            )}
+          </div>
+          <div className="absolute inset-x-3 bottom-3 flex items-end justify-between gap-2">
+            <div className="min-w-0 flex-1 font-[family-name:var(--font-inter)]">
+              <h3 className="truncate text-sm leading-[17.5px] font-semibold">
+                {session.title}
+              </h3>
+              <p className="mt-0.5 truncate text-[11px] leading-[14px] text-white/80">
+                {session.subtitle}
+              </p>
+              {"progress" in session && session.progress !== undefined ? (
+                <div className="mt-2">
+                  <div className="flex justify-between text-[11px] leading-[14px]">
                     <span>Progress</span>
                     <span>{session.progress}%</span>
                   </div>
-                  <Progress
-                    value={session.progress}
-                    aria-label={`${session.title} progress: ${session.progress}%`}
-                    className="gap-0 [&_[data-slot=progress-indicator]]:bg-[#1447e6] [&_[data-slot=progress-track]]:h-1 [&_[data-slot=progress-track]]:bg-[#e5e5e5]"
-                  />
+                  <div className="mt-1.5 h-[3px] rounded-full bg-white/30">
+                    <div
+                      role="progressbar"
+                      aria-label={`${session.title} progress`}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuenow={session.progress}
+                      className="h-full rounded-full bg-[#1447e6]"
+                      style={{ width: `${session.progress}%` }}
+                    />
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
+              ) : (
+                <p className="mt-2 flex items-center gap-1 text-[11px] leading-[14px]">
+                  <Clock3 className="size-2.5" />
+                  {"timestamp" in session ? session.timestamp : ""}
+                </p>
+              )}
+            </div>
+            <button
+              type="button"
+              aria-label={`Continue ${session.title}`}
+              className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#1e40af] hover:bg-[#193cb8]"
+            >
+              {("timestamp" in session ? session.timestamp : "") ? (
+                <ArrowRight className="size-4" />
+              ) : (
+                <Play className="ml-0.5 size-4 fill-white" />
+              )}
+            </button>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+)
 
 export default ContinueSessionSection
