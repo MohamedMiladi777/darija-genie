@@ -1,5 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalEnv": ["GOOGLE_GENAI_API_KEY", "GEMINI_API_KEY", "GEMINI_MODEL"],
   "ui": "tui",
   "tasks": {
     "build": {

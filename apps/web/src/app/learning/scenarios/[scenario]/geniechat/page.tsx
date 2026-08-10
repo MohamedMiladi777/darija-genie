@@ -3,8 +3,8 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import GenieChatSidebar from "@/components/genie-chat-section"
+import GenieChatDialogue from "@/components/genie-chat-dialogue"
 import { Button, buttonVariants } from "@workspace/ui/components/button"
-import { Card } from "@workspace/ui/components/card"
 
 import { isScenarioId, scenarioIds } from "../../scenario-data"
 
@@ -32,7 +32,7 @@ function DialogueHeader({ scenario }: { scenario: string }): React.JSX.Element {
               alt=""
               width={16}
               height={16}
-              className="size-4"
+              className="size-4 dark:brightness-0 dark:invert"
             />
           </Link>
           <div className="min-w-0">
@@ -46,7 +46,6 @@ function DialogueHeader({ scenario }: { scenario: string }): React.JSX.Element {
             </p>
           </div>
         </div>
-
         <Button
           type="button"
           variant="outline"
@@ -59,12 +58,11 @@ function DialogueHeader({ scenario }: { scenario: string }): React.JSX.Element {
             alt=""
             width={16}
             height={16}
-            className="size-4"
+            className="size-4 dark:brightness-0 dark:invert"
           />
           <span className="absolute top-[6px] right-[7px] size-2 rounded-full bg-[#fb2c36]" />
         </Button>
       </header>
-
       <div className="flex h-[53px] shrink-0 items-center justify-between border-b border-border bg-card px-4">
         <div className="flex items-center gap-2">
           <span className="flex size-7 items-center justify-center rounded-full bg-[#162456]">
@@ -76,135 +74,23 @@ function DialogueHeader({ scenario }: { scenario: string }): React.JSX.Element {
               className="size-3"
             />
           </span>
-          <span className="font-[family-name:var(--font-inter)] text-base leading-6 font-medium text-black">
+          <span className="font-[family-name:var(--font-inter)] text-base leading-6 font-medium text-foreground">
             Dialogue
           </span>
         </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="h-7 rounded-lg bg-[#fee2e2] px-3 font-[family-name:var(--font-inter)] text-xs leading-4 font-medium text-[#991b1b] hover:bg-[#fecaca] hover:text-[#991b1b]"
+        <Link
+          href={`/learning/scenarios/${scenario}`}
+          className={buttonVariants({
+            variant: "ghost",
+            size: "sm",
+            className:
+              "h-7 rounded-lg bg-[#fee2e2] px-3 font-[family-name:var(--font-inter)] text-xs font-medium text-[#991b1b] hover:bg-[#fecaca] hover:text-[#991b1b] dark:bg-red-950/40 dark:text-red-200 dark:hover:bg-red-950/60",
+          })}
         >
           End Dialogue
-        </Button>
+        </Link>
       </div>
     </>
-  )
-}
-
-function ScenarioCard({ scenario }: { scenario: string }): React.JSX.Element {
-  const isShopping = scenario.startsWith("shopping")
-
-  return (
-    <Card className="gap-0 rounded-[14px] bg-card py-0 shadow-none ring-border md:h-[256px] md:rounded-2xl">
-      <div className="relative h-[140px] w-full overflow-hidden md:h-48">
-        <Image
-          src={
-            isShopping
-              ? "/assets/scenarios/shopping.jpg"
-              : "/assets/genie-chat/restaurant.jpg"
-          }
-          alt=""
-          fill
-          priority
-          sizes="(min-width: 768px) 672px, 100vw"
-          className="object-cover"
-        />
-      </div>
-      <div className="flex h-16 flex-col justify-center border-t border-border px-3 font-[family-name:var(--font-inter)]">
-        <h2 className="text-sm leading-5 font-medium text-foreground">
-          {isShopping ? "Shopping Scenario" : "Restaurant Scenario"}
-        </h2>
-        <p className="pt-0.5 text-xs leading-4 text-muted-foreground">
-          {isShopping
-            ? "Practice shopping and conversing in a Moroccan souk"
-            : "Practice ordering and conversing at a restaurant"}
-        </p>
-      </div>
-    </Card>
-  )
-}
-
-function ServerMessage(): React.JSX.Element {
-  return (
-    <article className="flex items-end gap-2.5">
-      <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#162456] pb-px font-[family-name:var(--font-inter)] text-xs leading-4 font-bold text-[#f2efe4]">
-        S
-      </div>
-      <div className="max-w-80 min-w-0 flex-1 font-[family-name:var(--font-inter)]">
-        <p className="px-1 text-[10px] leading-[15px] text-[#a3a3a3] dark:text-[#c6b89b]/70">
-          Server
-        </p>
-        <div className="mt-1.5 rounded-t-2xl rounded-br-2xl rounded-bl-sm border border-border bg-card px-4 py-2.5 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
-          <p className="text-sm leading-[22.75px] text-foreground">
-            Mrhba! Welcome to our restaurant. What would you like to order
-            today?
-          </p>
-        </div>
-        <Button
-          type="button"
-          variant="outline"
-          size="xs"
-          className="mt-1.5 h-[25px] rounded-sm border-border bg-card px-2 text-[10px] leading-[15px] text-muted-foreground hover:bg-muted"
-        >
-          <Image
-            src="/assets/genie-chat/translate.svg"
-            alt=""
-            width={10}
-            height={10}
-            className="size-2.5"
-          />
-          Translate
-        </Button>
-        <p className="px-1 pt-1.5 text-[10px] leading-[15px] text-[#a3a3a3] dark:text-[#c6b89b]/70">
-          11:39 AM
-        </p>
-      </div>
-    </article>
-  )
-}
-
-function ResponseComposer(): React.JSX.Element {
-  const responseModes = [
-    {
-      label: "Text",
-      icon: "/assets/genie-chat/text.svg",
-      active: false,
-    },
-    {
-      label: "Audio",
-      icon: "/assets/genie-chat/audio.svg",
-      active: true,
-    },
-  ] as const
-
-  return (
-    <footer className="shrink-0 border-t border-border bg-card px-4 py-3">
-      <div className="mx-auto grid h-9 w-full max-w-2xl grid-cols-2 gap-2">
-        {responseModes.map((mode) => (
-          <Button
-            key={mode.label}
-            type="button"
-            variant="ghost"
-            className={`h-9 rounded-lg font-[family-name:var(--font-inter)] text-sm leading-5 font-medium ${
-              mode.active
-                ? "bg-[#dbeafe] text-[#1e40af] shadow-[0_1px_2px_rgba(0,0,0,0.1)] hover:bg-[#dbeafe] hover:text-[#1e40af] dark:bg-[#263a57] dark:text-[#8fc6ff] dark:hover:bg-[#263a57] dark:hover:text-[#8fc6ff]"
-                : "bg-background/60 text-muted-foreground/60 hover:bg-background/60 hover:text-muted-foreground/60"
-            }`}
-          >
-            <Image
-              src={mode.icon}
-              alt=""
-              width={16}
-              height={16}
-              className="size-4"
-            />
-            {mode.label}
-          </Button>
-        ))}
-      </div>
-    </footer>
   )
 }
 
@@ -214,26 +100,14 @@ export default async function GenieChatPage({
   params: Promise<{ scenario: string }>
 }): Promise<React.JSX.Element> {
   const { scenario } = await params
-
-  if (!isScenarioId(scenario)) {
-    notFound()
-  }
+  if (!isScenarioId(scenario)) notFound()
 
   return (
     <main className="flex h-dvh w-full overflow-hidden bg-card text-foreground">
       <GenieChatSidebar />
-
       <div className="flex min-w-0 flex-1 flex-col">
         <DialogueHeader scenario={scenario} />
-
-        <div className="min-h-0 flex-1 overflow-y-auto bg-background px-4 py-5">
-          <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
-            <ScenarioCard scenario={scenario} />
-            <ServerMessage />
-          </div>
-        </div>
-
-        <ResponseComposer />
+        <GenieChatDialogue scenario={scenario} />
       </div>
     </main>
   )
