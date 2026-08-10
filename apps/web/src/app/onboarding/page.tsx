@@ -1,6 +1,6 @@
 
 
-import LogoMark from "@/components/logo"
+import LogoMark from "@/components/assets/logo"
 
 // const logo = "/assets/images/logo.svg"
 

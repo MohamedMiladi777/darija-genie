@@ -2,7 +2,7 @@ import Image from "next/image"
 
 import { Button } from "@workspace/ui/components/button"
 
-import { LogoMarkDark } from "./logo"
+import { LogoMarkDark } from "./assets/logo"
 
 export const Header = (): React.JSX.Element => {
   return (

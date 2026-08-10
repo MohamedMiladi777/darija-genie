@@ -1,4 +1,4 @@
-import MosqueMark from "@/components/mosque"
+import MosqueMark from "@/components/assets/mosque"
 import { Button } from "@workspace/ui/components/button"
 import Link from "next/link"
 import { buttonVariants } from "@workspace/ui/components/button"

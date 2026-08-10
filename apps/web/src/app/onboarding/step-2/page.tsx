@@ -1,4 +1,4 @@
-import LogoMark from "@/components/logo"
+import LogoMark from "@/components/assets/logo"
 import { Button } from "@workspace/ui/components/button"
 import Link from "next/link"
 import { buttonVariants } from "@workspace/ui/components/button"

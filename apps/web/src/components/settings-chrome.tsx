@@ -3,7 +3,7 @@ import Link from "next/link"
 
 import { buttonVariants } from "@workspace/ui/components/button"
 
-import { MobileStatusBar } from "./ScenarioPageChrome"
+import { MobileStatusBar } from "./scenario-page-chrome"
 
 interface SettingsChromeProps {
   mobileTitle: string

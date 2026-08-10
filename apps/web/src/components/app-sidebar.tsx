@@ -1,43 +1,109 @@
 import Image from "next/image"
 import Link from "next/link"
+import { BookCheck, LucideIcon, Settings, House, Settings2 } from "lucide-react"
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarHeader,
+} from "@workspace/ui/components/sidebar"
 
 import type { LearningNavigationItem } from "./learning-navigation"
-import { LogoMarkDark } from "./logo"
+import { LogoMarkDark } from "./assets/logo"
+
+const SIDEBAR_WIDTH = "16rem"
+const SIDEBAR_WITH_MOBILE = "18rem"
+const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
 interface NavigationItem {
   value: LearningNavigationItem
   label: string
-  icon: string
+  icon: LucideIcon
   href?: string
   activeIcon?: string
 }
 
-const navigationItems: readonly NavigationItem[] = [
+/* const navigationItems: readonly NavigationItem[] = [
   {
     value: "testing",
     label: "Testing",
-    icon: "/assets/learning/desktop-nav-testing.svg",
+    icon: BookCheck,
   },
   {
     value: "learning",
     label: "Learning",
     href: "/learning",
-    icon: "/assets/learning/desktop-nav-learning.svg",
+    icon: House,
   },
   {
     value: "settings",
     label: "Settings",
     href: "/settings",
-    icon: "/assets/learning/desktop-nav-settings.svg",
+    icon: Settings,
     activeIcon: "/assets/settings/sidebar-settings-active.svg",
   },
 ]
+ */
+
+const data = {
+  user: {
+    name: "Darija Learner",
+    label: "Beginner",
+  },
+  navMain: [
+    {
+      title: "Learning",
+      icon: House,
+      url: "#",
+      isActive: true,
+    },
+
+    {
+      title: "Testing",
+      icon: BookCheck,
+      url: "#",
+      isActive: false,
+    },
+
+    {
+      title: "Settings",
+      icon: Settings,
+      url: "#",
+      isActive: false,
+    },
+  ],
+}
 
 interface LearningSidebarProps {
   activeItem?: LearningNavigationItem
 }
 
-export default function LearningSidebar({
+function NavMain({ items }: { items: typeof data.navMain }) {}
+
+export function AppSidebar({
+  navMain,
+}: {
+  navMain: {
+    title: string
+    icon: React.ElementType
+  }
+}) {
+  return (
+    <Sidebar variant="sidebar" collapsible="icon">
+      <SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup />
+          <SidebarGroup />
+        </SidebarContent>
+      </SidebarHeader>
+    </Sidebar>
+  )
+}
+
+/** Without Shadcn */
+
+/*export default function LearningSidebar({
   activeItem = "learning",
 }: LearningSidebarProps): React.JSX.Element {
   return (
@@ -112,3 +178,5 @@ export default function LearningSidebar({
     </aside>
   )
 }
+
+*/

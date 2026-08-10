@@ -1,14 +1,14 @@
-import ContinueSessionSection from "@/components/ContinueSessionSection"
-import Header from "@/components/Header"
-import LearningMobileNavigation from "@/components/LearningMobileNavigation"
-import LearningSidebar from "@/components/LearningSidebar"
-import QuizSection from "@/components/QuizSection"
-import ScenarioSection from "@/components/ScenarioSection"
+import ContinueSessionSection from "@/components/continue-session-section"
+import Header from "@/components/header"
+import LearningMobileNavigation from "@/components/learning-navigation-mobile"
+import { AppSidebar } from "@/components/app-sidebar"
+import QuizSection from "@/components/quiz-section"
+import ScenarioSection from "@/components/scenario-section"
 
 export default function LearningPage(): React.JSX.Element {
   return (
     <main className="min-h-dvh w-full bg-white text-[#162456] md:flex">
-      <LearningSidebar />
+      <AppSidebar />
 
       <div className="min-w-0 flex-1 bg-[#f2efe4] md:h-dvh md:overflow-y-auto">
         <Header />

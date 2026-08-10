@@ -1,9 +1,9 @@
 import Image from "next/image"
 import Link from "next/link"
 
-import LearningMobileNavigation from "@/components/LearningMobileNavigation"
-import LearningSidebar from "@/components/LearningSidebar"
-import SettingsChrome from "@/components/SettingsChrome"
+import LearningMobileNavigation from "@/components/learning-navigation-mobile"
+import LearningSidebar from "@/components/app-sidebar"
+import SettingsChrome from "@/components/settings-chrome"
 
 const settingsItems = [
   {

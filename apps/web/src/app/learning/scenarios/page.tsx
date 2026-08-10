@@ -1,9 +1,9 @@
 import Image from "next/image"
 import Link from "next/link"
 
-import LearningMobileNavigation from "@/components/LearningMobileNavigation"
-import LearningSidebar from "@/components/LearningSidebar"
-import ScenarioPageChrome from "@/components/ScenarioPageChrome"
+import LearningMobileNavigation from "@/components/learning-navigation-mobile"
+import LearningSidebar from "@/components/app-sidebar"
+import ScenarioPageChrome from "@/components/scenario-page-chrome"
 import { Card, CardContent } from "@workspace/ui/components/card"
 
 const scenarios = [

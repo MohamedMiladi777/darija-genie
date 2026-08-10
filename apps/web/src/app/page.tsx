@@ -3,7 +3,7 @@ import { Button } from "@workspace/ui/components/button"
 import { Card } from "@workspace/ui/components/card"
 import Image from "next/image"
 
-import LogoMark from "@/components/logo"
+import LogoMark from "@/components/assets/logo"
 
 export default function SplashScreen() {
   return (

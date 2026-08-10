@@ -1,7 +1,7 @@
-import LearningMobileNavigation from "@/components/LearningMobileNavigation"
-import LearningSidebar from "@/components/LearningSidebar"
-import PreferenceSelector from "@/components/PreferenceSelector"
-import SettingsChrome from "@/components/SettingsChrome"
+import LearningMobileNavigation from "@/components/learning-navigation-mobile"
+import LearningSidebar from "@/components/app-sidebar"
+import PreferenceSelector from "@/components/preference-selector"
+import SettingsChrome from "@/components/settings-chrome"
 
 export default function TextScriptSettingsPage(): React.JSX.Element {
   return (

@@ -2,7 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
-import GenieChatSidebar from "@/components/GenieChatSidebar"
+import GenieChatSidebar from "@/components/genie-chat-section"
 import { Button, buttonVariants } from "@workspace/ui/components/button"
 import { Card } from "@workspace/ui/components/card"
 

@@ -1,4 +1,4 @@
-import AtayMark from "@/components/atay"
+import AtayMark from "@/components/assets/atay"
 import { Button } from "@workspace/ui/components/button"
 import { ArrowRight } from "lucide-react"
 import { buttonVariants } from "@workspace/ui/components/button"

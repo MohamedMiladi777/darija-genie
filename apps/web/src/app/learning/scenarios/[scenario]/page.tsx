@@ -2,9 +2,9 @@ import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
-import LearningMobileNavigation from "@/components/LearningMobileNavigation"
-import LearningSidebar from "@/components/LearningSidebar"
-import ScenarioPageChrome from "@/components/ScenarioPageChrome"
+import LearningMobileNavigation from "@/components/learning-navigation-mobile"
+import LearningSidebar from "@/components/app-sidebar"
+import ScenarioPageChrome from "@/components/scenario-page-chrome"
 import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
 

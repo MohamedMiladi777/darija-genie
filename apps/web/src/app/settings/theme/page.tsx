@@ -1,7 +1,7 @@
-import LearningMobileNavigation from "@/components/LearningMobileNavigation"
-import LearningSidebar from "@/components/LearningSidebar"
-import SettingsChrome from "@/components/SettingsChrome"
-import ThemeSelector from "@/components/ThemeSelector"
+import LearningMobileNavigation from "@/components/learning-navigation-mobile"
+import LearningSidebar from "@/components/app-sidebar"
+import SettingsChrome from "@/components/settings-chrome"
+import ThemeSelector from "@/components/theme-selector"
 
 export default function ThemeSettingsPage(): React.JSX.Element {
   return (

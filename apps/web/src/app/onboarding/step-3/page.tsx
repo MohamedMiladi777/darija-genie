@@ -1,4 +1,4 @@
-import LampMark from "@/components/lamp"
+import LampMark from "@/components/assets/lamp"
 import { Sun, Moon } from "lucide-react"
 import { buttonVariants } from "@workspace/ui/components/button"
 import Link from "next/link"
