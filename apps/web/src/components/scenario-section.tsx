@@ -21,13 +21,13 @@ export const ScenarioSection = (): React.JSX.Element => (
     <div className="flex items-center justify-between">
       <h2
         id="scenarios-heading"
-        className="text-xl leading-7 font-bold text-[#162456]"
+        className="text-xl leading-7 font-bold text-foreground"
       >
         Scenarios
       </h2>
       <Link
         href="/learning/scenarios"
-        className="font-[family-name:var(--font-lato)] text-base leading-6 text-[#79716b] hover:text-[#162456]"
+        className="font-[family-name:var(--font-lato)] text-base leading-6 text-muted-foreground hover:text-foreground"
       >
         See All
       </Link>
@@ -38,13 +38,13 @@ export const ScenarioSection = (): React.JSX.Element => (
           key={scenario.title}
           href="/learning/scenarios"
           aria-label={`Open ${scenario.title} scenario`}
-          className={`flex h-[68px] w-[265px] shrink-0 snap-start items-center justify-between gap-2 rounded-2xl border border-[#e5e5e5] bg-white px-3 shadow-xs transition-colors hover:bg-[#fafafa] sm:w-auto ${"mobileHidden" in scenario && scenario.mobileHidden ? "hidden sm:flex" : ""}`}
+          className={`flex h-[68px] w-[265px] shrink-0 snap-start items-center justify-between gap-2 rounded-2xl border border-border bg-card px-3 shadow-xs transition-colors hover:bg-muted sm:w-auto ${"mobileHidden" in scenario && scenario.mobileHidden ? "hidden sm:flex" : ""}`}
         >
           <span className="min-w-0 font-[family-name:var(--font-inter)]">
-            <span className="block truncate text-sm leading-5 font-medium text-[#09090b]">
+            <span className="block truncate text-sm leading-5 font-medium text-foreground">
               {scenario.title}
             </span>
-            <span className="block truncate text-sm leading-5 text-[#737373]">
+            <span className="block truncate text-sm leading-5 text-muted-foreground">
               {scenario.description}
             </span>
           </span>

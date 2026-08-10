@@ -5,7 +5,7 @@ import ThemeSelector from "@/components/theme-selector"
 
 export default function ThemeSettingsPage(): React.JSX.Element {
   return (
-    <main className="min-h-dvh bg-[#f2efe4] md:flex">
+    <main className="min-h-dvh bg-background md:flex">
       <LearningSidebar activeItem="settings" />
 
       <div className="min-w-0 flex-1">

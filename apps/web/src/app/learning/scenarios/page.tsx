@@ -44,7 +44,7 @@ function ScenarioCard({
       aria-label={`Open ${scenario.title} scenario`}
       className="group rounded-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 md:rounded-2xl"
     >
-      <Card className="gap-0 rounded-[inherit] bg-white py-0 shadow-[0_1px_2px_rgba(0,0,0,0.05)] ring-[#e5e5e5] transition-transform group-hover:-translate-y-0.5">
+      <Card className="gap-0 rounded-[inherit] bg-card py-0 shadow-[0_1px_2px_rgba(0,0,0,0.05)] ring-border transition-transform group-hover:-translate-y-0.5">
         <div className="relative aspect-video w-full overflow-hidden">
           <Image
             src={scenario.image}
@@ -56,10 +56,10 @@ function ScenarioCard({
         </div>
         <CardContent className="flex min-h-[62px] items-center justify-between gap-3 px-3 py-[11px] md:min-h-[66px] md:py-3">
           <div className="min-w-0 font-[family-name:var(--font-inter)] text-sm leading-5">
-            <h3 className="truncate font-medium text-[#0a0a0a]">
+            <h3 className="truncate font-medium text-foreground">
               {scenario.title}
             </h3>
-            <p className="truncate font-normal text-[#797979]">
+            <p className="truncate font-normal text-muted-foreground">
               {scenario.description}
             </p>
           </div>
@@ -80,10 +80,10 @@ function ScenarioCard({
 
 export default function ScenariosPage(): React.JSX.Element {
   return (
-    <main className="min-h-dvh w-full bg-white text-[#162456] md:flex">
+    <main className="min-h-dvh w-full bg-card text-foreground md:flex">
       <LearningSidebar />
 
-      <div className="min-w-0 flex-1 bg-[#f2efe4] md:h-dvh md:overflow-y-auto">
+      <div className="min-w-0 flex-1 bg-background md:h-dvh md:overflow-y-auto">
         <ScenarioPageChrome
           backHref="/learning"
           desktopSubtitle="Learn Darija through scenarios"
@@ -91,10 +91,10 @@ export default function ScenariosPage(): React.JSX.Element {
 
         <section className="mx-auto w-full max-w-[402px] px-4 pt-2 pb-20 md:max-w-[896px] md:px-8 md:pt-6 md:pb-8">
           <div>
-            <h2 className="font-[family-name:var(--font-lato)] text-xl leading-7 font-bold text-[#2d3648] md:font-[family-name:var(--font-sans)] md:text-[#162456]">
+            <h2 className="font-[family-name:var(--font-lato)] text-xl leading-7 font-bold text-foreground md:font-[family-name:var(--font-sans)] md:text-foreground">
               Pick a scenario
             </h2>
-            <p className="font-[family-name:var(--font-lato)] text-[11px] leading-[15.4px] font-normal text-[#797979] md:text-xs md:leading-4 md:text-[#79716b]">
+            <p className="font-[family-name:var(--font-lato)] text-[11px] leading-[15.4px] font-normal text-muted-foreground md:text-xs md:leading-4 md:text-muted-foreground">
               Learn Darija through scenarios
             </p>
           </div>

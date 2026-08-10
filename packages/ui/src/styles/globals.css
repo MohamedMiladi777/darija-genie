@@ -69,23 +69,23 @@
     --border-radii-absolute-radius-infinite: 9999px;
     --border-radii-rounded-full: var(--border-radii-absolute-radius-infinite);
     --border-radii-rounded-lg: var(--border-radii-absolute-radius-8);
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
+    --background: #f2efe4;
+    --foreground: #162456;
+    --card: #ffffff;
+    --card-foreground: #162456;
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
     --primary: oklch(0.205 0 0);
     --primary-foreground: oklch(0.985 0 0);
     --secondary: oklch(0.97 0 0);
     --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
+    --muted: #f8f6ef;
+    --muted-foreground: #79716b;
     --accent: oklch(0.97 0 0);
     --accent-foreground: oklch(0.205 0 0);
     --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
+    --border: #e5e5e5;
+    --input: #e5e5e5;
     --ring: oklch(0.708 0 0);
     --chart-1: oklch(0.87 0 0);
     --chart-2: oklch(0.556 0 0);
@@ -151,23 +151,23 @@
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
+    --background: #182334;
+    --foreground: #ffffff;
+    --card: #202c3d;
+    --card-foreground: #ffffff;
+    --popover: #202c3d;
+    --popover-foreground: #ffffff;
     --primary: oklch(0.922 0 0);
     --primary-foreground: oklch(0.205 0 0);
     --secondary: oklch(0.269 0 0);
     --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
+    --muted: #263346;
+    --muted-foreground: #c6b89b;
+    --accent: #2d3a4e;
+    --accent-foreground: #ffffff;
     --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
+    --border: rgba(198, 184, 155, 0.18);
+    --input: rgba(198, 184, 155, 0.22);
     --ring: oklch(0.556 0 0);
     --chart-1: oklch(0.87 0 0);
     --chart-2: oklch(0.556 0 0);
@@ -212,3 +212,20 @@
 
 .quiz-card-exit-left { animation: quiz-card-exit-left 650ms cubic-bezier(.22, 1, .36, 1) both; }
 .quiz-card-exit-right { animation: quiz-card-exit-right 650ms cubic-bezier(.22, 1, .36, 1) both; }
+
+::view-transition-group(.logo-morph) {
+  animation-duration: 850ms;
+  animation-timing-function: cubic-bezier(.22, 1, .36, 1);
+}
+
+::view-transition-old(.logo-morph),
+::view-transition-new(.logo-morph) {
+  height: 100%;
+  mix-blend-mode: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(.logo-morph) {
+    animation-duration: 1ms;
+  }
+}

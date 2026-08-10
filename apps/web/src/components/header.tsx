@@ -17,7 +17,7 @@ export const Header = (): React.JSX.Element => {
             type="button"
             variant="secondary"
             size="icon"
-            className="size-9 rounded-lg bg-[#f2efe4] p-0 text-[#162456] hover:bg-[#f2efe4]/90"
+            className="size-9 rounded-lg bg-background p-0 text-foreground hover:bg-background/90"
             aria-label="Open display settings"
           >
             <span className="flex size-4 items-center justify-center">
@@ -46,10 +46,10 @@ export const Header = (): React.JSX.Element => {
 
       <header className="hidden min-h-[94px] w-full items-center justify-between px-8 py-5 md:flex">
         <div>
-          <h1 className="text-2xl leading-8 font-bold text-[#162456]">
+          <h1 className="text-2xl leading-8 font-bold text-foreground">
             Learn Darija!
           </h1>
-          <p className="pt-0.5 font-[family-name:var(--font-lato)] text-sm leading-5 text-[#79716b]">
+          <p className="pt-0.5 font-[family-name:var(--font-lato)] text-sm leading-5 text-muted-foreground">
             What would you like to learn today?
           </p>
         </div>

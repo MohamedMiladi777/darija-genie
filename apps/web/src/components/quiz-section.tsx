@@ -13,13 +13,13 @@ const QuizSection = (): React.JSX.Element => (
     <div className="flex items-center justify-between">
       <h2
         id="quizzes-heading"
-        className="text-xl leading-7 font-bold text-[#162456]"
+        className="text-xl leading-7 font-bold text-foreground"
       >
         Quizzes
       </h2>
       <button
         type="button"
-        className="font-[family-name:var(--font-lato)] text-base leading-6 text-[#79716b] hover:text-[#162456]"
+        className="font-[family-name:var(--font-lato)] text-base leading-6 text-muted-foreground hover:text-foreground"
       >
         See All
       </button>
@@ -30,13 +30,13 @@ const QuizSection = (): React.JSX.Element => (
           key={quiz.title}
           type="button"
           aria-label={`${quiz.title}, ${quiz.subtitle}`}
-          className="flex h-[85px] basis-[165px] grow shrink-0 snap-start items-center justify-between rounded-2xl border border-[#e5e5e5] bg-white px-4 text-left shadow-xs transition-colors hover:bg-[#fafafa]"
+          className="flex h-[85px] shrink-0 grow basis-[165px] snap-start items-center justify-between rounded-2xl border border-border bg-card px-4 text-left shadow-xs transition-colors hover:bg-muted"
         >
           <span className="min-w-0 font-[family-name:var(--font-inter)]">
-            <span className="block truncate text-[15px] leading-5 font-medium text-[#162456]">
+            <span className="block truncate text-[15px] leading-5 font-medium text-foreground">
               {quiz.title}
             </span>
-            <span className="mt-0.5 block truncate text-[13px] leading-4 text-[#737373]">
+            <span className="mt-0.5 block truncate text-[13px] leading-4 text-muted-foreground">
               {quiz.subtitle}
             </span>
           </span>

@@ -47,7 +47,7 @@ function LearningOptionCard({
 
   const card = (
     <Card
-      className={`gap-0 rounded-[14px] bg-white py-0 shadow-[0_1px_2px_rgba(0,0,0,0.05)] ring-[#e5e5e5] transition-transform md:rounded-2xl ${
+      className={`gap-0 rounded-[14px] bg-card py-0 shadow-[0_1px_2px_rgba(0,0,0,0.05)] ring-border transition-transform md:rounded-2xl ${
         isFeatured
           ? "h-[164px] w-full md:h-[306px]"
           : "h-[204px] min-w-0 md:h-[271px]"
@@ -59,10 +59,10 @@ function LearningOptionCard({
         }`}
       >
         <div className="min-w-0 font-[family-name:var(--font-inter)]">
-          <h2 className="text-base leading-6 font-medium text-[#09090b]">
+          <h2 className="text-base leading-6 font-medium text-foreground">
             {option.title}
           </h2>
-          <p className="mt-1 text-sm leading-5 font-normal text-[#737373]">
+          <p className="mt-1 text-sm leading-5 font-normal text-muted-foreground">
             {option.description}
           </p>
         </div>
@@ -96,7 +96,7 @@ function LearningOptionCard({
 
       <CardContent className="px-4 pb-4">
         <div
-          className={`relative overflow-hidden rounded-[10px] border border-[#e5e5e5] md:rounded-xl ${
+          className={`relative overflow-hidden rounded-[10px] border border-border md:rounded-xl ${
             isFeatured ? "h-[68px] md:h-[209px]" : "h-[88px] md:h-[174px]"
           }`}
         >
@@ -139,17 +139,17 @@ function ActivityChart(): React.JSX.Element {
       <header className="flex h-7 items-start justify-between px-4 md:px-0">
         <h2
           id="activity-heading"
-          className="font-[family-name:var(--font-lato)] text-xl leading-7 font-bold text-[#2d3648]"
+          className="font-[family-name:var(--font-lato)] text-xl leading-7 font-bold text-foreground"
         >
           Your Activity
         </h2>
-        <p className="font-[family-name:var(--font-lato)] text-[11px] leading-[15px] text-[#797979] md:text-xs md:leading-4">
+        <p className="font-[family-name:var(--font-lato)] text-[11px] leading-[15px] text-muted-foreground md:text-xs md:leading-4">
           January - May
         </p>
       </header>
 
       <div className="relative mx-auto h-[161px] w-[240px] md:mt-6 md:w-[448px]">
-        <div className="relative h-32 border-b border-l border-[#e5e5e5]">
+        <div className="relative h-32 border-b border-l border-border">
           {[0, 24, 48, 72, 95].map((top) => (
             <span
               key={top}
@@ -175,7 +175,7 @@ function ActivityChart(): React.JSX.Element {
           </div>
         </div>
 
-        <div className="absolute top-[134px] right-0 left-0 grid grid-cols-6 font-[family-name:var(--font-inter)] text-[8px] leading-3 text-[#737373] md:text-xs md:leading-4">
+        <div className="absolute top-[134px] right-0 left-0 grid grid-cols-6 font-[family-name:var(--font-inter)] text-[8px] leading-3 text-muted-foreground md:text-xs md:leading-4">
           {months.map((month) => (
             <span key={month} className="text-center">
               {month}
@@ -183,7 +183,7 @@ function ActivityChart(): React.JSX.Element {
           ))}
         </div>
 
-        <div className="absolute top-[153px] right-0 left-0 flex items-center justify-center gap-1 font-[family-name:var(--font-inter)] text-[8px] leading-none text-[#737373] md:text-xs">
+        <div className="absolute top-[153px] right-0 left-0 flex items-center justify-center gap-1 font-[family-name:var(--font-inter)] text-[8px] leading-none text-muted-foreground md:text-xs">
           <span className="size-1.5 rounded-[1px] bg-[#8fc6ff]" />
           <span>Activity</span>
         </div>
@@ -204,10 +204,10 @@ export default async function ScenarioHomePage({
   }
 
   return (
-    <main className="min-h-dvh w-full bg-white text-[#162456] md:flex">
+    <main className="min-h-dvh w-full bg-card text-foreground md:flex">
       <LearningSidebar />
 
-      <div className="min-w-0 flex-1 bg-[#f2efe4] md:h-dvh md:overflow-y-auto">
+      <div className="min-w-0 flex-1 bg-background md:h-dvh md:overflow-y-auto">
         <ScenarioPageChrome
           backHref="/learning/scenarios"
           desktopSubtitle="What would you like to learn today?"
@@ -218,11 +218,11 @@ export default async function ScenarioHomePage({
             <div className="px-4 md:px-0">
               <h2
                 id="learning-options-heading"
-                className="font-[family-name:var(--font-lato)] text-xl leading-7 font-bold text-[#2d3648]"
+                className="font-[family-name:var(--font-lato)] text-xl leading-7 font-bold text-foreground"
               >
                 What would you like to learn today?
               </h2>
-              <p className="mt-[7px] font-[family-name:var(--font-lato)] text-[11px] leading-[15px] font-normal text-[#797979] md:mt-1 md:text-xs md:leading-4">
+              <p className="mt-[7px] font-[family-name:var(--font-lato)] text-[11px] leading-[15px] font-normal text-muted-foreground md:mt-1 md:text-xs md:leading-4">
                 Choose how you&apos;d like to practise your language skills.
                 Learn new concepts, review past conversations, or start chatting
                 with your AI tutor.

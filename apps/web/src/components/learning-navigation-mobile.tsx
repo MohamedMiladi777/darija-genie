@@ -47,7 +47,7 @@ export default function LearningMobileNavigation({
   return (
     <nav
       aria-label="Primary navigation"
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-[#ded5c3] bg-[#ebe0ca] sm:right-auto sm:bottom-4 sm:left-1/2 sm:w-[min(560px,calc(100%-2rem))] sm:-translate-x-1/2 sm:rounded-xl sm:border sm:shadow-[0_10px_30px_rgba(22,36,86,0.16)] md:hidden"
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-[#ded5c3] bg-[#ebe0ca] sm:right-auto sm:bottom-4 sm:left-1/2 sm:w-[min(560px,calc(100%-2rem))] sm:-translate-x-1/2 sm:rounded-xl sm:border sm:shadow-[0_10px_30px_rgba(22,36,86,0.16)] md:hidden dark:border-border dark:bg-background"
     >
       <div className="grid h-[55px] grid-cols-[126fr_140fr_136fr] items-center sm:grid-cols-3">
         {navigationItems.map((item) => {
@@ -55,7 +55,7 @@ export default function LearningMobileNavigation({
           const className = `flex h-full min-w-0 items-center justify-center gap-1 rounded-md font-[family-name:var(--font-inter)] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-[#1447e6] ${
             isActive
               ? "bg-[#193cb8] text-base text-[#f2efe4]"
-              : "text-sm text-[#0a0a0a] hover:bg-white/35"
+              : "text-sm text-foreground hover:bg-white/35"
           }`
           const content = (
             <>

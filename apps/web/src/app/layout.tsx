@@ -1,4 +1,10 @@
-import { Geist_Mono, Inter, Lato, Montserrat, Open_Sans } from "next/font/google"
+import {
+  Geist_Mono,
+  Inter,
+  Lato,
+  Montserrat,
+  Open_Sans,
+} from "next/font/google"
 
 import "@workspace/ui/globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -44,9 +50,17 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, openSans.variable, inter.variable, lato.variable, montserrat.variable, "font-sans")}
+      className={cn(
+        "antialiased",
+        fontMono.variable,
+        openSans.variable,
+        inter.variable,
+        lato.variable,
+        montserrat.variable,
+        "font-sans"
+      )}
     >
-      <body className="bg-[#f2efe4] text-[#162456]">
+      <body className="bg-background text-foreground">
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

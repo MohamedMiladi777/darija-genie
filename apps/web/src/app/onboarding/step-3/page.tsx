@@ -38,7 +38,7 @@ function MainContent() {
               variant: null,
               size: "lg",
               className:
-                "click:bg-blue-100 flex items-center justify-center gap-2 rounded-full border border-neutral-200 bg-white px-6 py-3 text-sm font-medium text-blue-950 shadow-sm hover:bg-blue-50",
+                "click:bg-blue-100 flex items-center justify-center gap-2 rounded-full border border-neutral-200 bg-card px-6 py-3 text-sm font-medium text-blue-950 shadow-sm hover:bg-blue-50",
             })}
           >
             {" "}

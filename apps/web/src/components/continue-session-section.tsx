@@ -43,13 +43,13 @@ const ContinueSessionSection = (): React.JSX.Element => (
     <div className="flex items-center justify-between">
       <h2
         id="continue-session-heading"
-        className="text-xl leading-7 font-bold text-[#162456]"
+        className="text-xl leading-7 font-bold text-foreground"
       >
         Continue Session
       </h2>
       <button
         type="button"
-        className="font-[family-name:var(--font-lato)] text-base text-[#79716b]"
+        className="font-[family-name:var(--font-lato)] text-base text-muted-foreground"
       >
         See All
       </button>
@@ -58,7 +58,7 @@ const ContinueSessionSection = (): React.JSX.Element => (
       {sessions.map((session) => (
         <article
           key={session.title}
-          className="relative h-[190px] basis-[210px] grow shrink-0 snap-start overflow-hidden rounded-2xl text-white"
+          className="relative h-[190px] shrink-0 grow basis-[210px] snap-start overflow-hidden rounded-2xl text-white"
         >
           <Image
             src={session.image}

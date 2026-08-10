@@ -2,9 +2,12 @@ import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@workspace/ui"],
-   images: {
+  experimental: {
+    viewTransition: true,
+  },
+  images: {
     dangerouslyAllowSVG: true,
-    contentDispositionType: 'attachment',
+    contentDispositionType: "attachment",
   },
 }
 

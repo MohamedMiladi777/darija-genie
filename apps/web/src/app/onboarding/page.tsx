@@ -1,5 +1,3 @@
-
-
 import LogoMark from "@/components/assets/logo"
 
 // const logo = "/assets/images/logo.svg"
@@ -14,7 +12,7 @@ import LogoMark from "@/components/assets/logo"
 
 export default function SplashScreen() {
   return (
-    <main className="flex min-h-svh justify-center bg-[#f2efe4] text-[#162456]">
+    <main className="flex min-h-svh justify-center bg-background text-foreground">
       <LogoMark />
     </main>
   )

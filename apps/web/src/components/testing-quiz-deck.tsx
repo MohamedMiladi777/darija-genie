@@ -165,16 +165,16 @@ export default function TestingQuizDeck(): React.JSX.Element {
 
       <div className="min-w-0">
         <div key={`details-${quiz.id}`} className={transitionClass}>
-          <p className="text-xs text-[#79716b]">
+          <p className="text-xs text-muted-foreground">
             {activeIndex + 1} of {quizzes.length}
           </p>
-          <h3 className="pt-1.5 text-[28px] leading-[35px] font-bold text-[#2d3648]">
+          <h3 className="pt-1.5 text-[28px] leading-[35px] font-bold text-foreground">
             {quiz.title}
           </h3>
           <p className="pt-1 font-[family-name:var(--font-inter)] text-[13px] leading-5 text-[#c6b89b]">
             {quiz.arabic}
           </p>
-          <p className="max-w-xl pt-3 font-[family-name:var(--font-lato)] text-[15px] leading-[22px] text-[#79716b]">
+          <p className="max-w-xl pt-3 font-[family-name:var(--font-lato)] text-[15px] leading-[22px] text-muted-foreground">
             {quiz.description}
           </p>
 
@@ -204,7 +204,7 @@ export default function TestingQuizDeck(): React.JSX.Element {
             <button
               type="button"
               onClick={() => move(-1)}
-              className="flex items-center gap-1.5 justify-self-start text-[13px] font-medium text-[#79716b] transition-colors hover:text-[#162456]"
+              className="flex items-center gap-1.5 justify-self-start text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               <Image
                 src="/assets/testing/previous.svg"
@@ -233,7 +233,7 @@ export default function TestingQuizDeck(): React.JSX.Element {
             <button
               type="button"
               onClick={() => move(1)}
-              className="flex items-center gap-1.5 justify-self-end text-[13px] font-medium text-[#79716b] transition-colors hover:text-[#162456]"
+              className="flex items-center gap-1.5 justify-self-end text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               Next
               <Image
@@ -248,7 +248,7 @@ export default function TestingQuizDeck(): React.JSX.Element {
         </div>
 
         <div className="pt-2">
-          <h3 className="font-[family-name:var(--font-inter)] text-xs leading-[18px] font-semibold tracking-[0.3px] text-[#79716b] uppercase">
+          <h3 className="font-[family-name:var(--font-inter)] text-xs leading-[18px] font-semibold tracking-[0.3px] text-muted-foreground uppercase">
             All quizzes
           </h3>
           <div className="flex flex-col gap-2 pt-3">
@@ -260,7 +260,7 @@ export default function TestingQuizDeck(): React.JSX.Element {
                   type="button"
                   onClick={() => selectQuiz(index)}
                   aria-pressed={selected}
-                  className={`flex min-h-[65px] w-full items-center gap-3 rounded-xl border p-3 text-left transition-all duration-300 hover:-translate-y-0.5 ${selected ? "border-[#162456]/20 bg-white shadow-sm" : "border-transparent bg-white/50 hover:bg-white/80"}`}
+                  className={`flex min-h-[65px] w-full items-center gap-3 rounded-xl border p-3 text-left transition-all duration-300 hover:-translate-y-0.5 ${selected ? "border-[#162456]/20 bg-card shadow-sm" : "border-transparent bg-card/50 hover:bg-card/80"}`}
                 >
                   <span className="relative size-10 shrink-0 overflow-hidden rounded-xl">
                     <Image
@@ -273,14 +273,14 @@ export default function TestingQuizDeck(): React.JSX.Element {
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="flex items-baseline gap-1.5">
-                      <span className="truncate font-[family-name:var(--font-inter)] text-[13px] leading-4 font-semibold text-[#2d3648]">
+                      <span className="truncate font-[family-name:var(--font-inter)] text-[13px] leading-4 font-semibold text-foreground">
                         {item.title}
                       </span>
                       <span className="truncate text-[11px] leading-4 text-[#c6b89b]">
                         {item.arabic}
                       </span>
                     </span>
-                    <span className="mt-0.5 block text-[11px] leading-4 text-[#79716b]">
+                    <span className="mt-0.5 block text-[11px] leading-4 text-muted-foreground">
                       {item.questions} questions · {item.duration} min
                     </span>
                   </span>
@@ -342,7 +342,7 @@ function QuizCardFace({
               <button
                 type="button"
                 onClick={onStart}
-                className="flex h-10 shrink-0 items-center gap-2 rounded-xl bg-white px-4 font-[family-name:var(--font-inter)] text-[13px] font-semibold text-[#162456] shadow-sm transition-transform hover:-translate-y-0.5 active:translate-y-0"
+                className="flex h-10 shrink-0 items-center gap-2 rounded-xl bg-card px-4 font-[family-name:var(--font-inter)] text-[13px] font-semibold text-foreground shadow-sm transition-transform hover:-translate-y-0.5 active:translate-y-0"
               >
                 <Image
                   src="/assets/testing/card-play.svg"
@@ -388,14 +388,14 @@ function MetricCard({
   suffix?: string
 }): React.JSX.Element {
   return (
-    <div className="min-h-[90px] rounded-2xl border border-[#e5e5e5] bg-white p-4 shadow-sm">
-      <p className="font-[family-name:var(--font-inter)] text-[11px] leading-[17px] font-medium tracking-[0.25px] text-[#79716b] uppercase">
+    <div className="min-h-[90px] rounded-2xl border border-border bg-card p-4 shadow-sm">
+      <p className="font-[family-name:var(--font-inter)] text-[11px] leading-[17px] font-medium tracking-[0.25px] text-muted-foreground uppercase">
         {label}
       </p>
-      <p className="pt-1 text-2xl leading-9 font-bold text-[#162456]">
+      <p className="pt-1 text-2xl leading-9 font-bold text-foreground">
         {value}
         {suffix ? (
-          <span className="pl-1 font-[family-name:var(--font-lato)] text-sm font-normal text-[#79716b]">
+          <span className="pl-1 font-[family-name:var(--font-lato)] text-sm font-normal text-muted-foreground">
             {suffix}
           </span>
         ) : null}

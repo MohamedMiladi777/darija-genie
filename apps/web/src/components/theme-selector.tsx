@@ -40,7 +40,7 @@ function MiniatureContent({
       <div
         className={`w-[31%] shrink-0 px-2 py-3 ${dark ? "bg-[#0f172a]" : "bg-[#162456]"}`}
       >
-        <div className="mb-3 h-2 w-5 rounded-full bg-[#f2efe4]/85" />
+        <div className="mb-3 h-2 w-5 rounded-full bg-background/85" />
         <div className="space-y-1.5">
           <div className="h-1.5 rounded-full bg-[#1447e6]" />
           <div className="h-1.5 rounded-full bg-white/20" />
@@ -49,7 +49,7 @@ function MiniatureContent({
       </div>
       <div className="min-w-0 flex-1">
         <div
-          className={`flex h-7 items-center border-b px-2 ${dark ? "border-white/10 bg-[#1f2937]" : "border-[#e5e5e5] bg-white"}`}
+          className={`flex h-7 items-center border-b px-2 ${dark ? "border-white/10 bg-[#1f2937]" : "border-border bg-card"}`}
         >
           <div
             className={`h-1.5 w-9 rounded-full ${dark ? "bg-white/40" : "bg-[#162456]/45"}`}
@@ -61,10 +61,10 @@ function MiniatureContent({
           />
           <div className="grid grid-cols-2 gap-1.5">
             <div
-              className={`h-8 rounded ${dark ? "bg-white/10" : "bg-white shadow-sm"}`}
+              className={`h-8 rounded ${dark ? "bg-white/10" : "bg-card shadow-sm"}`}
             />
             <div
-              className={`h-8 rounded ${dark ? "bg-white/10" : "bg-white shadow-sm"}`}
+              className={`h-8 rounded ${dark ? "bg-white/10" : "bg-card shadow-sm"}`}
             />
           </div>
           <div
@@ -109,10 +109,10 @@ export default function ThemeSelector(): React.JSX.Element {
   return (
     <>
       <div>
-        <h2 className="font-[family-name:var(--font-lato)] text-xl leading-7 font-bold text-[#162456]">
+        <h2 className="font-[family-name:var(--font-lato)] text-xl leading-7 font-bold text-foreground">
           Choose a theme
         </h2>
-        <p className="mt-0.5 font-[family-name:var(--font-lato)] text-sm leading-5 text-[#79716b]">
+        <p className="mt-0.5 font-[family-name:var(--font-lato)] text-sm leading-5 text-muted-foreground">
           Select how Darija Genie looks to you.
         </p>
       </div>
@@ -127,15 +127,15 @@ export default function ThemeSelector(): React.JSX.Element {
               type="button"
               aria-pressed={isSelected}
               onClick={() => setTheme(choice.value)}
-              className="min-w-0 text-left outline-none focus-visible:rounded-2xl focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f2efe4]"
+              className="min-w-0 text-left outline-none focus-visible:rounded-2xl focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <span
                 className={`block h-[148px] rounded-2xl p-[11px] transition-colors ${
                   isSelected
-                    ? "border-[3px] border-[#162456] bg-[#dedbd0]"
+                    ? "border-[3px] border-[#162456] bg-[#dedbd0] dark:border-[#c6b89b] dark:bg-[#263346]"
                     : choice.value === "dark"
                       ? "border border-[#374151] bg-[#252b38]"
-                      : "border border-[#d6d3ca] bg-[#dedbd0]"
+                      : "border border-[#d6d3ca] bg-[#dedbd0] dark:border-border dark:bg-[#263346]"
                 }`}
               >
                 <ThemePreview theme={choice.value} />
@@ -147,13 +147,13 @@ export default function ThemeSelector(): React.JSX.Element {
                   alt=""
                   width={15}
                   height={15}
-                  className="size-[15px] shrink-0"
+                  className="size-[15px] shrink-0 dark:brightness-0 dark:invert"
                 />
                 <span
                   className={`min-w-0 flex-1 font-[family-name:var(--font-inter)] text-sm leading-5 ${
                     isSelected
-                      ? "font-medium text-[#162456]"
-                      : "font-normal text-[#737373]"
+                      ? "font-medium text-foreground"
+                      : "font-normal text-muted-foreground"
                   }`}
                 >
                   {choice.label}
@@ -169,7 +169,7 @@ export default function ThemeSelector(): React.JSX.Element {
                     />
                   </span>
                 ) : (
-                  <span className="size-4 shrink-0 rounded-full border border-[#a3a3a3]" />
+                  <span className="size-4 shrink-0 rounded-full border border-[#a3a3a3] dark:border-[#c6b89b]" />
                 )}
               </span>
             </button>
@@ -177,7 +177,7 @@ export default function ThemeSelector(): React.JSX.Element {
         })}
       </div>
 
-      <div className="mt-6 flex min-h-11 items-center gap-3 rounded-xl bg-[#dbeafe] px-4 py-2">
+      <div className="mt-6 flex min-h-11 items-center gap-3 rounded-xl bg-[#dbeafe] px-4 py-2 dark:bg-[#263a57]">
         <Image
           src="/assets/settings/system-info.svg"
           alt=""
@@ -185,7 +185,7 @@ export default function ThemeSelector(): React.JSX.Element {
           height={16}
           className="size-4 shrink-0"
         />
-        <p className="font-[family-name:var(--font-inter)] text-xs leading-4 text-[#1e40af]">
+        <p className="font-[family-name:var(--font-inter)] text-xs leading-4 text-[#1e40af] dark:text-[#8fc6ff]">
           <strong className="font-semibold">System</strong> automatically
           switches between light and dark based on your device settings.
         </p>

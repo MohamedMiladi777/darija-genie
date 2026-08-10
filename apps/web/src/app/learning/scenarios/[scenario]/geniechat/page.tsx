@@ -15,7 +15,7 @@ export function generateStaticParams(): Array<{ scenario: string }> {
 function DialogueHeader({ scenario }: { scenario: string }): React.JSX.Element {
   return (
     <>
-      <header className="flex h-[76px] shrink-0 items-center justify-between border-b border-[#e5e5e5] bg-[#f2efe4] px-4 md:h-[95px] md:px-8">
+      <header className="flex h-[76px] shrink-0 items-center justify-between border-b border-border bg-background px-4 md:h-[95px] md:px-8">
         <div className="flex min-w-0 items-center gap-3">
           <Link
             href={`/learning/scenarios/${scenario}`}
@@ -24,7 +24,7 @@ function DialogueHeader({ scenario }: { scenario: string }): React.JSX.Element {
               variant: "outline",
               size: "icon",
               className:
-                "size-9 rounded-xl border-[#e5e5e5] bg-white p-0 shadow-none hover:bg-white",
+                "size-9 rounded-xl border-border bg-card p-0 shadow-none hover:bg-muted",
             })}
           >
             <Image
@@ -36,10 +36,10 @@ function DialogueHeader({ scenario }: { scenario: string }): React.JSX.Element {
             />
           </Link>
           <div className="min-w-0">
-            <h1 className="truncate font-[family-name:var(--font-sans)] text-xl leading-7 font-bold text-[#162456] md:text-2xl md:leading-8">
+            <h1 className="truncate font-[family-name:var(--font-sans)] text-xl leading-7 font-bold text-foreground md:text-2xl md:leading-8">
               Darija Genie
             </h1>
-            <p className="truncate pt-0.5 font-[family-name:var(--font-lato)] text-xs leading-4 text-[#79716b] md:text-sm md:leading-5">
+            <p className="truncate pt-0.5 font-[family-name:var(--font-lato)] text-xs leading-4 text-muted-foreground md:text-sm md:leading-5">
               {scenario.startsWith("shopping")
                 ? "Shopping scenario · Lesson 1"
                 : "Restaurant scenario · Lesson 1"}
@@ -52,7 +52,7 @@ function DialogueHeader({ scenario }: { scenario: string }): React.JSX.Element {
           variant="outline"
           size="icon"
           aria-label="Notifications"
-          className="relative size-9 rounded-xl border-[#e5e5e5] bg-white p-0 hover:bg-white"
+          className="relative size-9 rounded-xl border-border bg-card p-0 hover:bg-muted"
         >
           <Image
             src="/assets/genie-chat/bell.svg"
@@ -65,7 +65,7 @@ function DialogueHeader({ scenario }: { scenario: string }): React.JSX.Element {
         </Button>
       </header>
 
-      <div className="flex h-[53px] shrink-0 items-center justify-between border-b border-[#e5e5e5] bg-white px-4">
+      <div className="flex h-[53px] shrink-0 items-center justify-between border-b border-border bg-card px-4">
         <div className="flex items-center gap-2">
           <span className="flex size-7 items-center justify-center rounded-full bg-[#162456]">
             <Image
@@ -97,7 +97,7 @@ function ScenarioCard({ scenario }: { scenario: string }): React.JSX.Element {
   const isShopping = scenario.startsWith("shopping")
 
   return (
-    <Card className="gap-0 rounded-[14px] bg-white py-0 shadow-none ring-[#e5e5e5] md:h-[256px] md:rounded-2xl">
+    <Card className="gap-0 rounded-[14px] bg-card py-0 shadow-none ring-border md:h-[256px] md:rounded-2xl">
       <div className="relative h-[140px] w-full overflow-hidden md:h-48">
         <Image
           src={
@@ -112,11 +112,11 @@ function ScenarioCard({ scenario }: { scenario: string }): React.JSX.Element {
           className="object-cover"
         />
       </div>
-      <div className="flex h-16 flex-col justify-center border-t border-[#e5e5e5] px-3 font-[family-name:var(--font-inter)]">
-        <h2 className="text-sm leading-5 font-medium text-[#162456]">
+      <div className="flex h-16 flex-col justify-center border-t border-border px-3 font-[family-name:var(--font-inter)]">
+        <h2 className="text-sm leading-5 font-medium text-foreground">
           {isShopping ? "Shopping Scenario" : "Restaurant Scenario"}
         </h2>
-        <p className="pt-0.5 text-xs leading-4 text-[#737373]">
+        <p className="pt-0.5 text-xs leading-4 text-muted-foreground">
           {isShopping
             ? "Practice shopping and conversing in a Moroccan souk"
             : "Practice ordering and conversing at a restaurant"}
@@ -133,9 +133,11 @@ function ServerMessage(): React.JSX.Element {
         S
       </div>
       <div className="max-w-80 min-w-0 flex-1 font-[family-name:var(--font-inter)]">
-        <p className="px-1 text-[10px] leading-[15px] text-[#a3a3a3]">Server</p>
-        <div className="mt-1.5 rounded-t-2xl rounded-br-2xl rounded-bl-sm border border-[#e5e5e5] bg-white px-4 py-2.5 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
-          <p className="text-sm leading-[22.75px] text-[#09090b]">
+        <p className="px-1 text-[10px] leading-[15px] text-[#a3a3a3] dark:text-[#c6b89b]/70">
+          Server
+        </p>
+        <div className="mt-1.5 rounded-t-2xl rounded-br-2xl rounded-bl-sm border border-border bg-card px-4 py-2.5 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
+          <p className="text-sm leading-[22.75px] text-foreground">
             Mrhba! Welcome to our restaurant. What would you like to order
             today?
           </p>
@@ -144,7 +146,7 @@ function ServerMessage(): React.JSX.Element {
           type="button"
           variant="outline"
           size="xs"
-          className="mt-1.5 h-[25px] rounded-sm border-[#e5e5e5] bg-white px-2 text-[10px] leading-[15px] text-[#737373] hover:bg-white"
+          className="mt-1.5 h-[25px] rounded-sm border-border bg-card px-2 text-[10px] leading-[15px] text-muted-foreground hover:bg-muted"
         >
           <Image
             src="/assets/genie-chat/translate.svg"
@@ -155,7 +157,7 @@ function ServerMessage(): React.JSX.Element {
           />
           Translate
         </Button>
-        <p className="px-1 pt-1.5 text-[10px] leading-[15px] text-[#a3a3a3]">
+        <p className="px-1 pt-1.5 text-[10px] leading-[15px] text-[#a3a3a3] dark:text-[#c6b89b]/70">
           11:39 AM
         </p>
       </div>
@@ -178,7 +180,7 @@ function ResponseComposer(): React.JSX.Element {
   ] as const
 
   return (
-    <footer className="shrink-0 border-t border-[#e5e5e5] bg-white px-4 py-3">
+    <footer className="shrink-0 border-t border-border bg-card px-4 py-3">
       <div className="mx-auto grid h-9 w-full max-w-2xl grid-cols-2 gap-2">
         {responseModes.map((mode) => (
           <Button
@@ -187,8 +189,8 @@ function ResponseComposer(): React.JSX.Element {
             variant="ghost"
             className={`h-9 rounded-lg font-[family-name:var(--font-inter)] text-sm leading-5 font-medium ${
               mode.active
-                ? "bg-[#dbeafe] text-[#1e40af] shadow-[0_1px_2px_rgba(0,0,0,0.1)] hover:bg-[#dbeafe] hover:text-[#1e40af]"
-                : "bg-[#f2efe4]/60 text-[#737373]/60 hover:bg-[#f2efe4]/60 hover:text-[#737373]/60"
+                ? "bg-[#dbeafe] text-[#1e40af] shadow-[0_1px_2px_rgba(0,0,0,0.1)] hover:bg-[#dbeafe] hover:text-[#1e40af] dark:bg-[#263a57] dark:text-[#8fc6ff] dark:hover:bg-[#263a57] dark:hover:text-[#8fc6ff]"
+                : "bg-background/60 text-muted-foreground/60 hover:bg-background/60 hover:text-muted-foreground/60"
             }`}
           >
             <Image
@@ -218,13 +220,13 @@ export default async function GenieChatPage({
   }
 
   return (
-    <main className="flex h-dvh w-full overflow-hidden bg-white text-[#162456]">
+    <main className="flex h-dvh w-full overflow-hidden bg-card text-foreground">
       <GenieChatSidebar />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <DialogueHeader scenario={scenario} />
 
-        <div className="min-h-0 flex-1 overflow-y-auto bg-[#f2efe4] px-4 py-5">
+        <div className="min-h-0 flex-1 overflow-y-auto bg-background px-4 py-5">
           <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
             <ScenarioCard scenario={scenario} />
             <ServerMessage />

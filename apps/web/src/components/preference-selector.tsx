@@ -97,7 +97,9 @@ function SelectionBox({
     <span
       aria-hidden="true"
       className={`flex shrink-0 items-center justify-center rounded-[4px] border shadow-[0_1px_2px_rgba(0,0,0,0.05)] ${sizeClassName} ${
-        selected ? "border-[#1e40af] bg-[#1e40af]" : "border-[#d4d4d4] bg-white"
+        selected
+          ? "border-[#1e40af] bg-[#1e40af]"
+          : "border-[#d4d4d4] bg-card dark:border-border"
       }`}
     >
       {selected ? (
@@ -160,13 +162,13 @@ export default function PreferenceSelector({
               type="button"
               aria-pressed={selected}
               onClick={() => togglePreference(option.value)}
-              className="flex h-[66px] w-full items-start gap-3 border-x border-t border-[#e5e5e5] bg-[#f5f5f5] p-3 text-left outline-none last:border-b focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-inset"
+              className="flex h-[66px] w-full items-start gap-3 border-x border-t border-border bg-muted p-3 text-left outline-none last:border-b focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-inset"
             >
               <span className="min-w-0 flex-1">
-                <span className="block font-[family-name:var(--font-inter)] text-sm leading-5 text-[#404040]">
+                <span className="block font-[family-name:var(--font-inter)] text-sm leading-5 text-foreground">
                   {option.title}
                 </span>
-                <span className="mt-1.5 block font-[family-name:var(--font-inter)] text-xs leading-4 text-[#737373]">
+                <span className="mt-1.5 block font-[family-name:var(--font-inter)] text-xs leading-4 text-muted-foreground">
                   {option.description}
                 </span>
               </span>
@@ -180,10 +182,10 @@ export default function PreferenceSelector({
 
       <section className="mx-auto hidden w-full max-w-2xl px-5 pt-6 pb-10 md:block">
         <div>
-          <h2 className="font-[family-name:var(--font-sans)] text-xl leading-7 font-bold text-[#162456]">
+          <h2 className="font-[family-name:var(--font-sans)] text-xl leading-7 font-bold text-foreground">
             {config.heading}
           </h2>
-          <p className="mt-0.5 font-[family-name:var(--font-inter)] text-sm leading-5 text-[#737373]">
+          <p className="mt-0.5 font-[family-name:var(--font-inter)] text-sm leading-5 text-muted-foreground">
             {config.subtitle}
           </p>
         </div>
@@ -202,15 +204,15 @@ export default function PreferenceSelector({
                 type="button"
                 aria-pressed={selected}
                 onClick={() => togglePreference(option.value)}
-                className={`flex h-[90px] w-full items-center gap-4 rounded-2xl border bg-white p-4 text-left transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f2efe4] ${
+                className={`flex h-[90px] w-full items-center gap-4 rounded-2xl border bg-card p-4 text-left transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                   selected
                     ? "border-[#162456]"
-                    : "border-[#e5e5e5] shadow-[0_1px_1px_rgba(0,0,0,0.05)]"
+                    : "border-border shadow-[0_1px_1px_rgba(0,0,0,0.05)]"
                 }`}
               >
                 <span
                   className={`flex size-14 shrink-0 items-center justify-center rounded-xl ${
-                    selected ? "bg-[#162456]" : "bg-[#f5f5f5]"
+                    selected ? "bg-[#162456]" : "bg-muted"
                   }`}
                 >
                   {option.icon ? (
@@ -224,7 +226,9 @@ export default function PreferenceSelector({
                   ) : (
                     <span
                       className={`font-[family-name:var(--font-inter)] text-lg font-semibold ${
-                        selected ? "text-white" : "text-[#525252]"
+                        selected
+                          ? "text-white"
+                          : "text-[#525252] dark:text-[#c6b89b]"
                       }`}
                     >
                       {option.monogram}
@@ -233,10 +237,10 @@ export default function PreferenceSelector({
                 </span>
 
                 <span className="min-w-0 flex-1">
-                  <span className="block font-[family-name:var(--font-inter)] text-base leading-6 font-medium text-[#404040]">
+                  <span className="block font-[family-name:var(--font-inter)] text-base leading-6 font-medium text-foreground">
                     {option.title}
                   </span>
-                  <span className="mt-0.5 block font-[family-name:var(--font-inter)] text-xs leading-4 text-[#737373]">
+                  <span className="mt-0.5 block font-[family-name:var(--font-inter)] text-xs leading-4 text-muted-foreground">
                     {option.description}
                   </span>
                 </span>
@@ -248,7 +252,7 @@ export default function PreferenceSelector({
         </div>
 
         {kind === "interaction" ? (
-          <div className="mt-6 flex min-h-11 items-start gap-3 rounded-xl bg-[#e0e7ff] px-4 py-3">
+          <div className="mt-6 flex min-h-11 items-start gap-3 rounded-xl bg-[#e0e7ff] px-4 py-3 dark:bg-[#263a57]">
             <Image
               src="/assets/settings/interaction-info.svg"
               alt=""
@@ -256,7 +260,7 @@ export default function PreferenceSelector({
               height={16}
               className="mt-0.5 size-4 shrink-0"
             />
-            <p className="font-[family-name:var(--font-inter)] text-xs leading-[19.5px] text-[#1e40af]">
+            <p className="font-[family-name:var(--font-inter)] text-xs leading-[19.5px] text-[#1e40af] dark:text-[#8fc6ff]">
               You can enable <strong className="font-bold">both</strong> modes
               at once. Audio mode requires microphone access.
             </p>
