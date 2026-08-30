@@ -3,7 +3,7 @@
 import Image from "next/image"
 import * as React from "react"
 
-type PreferenceKind = "script" | "interaction"
+type PreferenceKind = "script" | "interaction" | "fontSize"
 
 interface PreferenceOption {
   value: string
@@ -66,6 +66,33 @@ const preferenceConfigs: Record<
       },
     ],
   },
+  fontSize: {
+    heading: "Font size",
+    subtitle: "Choose a comfortable size for dialogue text",
+    storageKey: "darija-genie:font-size",
+    defaultValues: ["medium"],
+    multiple: false,
+    options: [
+      {
+        value: "small",
+        title: "Small",
+        description: "Compact dialogue text",
+        monogram: "A",
+      },
+      {
+        value: "medium",
+        title: "Medium",
+        description: "Comfortable dialogue text",
+        monogram: "A",
+      },
+      {
+        value: "large",
+        title: "Large",
+        description: "Extra readable dialogue text",
+        monogram: "A",
+      },
+    ],
+  },
 }
 
 const preferenceChangeEvent = "darija-genie:preference-change"
@@ -82,6 +109,19 @@ function subscribe(listener: () => void): () => void {
 
 function readStoredValue(key: string, fallback: string): string {
   return window.localStorage.getItem(key) ?? fallback
+}
+
+export function useStoredPreference(key: string, fallback: string): string {
+  return React.useSyncExternalStore(
+    subscribe,
+    () => readStoredValue(key, fallback),
+    () => fallback
+  )
+}
+
+export function setStoredPreference(key: string, value: string): void {
+  window.localStorage.setItem(key, value)
+  window.dispatchEvent(new Event(preferenceChangeEvent))
 }
 
 function SelectionBox({
@@ -122,11 +162,7 @@ export default function PreferenceSelector({
 }): React.JSX.Element {
   const config = preferenceConfigs[kind]
   const fallbackValue = config.defaultValues.join(",")
-  const storedValue = React.useSyncExternalStore(
-    subscribe,
-    () => readStoredValue(config.storageKey, fallbackValue),
-    () => fallbackValue
-  )
+  const storedValue = useStoredPreference(config.storageKey, fallbackValue)
   const selectedValues = storedValue.split(",").filter(Boolean)
 
   function togglePreference(value: string): void {
@@ -142,8 +178,7 @@ export default function PreferenceSelector({
       nextValues = [...selectedValues, value]
     }
 
-    window.localStorage.setItem(config.storageKey, nextValues.join(","))
-    window.dispatchEvent(new Event(preferenceChangeEvent))
+    setStoredPreference(config.storageKey, nextValues.join(","))
   }
 
   return (
@@ -225,7 +260,13 @@ export default function PreferenceSelector({
                     />
                   ) : (
                     <span
-                      className={`font-[family-name:var(--font-inter)] text-lg font-semibold ${
+                      className={`font-[family-name:var(--font-inter)] font-semibold ${
+                        kind === "fontSize" && option.value === "small"
+                          ? "text-sm"
+                          : kind === "fontSize" && option.value === "large"
+                            ? "text-2xl"
+                            : "text-lg"
+                      } ${
                         selected
                           ? "text-white"
                           : "text-[#525252] dark:text-[#c6b89b]"

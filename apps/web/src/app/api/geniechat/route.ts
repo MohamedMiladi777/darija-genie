@@ -57,33 +57,60 @@ function isHistory(value: unknown): value is HistoryEntry[] {
   })
 }
 
-function parseReply(rawReply: string): { assistant: string; slots: SlotState } {
-  const marker = /(?:^|\n)\s*(?:SLOT_STATE_JSON|SLOT_STATE|SLOT_JSON)\s*:?\s*/i
-  const match = marker.exec(rawReply)
-  const assistantBlock = match ? rawReply.slice(0, match.index) : rawReply
-  const assistant = assistantBlock
+function parseReply(rawReply: string): {
+  assistant: string
+  translation: string
+  slots: SlotState
+} {
+  const translationMarker =
+    /(?:^|\n)\s*(?:ENGLISH_TRANSLATION|TRANSLATION)\s*:?\s*/i
+  const slotMarker =
+    /(?:^|\n)\s*(?:SLOT_STATE_JSON|SLOT_STATE|SLOT_JSON)\s*:?\s*/i
+  const translationMatch = translationMarker.exec(rawReply)
+  const slotMatch = slotMarker.exec(rawReply)
+  const assistantEnd = Math.min(
+    translationMatch?.index ?? rawReply.length,
+    slotMatch?.index ?? rawReply.length
+  )
+  const assistant = rawReply
+    .slice(0, assistantEnd)
     .replace(/^\s*(?:#+\s*)?\**\s*ASSISTANT\s*\**\s*:?\s*/i, "")
     .trim()
 
-  if (!assistant)
+  if (!assistant) {
     throw new Error("Gemini response is missing an assistant utterance.")
-  if (!match) return { assistant, slots: {} }
+  }
+
+  const translation = translationMatch
+    ? rawReply
+        .slice(
+          translationMatch.index + translationMatch[0].length,
+          slotMatch?.index ?? rawReply.length
+        )
+        .trim()
+    : ""
+
+  if (!slotMatch) return { assistant, translation, slots: {} }
 
   const slotBlock = rawReply
-    .slice(match.index + match[0].length)
+    .slice(slotMatch.index + slotMatch[0].length)
     .replace(/^```(?:json)?\s*/i, "")
     .replace(/\s*```$/i, "")
     .trim()
   const start = slotBlock.indexOf("{")
   const end = slotBlock.lastIndexOf("}")
-  if (start < 0 || end < start) return { assistant, slots: {} }
+  if (start < 0 || end < start) return { assistant, translation, slots: {} }
 
   try {
     const parsed: unknown = JSON.parse(slotBlock.slice(start, end + 1))
-    if (!isRecord(parsed)) return { assistant, slots: {} }
-    return { assistant, slots: isRecord(parsed.slots) ? parsed.slots : parsed }
+    if (!isRecord(parsed)) return { assistant, translation, slots: {} }
+    return {
+      assistant,
+      translation,
+      slots: isRecord(parsed.slots) ? parsed.slots : parsed,
+    }
   } catch {
-    return { assistant, slots: {} }
+    return { assistant, translation, slots: {} }
   }
 }
 

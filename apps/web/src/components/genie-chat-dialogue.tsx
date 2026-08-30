@@ -6,6 +6,7 @@ import { LoaderCircle, RefreshCw, Send } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
 import { Card } from "@workspace/ui/components/card"
+import { useStoredPreference } from "@/components/preference-selector"
 
 type SlotState = Record<string, unknown>
 type HistoryEntry =
@@ -16,10 +17,11 @@ type Message = {
   id: number
   sender: "assistant" | "user"
   text: string
+  translation?: string
   timestamp: Date
 }
 
-type ChatReply = { assistant: string; slots: SlotState }
+type ChatReply = { assistant: string; translation: string; slots: SlotState }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value)
@@ -47,6 +49,8 @@ async function requestReply(history: HistoryEntry[]): Promise<ChatReply> {
 
   return {
     assistant: payload.assistant,
+    translation:
+      typeof payload.translation === "string" ? payload.translation : "",
     slots: isRecord(payload.slots) ? payload.slots : {},
   }
 }
@@ -85,6 +89,14 @@ function ScenarioCard({ scenario }: { scenario: string }): React.JSX.Element {
 }
 
 function MessageBubble({ message }: { message: Message }): React.JSX.Element {
+  const [showTranslation, setShowTranslation] = useState(false)
+  const fontSize = useStoredPreference("darija-genie:font-size", "medium")
+  const messageSize =
+    fontSize === "large"
+      ? "text-xl leading-9"
+      : fontSize === "small"
+        ? "text-base leading-7"
+        : "text-lg leading-8"
   const assistant = message.sender === "assistant"
   const time = message.timestamp.toLocaleTimeString([], {
     hour: "2-digit",
@@ -114,12 +126,39 @@ function MessageBubble({ message }: { message: Message }): React.JSX.Element {
           }`}
         >
           <p
-            className="text-left text-sm leading-[22.75px] break-words"
+            className={`text-left font-[family-name:var(--font-simplified-arabic)] break-words ${messageSize}`}
             dir="auto"
           >
             {message.text}
           </p>
         </div>
+        {assistant ? (
+          <div className="px-1 pt-2">
+            <button
+              type="button"
+              aria-expanded={showTranslation}
+              onClick={() => setShowTranslation((visible) => !visible)}
+              className="flex items-center gap-1.5 font-[family-name:var(--font-inter)] text-xs font-medium text-[#1e40af] hover:underline dark:text-[#8fc6ff]"
+            >
+              <Image
+                src="/assets/genie-chat/translate.svg"
+                alt=""
+                width={14}
+                height={14}
+                className="size-3.5 dark:brightness-0 dark:invert"
+              />
+              {showTranslation ? "Hide translation" : "Translate"}
+            </button>
+            {showTranslation ? (
+              <p
+                className="mt-2 rounded-xl border border-border bg-muted px-3 py-2 font-[family-name:var(--font-inter)] text-sm leading-6 text-foreground"
+                dir="ltr"
+              >
+                {message.translation || "Translation unavailable."}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
         <p className="px-1 pt-1.5 text-[10px] leading-[15px] text-muted-foreground/70">
           {time}
         </p>
@@ -142,10 +181,15 @@ export default function GenieChatDialogue({
   const endRef = useRef<HTMLDivElement>(null)
 
   const createMessage = useCallback(
-    (sender: Message["sender"], text: string): Message => ({
+    (
+      sender: Message["sender"],
+      text: string,
+      translation?: string
+    ): Message => ({
       id: nextId.current++,
       sender,
       text,
+      translation,
       timestamp: new Date(),
     }),
     []
@@ -162,7 +206,9 @@ export default function GenieChatDialogue({
       setHistory([
         { assistant: { utterance: reply.assistant, slots: reply.slots } },
       ])
-      setMessages([createMessage("assistant", reply.assistant)])
+      setMessages([
+        createMessage("assistant", reply.assistant, reply.translation),
+      ])
     } catch (caught) {
       setError(
         caught instanceof Error ? caught.message : "Unable to start GenieChat."
@@ -204,7 +250,7 @@ export default function GenieChatDialogue({
       setHistory((current) => [...current, assistantTurn])
       setMessages((current) => [
         ...current,
-        createMessage("assistant", reply.assistant),
+        createMessage("assistant", reply.assistant, reply.translation),
       ])
     } catch (caught) {
       setHistory(previousHistory)
@@ -282,7 +328,7 @@ export default function GenieChatDialogue({
             placeholder="Write your response..."
             rows={1}
             disabled={loading || history.length === 0}
-            className="max-h-28 min-h-10 flex-1 resize-none rounded-xl border border-input bg-background px-3 py-2.5 font-[family-name:var(--font-inter)] text-sm leading-5 text-foreground outline-none placeholder:text-muted-foreground focus:border-[#1447e6] focus:ring-2 focus:ring-[#1447e6]/20 disabled:cursor-not-allowed disabled:opacity-60"
+            className="max-h-32 min-h-12 flex-1 resize-none rounded-xl border border-input bg-background px-3 py-2.5 font-[family-name:var(--font-simplified-arabic)] text-base leading-7 text-foreground outline-none placeholder:text-muted-foreground focus:border-[#1447e6] focus:ring-2 focus:ring-[#1447e6]/20 disabled:cursor-not-allowed disabled:opacity-60"
           />
           <Button
             type="submit"

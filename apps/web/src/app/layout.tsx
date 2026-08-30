@@ -3,6 +3,7 @@ import {
   Inter,
   Lato,
   Montserrat,
+  Noto_Sans_Arabic,
   Open_Sans,
 } from "next/font/google"
 
@@ -41,6 +42,11 @@ const fontMono = Geist_Mono({
   variable: "--font-mono",
 })
 
+const arabic = Noto_Sans_Arabic({
+  subsets: ["arabic"],
+  variable: "--font-arabic",
+})
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -57,6 +63,7 @@ export default function RootLayout({
         inter.variable,
         lato.variable,
         montserrat.variable,
+        arabic.variable,
         "font-sans"
       )}
     >

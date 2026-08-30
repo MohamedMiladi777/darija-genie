@@ -25,6 +25,12 @@ const settingsItems = [
     icon: "/assets/settings/microphone.svg",
     href: "/settings/interaction",
   },
+  {
+    title: "Font Size",
+    description: "Choose a comfortable dialogue text size",
+    icon: "/assets/genie-chat/text.svg",
+    href: "/settings/font-size",
+  },
 ] as const
 
 function SettingsRow({
