@@ -4,6 +4,7 @@ import Link from "next/link"
 import LearningMobileNavigation from "@/components/learning-navigation-mobile"
 import LearningSidebar from "@/components/app-sidebar"
 import SettingsChrome from "@/components/settings-chrome"
+import { SidebarInset } from "@workspace/ui/components/sidebar"
 
 const settingsItems = [
   {
@@ -80,7 +81,8 @@ function SettingsRow({
 
 export default function SettingsPage(): React.JSX.Element {
   return (
-    <main className="min-h-dvh bg-background md:flex">
+    // <main className="min-h-dvh bg-background md:flex">
+    <SidebarInset className="min-h-dvh bg-background md:flex">
       <LearningSidebar activeItem="settings" />
 
       <div className="min-w-0 flex-1">
@@ -125,6 +127,7 @@ export default function SettingsPage(): React.JSX.Element {
       </div>
 
       <LearningMobileNavigation activeItem="settings" />
-    </main>
+      {/* </main> */}
+    </SidebarInset>
   )
 }

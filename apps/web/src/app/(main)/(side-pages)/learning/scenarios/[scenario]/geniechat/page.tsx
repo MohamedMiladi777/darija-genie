@@ -6,7 +6,8 @@ import GenieChatSidebar from "@/components/genie-chat-section"
 import GenieChatDialogue from "@/components/genie-chat-dialogue"
 import { Button, buttonVariants } from "@workspace/ui/components/button"
 
-import { isScenarioId, scenarioIds } from "../../scenario-data"
+// import { isScenarioId, scenarioIds } from "../../scenario-data"
+import { isScenarioId, scenarioIds } from "@/app/(main)/learning/scenarios/scenario-data"
 
 export function generateStaticParams(): Array<{ scenario: string }> {
   return scenarioIds.map((scenario) => ({ scenario }))

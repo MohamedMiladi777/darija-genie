@@ -1,8 +1,19 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 import type { LearningNavigationItem } from "./learning-navigation"
 import { LogoMarkDark } from "./assets/logo"
+import {
+  Sidebar,
+  SidebarHeader,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarFooter,
+} from "@workspace/ui/components/sidebar"
 
 interface NavigationItem {
   value: LearningNavigationItem
@@ -34,66 +45,75 @@ const navigationItems: readonly NavigationItem[] = [
   },
 ]
 
-interface LearningSidebarProps {
-  activeItem?: LearningNavigationItem
-}
+// interface LearningSidebarProps {
+//   activeItem?: LearningNavigationItem
+// }
 
-export function AppSidebar({
-  activeItem = "learning",
-}: LearningSidebarProps): React.JSX.Element {
+export function AppSidebar(): React.JSX.Element {
   return (
-    <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col bg-[#162456] md:flex lg:w-72">
-      <div className="flex min-h-36 items-center border-b border-[#f2efe4]/15 px-6 py-8">
+    <Sidebar collapsible="icon">
+      <SidebarHeader className="flex min-h-36 items-center border-b px-6 py-8">
         <LogoMarkDark className="h-20 w-[90px]" />
-      </div>
+      </SidebarHeader>
 
-      <nav
+      {/* <nav
         aria-label="Primary navigation"
         className="flex flex-1 flex-col gap-1 p-4"
-      >
-        {navigationItems.map((item) => {
-          const isActive = item.value === activeItem
-          const className = `flex items-center gap-3 rounded-xl px-4 py-3 font-[family-name:var(--font-inter)] text-[15px] leading-[22.5px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2efe4] ${isActive ? "bg-[#193cb8] text-[#f2efe4]" : "text-[#f2efe4]/55 hover:bg-white/8 hover:text-[#f2efe4]"}`
-          const content = (
-            <>
-              <Image
-                src={isActive && item.activeIcon ? item.activeIcon : item.icon}
-                alt=""
-                width={20}
-                height={20}
-                className={`size-5 ${isActive && item.value === "testing" ? "brightness-0 invert" : ""}`}
-              />
-              <span>{item.label}</span>
-            </>
-          )
+      > */}
 
-          if (!item.href) {
-            return (
-              <button
-                key={item.value}
-                type="button"
-                disabled
-                className={className}
-              >
-                {content}
-              </button>
-            )
-          }
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent className="flex flex-col gap-1 p-4">
+            {navigationItems.map((item) => {
+              //const isActive = item.value === activeItem
+              const pathname = usePathname()
+              const isActive = item.value === pathname
+              const className = `flex items-center gap-3 rounded-xl px-4 py-3 font-[family-name:var(--font-inter)] text-[15px] leading-[22.5px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2efe4] ${isActive ? "bg-[#193cb8] text-[#f2efe4]" : "text-[#f2efe4]/55 hover:bg-white/8 hover:text-[#f2efe4]"}`
+              const content = (
+                <>
+                  <Image
+                    src={
+                      isActive && item.activeIcon ? item.activeIcon : item.icon
+                    }
+                    alt=""
+                    width={20}
+                    height={20}
+                    className={`size-5 ${isActive && pathname.startsWith("/testing") ? "brightness-0 invert" : ""}`}
+                  />
+                  <span>{item.label}</span>
+                </>
+              )
 
-          return (
-            <Link
-              key={item.value}
-              href={item.href}
-              aria-current={isActive ? "page" : undefined}
-              className={className}
-            >
-              {content}
-            </Link>
-          )
-        })}
-      </nav>
+              if (!item.href) {
+                return (
+                  <button
+                    key={item.value}
+                    type="button"
+                    disabled
+                    className={className}
+                  >
+                    {content}
+                  </button>
+                )
+              }
 
-      <div className="p-4 py-6">
+              return (
+                <Link
+                  key={item.value}
+                  href={item.href}
+                  aria-current={isActive ? "page" : undefined}
+                  className={className}
+                >
+                  {content}
+                </Link>
+              )
+            })}
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      {/* </nav> */}
+
+      {/* <div className="p-4 py-6">
         <div className="flex items-center gap-3 rounded-xl bg-white/8 px-4 py-3">
           <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#c6b89b] font-[family-name:var(--font-inter)] text-sm font-bold text-[#162456]">
             DJ
@@ -105,8 +125,22 @@ export function AppSidebar({
             <p className="text-xs leading-4 text-[#f2efe4]/50">Beginner</p>
           </div>
         </div>
-      </div>
-    </aside>
+      </div> */}
+
+      <SidebarFooter>
+        <div className="flex items-center gap-3 rounded-xl bg-white/8 px-4 py-3">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#c6b89b] font-[family-name:var(--font-inter)] text-sm font-bold text-[#162456]">
+            DJ
+          </div>
+          <div className="min-w-0 font-[family-name:var(--font-inter)]">
+            <p className="truncate text-sm leading-5 font-medium text-white">
+              Darija Learner
+            </p>
+            <p className="text-xs leading-4 text-[#f2efe4]/50">Beginner</p>
+          </div>
+        </div>
+      </SidebarFooter>
+    </Sidebar>
   )
 }
 

@@ -30,6 +30,12 @@ const learningOptions = [
     description: "Review previous conversations",
     image: "/assets/scenario-home/review.jpg",
   },
+  {
+    id: "quiz",
+    title: "Scenario Quiz",
+    description: "Test your Darija knowledge",
+    image: "/assets/scenario-home/quiz.jpg",
+  },
 ] as const
 
 export function generateStaticParams(): Array<{ scenario: string }> {
@@ -122,6 +128,18 @@ function LearningOptionCard({
         href={`/learning/scenarios/${scenario}/geniechat`}
         aria-label="Open GenieChat"
         className="group col-span-2 w-[300px] justify-self-center rounded-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 md:w-full md:rounded-2xl [&_[data-slot=card]]:group-hover:-translate-y-0.5"
+      >
+        {card}
+      </Link>
+    )
+  }
+
+  if (option.id === "quiz") {
+    return (
+      <Link
+        href="/testing"
+        aria-label="Open Scenario Quiz"
+        className="group col-span-2 w-[300px] justify-self-center rounded-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 md:w-[calc(50%-8px)] md:rounded-2xl [&_[data-slot=card]]:group-hover:-translate-y-0.5"
       >
         {card}
       </Link>

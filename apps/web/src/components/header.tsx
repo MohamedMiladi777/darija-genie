@@ -3,6 +3,7 @@ import Image from "next/image"
 import { Button } from "@workspace/ui/components/button"
 
 import { LogoMarkDark } from "./assets/logo"
+import { SidebarTrigger } from "@workspace/ui/components/sidebar"
 
 export const Header = (): React.JSX.Element => {
   return (
@@ -45,14 +46,18 @@ export const Header = (): React.JSX.Element => {
       </section>
 
       <header className="hidden min-h-[94px] w-full items-center justify-between px-8 py-5 md:flex">
-        <div>
-          <h1 className="text-2xl leading-8 font-bold text-foreground">
-            Learn Darija!
-          </h1>
-          <p className="pt-0.5 font-[family-name:var(--font-lato)] text-sm leading-5 text-muted-foreground">
-            What would you like to learn today?
-          </p>
+        <div className="flex items-center gap-3">
+          <SidebarTrigger />
+          <div>
+            <h1 className="text-2xl leading-8 font-bold text-foreground">
+              Learn Darija!
+            </h1>
+            <p className="pt-0.5 font-[family-name:var(--font-lato)] text-sm leading-5 text-muted-foreground">
+              What would you like to learn today?
+            </p>
+          </div>
         </div>
+
         <Button
           type="button"
           variant="ghost"
