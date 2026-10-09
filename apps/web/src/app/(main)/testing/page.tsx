@@ -1,16 +1,12 @@
 import Image from "next/image"
 import Link from "next/link"
 
-import { AppSidebar } from "@/components/app-sidebar"
-import LearningMobileNavigation from "@/components/learning-navigation-mobile"
 import TestingQuizDeck from "@/components/testing-quiz-deck"
 
 export default function TestingPage(): React.JSX.Element {
   return (
-    <main className="min-h-dvh w-full bg-background text-foreground md:flex">
-      <AppSidebar activeItem="testing" />
-
-      <div className="min-w-0 flex-1 bg-background md:h-dvh md:overflow-y-auto">
+    <main className="min-h-dvh w-full bg-background text-foreground">
+      <div className="min-w-0 bg-background md:h-dvh md:overflow-y-auto">
         <header className="flex min-h-[93px] items-center border-b border-border px-4 py-5 sm:px-6 md:px-8">
           <div className="flex items-center gap-3">
             <Link
@@ -49,8 +45,6 @@ export default function TestingPage(): React.JSX.Element {
           <TestingQuizDeck />
         </section>
       </div>
-
-      <LearningMobileNavigation activeItem="testing" />
     </main>
   )
 }

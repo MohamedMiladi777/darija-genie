@@ -1,8 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
 
-import LearningMobileNavigation from "@/components/learning-navigation-mobile"
-import LearningSidebar from "@/components/app-sidebar"
 import ScenarioPageChrome from "@/components/scenario-page-chrome"
 import { Card, CardContent } from "@workspace/ui/components/card"
 
@@ -81,8 +79,6 @@ function ScenarioCard({
 export default function ScenariosPage(): React.JSX.Element {
   return (
     <main className="min-h-dvh w-full bg-card text-foreground md:flex">
-      <LearningSidebar />
-
       <div className="min-w-0 flex-1 bg-background md:h-dvh md:overflow-y-auto">
         <ScenarioPageChrome
           backHref="/learning"
@@ -106,8 +102,6 @@ export default function ScenariosPage(): React.JSX.Element {
           </div>
         </section>
       </div>
-
-      <LearningMobileNavigation />
     </main>
   )
 }

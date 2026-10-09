@@ -14,15 +14,32 @@ type HistoryEntry =
 
 const usesVertexAi = process.env.GOOGLE_GENAI_USE_VERTEXAI === "true"
 const apiKey = process.env.GOOGLE_GENAI_API_KEY ?? process.env.GEMINI_API_KEY
-const hasCredentials = usesVertexAi
-  ? Boolean(
-      process.env.GOOGLE_CLOUD_PROJECT && process.env.GOOGLE_CLOUD_LOCATION
-    )
-  : Boolean(apiKey)
+const hasApiKey = Boolean(apiKey)
+const hasVertexTarget = Boolean(
+  process.env.GOOGLE_CLOUD_PROJECT && process.env.GOOGLE_CLOUD_LOCATION
+)
+const hasLocalVertexCredentials = Boolean(
+  process.env.GOOGLE_APPLICATION_CREDENTIALS ||
+    process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON
+)
+const runningOnGoogleInfra = Boolean(
+  process.env.K_SERVICE ||
+    process.env.FUNCTION_TARGET ||
+    process.env.GAE_SERVICE ||
+    process.env.CLOUD_RUN_JOB
+)
+const vertexReady =
+  usesVertexAi && hasVertexTarget && (hasLocalVertexCredentials || runningOnGoogleInfra)
 
-if (!usesVertexAi && apiKey && !process.env.GOOGLE_GENAI_API_KEY) {
+if (apiKey && !process.env.GOOGLE_GENAI_API_KEY) {
   process.env.GOOGLE_GENAI_API_KEY = apiKey
 }
+
+if (!vertexReady) {
+  process.env.GOOGLE_GENAI_USE_VERTEXAI = "false"
+}
+
+const hasCredentials = vertexReady || hasApiKey
 
 const agent = new LlmAgent({
   name: "darija_genie",
@@ -138,7 +155,7 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json(
       {
         error: usesVertexAi
-          ? "GOOGLE_CLOUD_PROJECT and GOOGLE_CLOUD_LOCATION must be configured on the server."
+          ? "Vertex AI is enabled but no local ADC credentials were found. Set GOOGLE_APPLICATION_CREDENTIALS, or switch to API key mode by setting GOOGLE_GENAI_USE_VERTEXAI=false and GOOGLE_GENAI_API_KEY."
           : "GOOGLE_GENAI_API_KEY is not configured on the server.",
       },
       { status: 503 }

@@ -1,4 +1,7 @@
+"use client"
+
 import Image from "next/image"
+import { usePathname } from "next/navigation"
 import Link from "next/link"
 
 import type { LearningNavigationItem } from "./learning-navigation"
@@ -37,13 +40,16 @@ const navigationItems: readonly NavigationItem[] = [
   },
 ]
 
-interface LearningMobileNavigationProps {
-  activeItem?: LearningNavigationItem
-}
+export default function LearningMobileNavigation(): React.JSX.Element | null {
+  const pathname = usePathname()
+  if (pathname.includes("/geniechat")) return null
 
-export default function LearningMobileNavigation({
-  activeItem = "learning",
-}: LearningMobileNavigationProps): React.JSX.Element {
+  const activeItem: LearningNavigationItem = pathname.startsWith("/settings")
+    ? "settings"
+    : pathname.startsWith("/testing")
+      ? "testing"
+      : "learning"
+
   return (
     <nav
       aria-label="Primary navigation"

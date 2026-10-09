@@ -1,31 +1,19 @@
 import ContinueSessionSection from "@/components/continue-session-section"
 import Header from "@/components/header"
-import LearningMobileNavigation from "@/components/learning-navigation-mobile"
-import { AppSidebar } from "@/components/app-sidebar"
 import QuizSection from "@/components/quiz-section"
 import ScenarioSection from "@/components/scenario-section"
-import { SidebarProvider, SidebarInset } from "@workspace/ui/components/sidebar"
 
 export default function LearningPage(): React.JSX.Element {
   return (
-    <SidebarProvider>
-      {/* <main className="min-h-dvh w-full bg-background text-foreground md:flex"> */}
-      1{" "}
-      <SidebarInset className="min-h-dvh w-full bg-background text-foreground">
-        <AppSidebar />
-        <div className="min-w-0 flex-1 bg-background md:h-dvh md:overflow-y-auto">
-          <div className="w-full">
-            <Header />
-            <div className="flex min-h-0 w-full flex-col gap-8 overflow-hidden px-4 py-6 pb-24 sm:px-6 sm:pb-28 md:px-8 md:pb-8">
-              <ContinueSessionSection />
-              <ScenarioSection />
-              <QuizSection />
-            </div>
-          </div>
+    <main className="min-h-dvh w-full bg-background text-foreground">
+      <div className="min-w-0 bg-background md:h-dvh md:overflow-y-auto">
+        <Header />
+        <div className="flex min-h-0 w-full flex-col gap-8 overflow-hidden px-4 py-6 pb-24 sm:px-6 sm:pb-28 md:px-8 md:pb-8">
+          <ContinueSessionSection />
+          <ScenarioSection />
+          <QuizSection />
         </div>
-        <LearningMobileNavigation />
-        {/* </main> */}
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
+    </main>
   )
 }

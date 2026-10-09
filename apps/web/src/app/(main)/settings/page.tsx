@@ -1,10 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 
-import LearningMobileNavigation from "@/components/learning-navigation-mobile"
-import LearningSidebar from "@/components/app-sidebar"
 import SettingsChrome from "@/components/settings-chrome"
-import { SidebarInset } from "@workspace/ui/components/sidebar"
 
 const settingsItems = [
   {
@@ -87,10 +84,7 @@ function SettingsRow({
 
 export default function SettingsPage(): React.JSX.Element {
   return (
-    // <main className="min-h-dvh bg-background md:flex">
-    <SidebarInset className="min-h-dvh bg-background md:flex">
-      <LearningSidebar activeItem="settings" />
-
+    <main className="min-h-dvh bg-background">
       <div className="min-w-0 flex-1">
         <SettingsChrome mobileTitle="Settings" mobileBackHref="/learning" />
 
@@ -131,9 +125,6 @@ export default function SettingsPage(): React.JSX.Element {
           </div>
         </section>
       </div>
-
-      <LearningMobileNavigation activeItem="settings" />
-      {/* </main> */}
-    </SidebarInset>
+    </main>
   )
 }

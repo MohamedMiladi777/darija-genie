@@ -49,7 +49,11 @@ const navigationItems: readonly NavigationItem[] = [
 //   activeItem?: LearningNavigationItem
 // }
 
-export function AppSidebar(): React.JSX.Element {
+export function AppSidebar(): React.JSX.Element | null {
+  const pathname = usePathname()
+
+  if (pathname.includes("/geniechat")) return null
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="flex min-h-36 items-center border-b px-6 py-8">
@@ -65,9 +69,9 @@ export function AppSidebar(): React.JSX.Element {
         <SidebarGroup>
           <SidebarGroupContent className="flex flex-col gap-1 p-4">
             {navigationItems.map((item) => {
-              //const isActive = item.value === activeItem
-              const pathname = usePathname()
-              const isActive = item.value === pathname
+              const isActive =
+                pathname === item.href ||
+                (item.href ? pathname.startsWith(`${item.href}/`) : false)
               const className = `flex items-center gap-3 rounded-xl px-4 py-3 font-[family-name:var(--font-inter)] text-[15px] leading-[22.5px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2efe4] ${isActive ? "bg-[#193cb8] text-[#f2efe4]" : "text-[#f2efe4]/55 hover:bg-white/8 hover:text-[#f2efe4]"}`
               const content = (
                 <>
