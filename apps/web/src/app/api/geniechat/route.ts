@@ -12,6 +12,17 @@ type HistoryEntry =
   | { assistant: { utterance: string; slots: SlotState } }
   | { user: { utterance: string } }
 
+const llmProvider = (process.env.GENIECHAT_PROVIDER ?? "gemini").toLowerCase()
+const usesOpenAiProvider = llmProvider === "openai" || llmProvider === "gpt"
+
+const openAiApiKey = process.env.OPENAI_API_KEY ?? process.env.GPT_API_KEY
+const openAiBaseUrl = (process.env.OPENAI_BASE_URL ?? "https://api.openai.com/v1").replace(
+  /\/+$/,
+  ""
+)
+const openAiModel = process.env.OPENAI_MODEL ?? process.env.GPT_MODEL ?? "gpt-4o-mini"
+const hasOpenAiCredentials = Boolean(openAiApiKey)
+
 const usesVertexAi = process.env.GOOGLE_GENAI_USE_VERTEXAI === "true"
 const apiKey = process.env.GOOGLE_GENAI_API_KEY ?? process.env.GEMINI_API_KEY
 const hasApiKey = Boolean(apiKey)
@@ -39,7 +50,10 @@ if (!vertexReady) {
   process.env.GOOGLE_GENAI_USE_VERTEXAI = "false"
 }
 
-const hasCredentials = vertexReady || hasApiKey
+const hasGeminiCredentials = vertexReady || hasApiKey
+const hasCredentials = usesOpenAiProvider
+  ? hasOpenAiCredentials
+  : hasGeminiCredentials
 
 const agent = new LlmAgent({
   name: "darija_genie",
@@ -150,8 +164,90 @@ async function runAgent(history: HistoryEntry[]): Promise<string> {
   return finalText
 }
 
+async function runOpenAiAgent(history: HistoryEntry[]): Promise<string> {
+  const response = await fetch(`${openAiBaseUrl}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${openAiApiKey}`,
+    },
+    body: JSON.stringify({
+      model: openAiModel,
+      temperature: 0.45,
+      max_tokens: 1024,
+      messages: [
+        { role: "system", content: GENIECHAT_SYSTEM_PROMPT },
+        {
+          role: "user",
+          content: `INPUT:\n${JSON.stringify(history)}\nEnd of input.`,
+        },
+      ],
+    }),
+    signal: AbortSignal.timeout(45_000),
+  })
+
+  const payload: unknown = await response.json().catch(() => null)
+
+  if (!response.ok) {
+    if (
+      isRecord(payload) &&
+      isRecord(payload.error) &&
+      typeof payload.error.message === "string"
+    ) {
+      throw new Error(payload.error.message)
+    }
+    throw new Error("GPT is unavailable.")
+  }
+
+  if (!isRecord(payload) || !Array.isArray(payload.choices) || payload.choices.length === 0) {
+    throw new Error("GPT returned an invalid response.")
+  }
+
+  const firstChoice = payload.choices[0]
+  if (!isRecord(firstChoice) || !isRecord(firstChoice.message)) {
+    throw new Error("GPT returned an invalid message payload.")
+  }
+
+  const content = firstChoice.message.content
+  if (typeof content === "string" && content.trim()) {
+    return content.trim()
+  }
+
+  if (Array.isArray(content)) {
+    const text = content
+      .map((part) => {
+        if (isRecord(part) && typeof part.text === "string") return part.text
+        return ""
+      })
+      .join("")
+      .trim()
+
+    if (text) return text
+  }
+
+  throw new Error("GPT returned an empty response.")
+}
+
+async function runWithProvider(history: HistoryEntry[]): Promise<string> {
+  if (usesOpenAiProvider) {
+    return runOpenAiAgent(history)
+  }
+
+  return runAgent(history)
+}
+
 export async function POST(request: Request): Promise<Response> {
   if (!hasCredentials) {
+    if (usesOpenAiProvider) {
+      return Response.json(
+        {
+          error:
+            "OPENAI_API_KEY is not configured on the server. Set OPENAI_API_KEY (or GPT_API_KEY) when GENIECHAT_PROVIDER=openai.",
+        },
+        { status: 503 }
+      )
+    }
+
     return Response.json(
       {
         error: usesVertexAi
@@ -179,20 +275,34 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   try {
-    const rawReply = await runAgent(body.history)
+    const rawReply = await runWithProvider(body.history)
     if (!rawReply) {
       return Response.json(
-        { error: "Gemini returned an empty response." },
+        {
+          error: usesOpenAiProvider
+            ? "GPT returned an empty response."
+            : "Gemini returned an empty response.",
+        },
         { status: 502 }
       )
     }
     return Response.json(parseReply(rawReply))
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Gemini is unavailable."
+      error instanceof Error
+        ? error.message
+        : usesOpenAiProvider
+          ? "GPT is unavailable."
+          : "Gemini is unavailable."
     const timedOut = error instanceof Error && error.name === "AbortError"
     return Response.json(
-      { error: timedOut ? "Gemini took too long to respond." : message },
+      {
+        error: timedOut
+          ? usesOpenAiProvider
+            ? "GPT took too long to respond."
+            : "Gemini took too long to respond."
+          : message,
+      },
       { status: timedOut ? 504 : 502 }
     )
   }
