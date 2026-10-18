@@ -2,8 +2,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
+import ScenarioChatLaunchLink from "@/components/scenario-chat-launch-link"
 import ScenarioPageChrome from "@/components/scenario-page-chrome"
-import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
 
 import { isScenarioId, scenarioIds, type ScenarioId } from "../scenario-data"
@@ -81,11 +81,9 @@ function LearningOptionCard({
             />
           </span>
         ) : (
-          <Button
-            type="button"
-            size="icon-sm"
-            aria-label={`Open ${option.title}`}
-            className="size-8 rounded-xl bg-[#1e40af] p-0 shadow-xs hover:bg-[#1e40af]/85 md:bg-[#162456] md:hover:bg-[#162456]/85"
+          <span
+            aria-hidden="true"
+            className="flex size-8 items-center justify-center rounded-xl bg-[#1e40af] shadow-xs md:bg-[#162456]"
           >
             <Image
               src="/assets/learning/scenario-arrow.svg"
@@ -94,7 +92,7 @@ function LearningOptionCard({
               height={14}
               className="size-3.5"
             />
-          </Button>
+          </span>
         )}
       </CardHeader>
 
@@ -122,10 +120,22 @@ function LearningOptionCard({
 
   if (isFeatured) {
     return (
-      <Link
-        href={`/learning/scenarios/${scenario}/geniechat`}
-        aria-label="Open GenieChat"
+      <ScenarioChatLaunchLink
+        scenario={scenario}
+        ariaLabel="Open GenieChat"
         className="group col-span-2 w-[300px] justify-self-center rounded-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 md:w-full md:rounded-2xl [&_[data-slot=card]]:group-hover:-translate-y-0.5"
+      >
+        {card}
+      </ScenarioChatLaunchLink>
+    )
+  }
+
+  if (option.id === "preview") {
+    return (
+      <Link
+        href={`/learning/scenarios/${scenario}/preview`}
+        aria-label="Open Preview"
+        className="group min-w-0 rounded-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 md:rounded-2xl [&_[data-slot=card]]:group-hover:-translate-y-0.5"
       >
         {card}
       </Link>
@@ -135,7 +145,7 @@ function LearningOptionCard({
   if (option.id === "quiz") {
     return (
       <Link
-        href="/testing"
+        href={`/testing?scenario=${scenario}`}
         aria-label="Open Scenario Quiz"
         className="group col-span-2 w-[300px] justify-self-center rounded-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 md:w-[calc(50%-8px)] md:rounded-2xl [&_[data-slot=card]]:group-hover:-translate-y-0.5"
       >

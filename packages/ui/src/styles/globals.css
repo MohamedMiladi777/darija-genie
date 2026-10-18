@@ -213,6 +213,26 @@
 .quiz-card-exit-left { animation: quiz-card-exit-left 650ms cubic-bezier(.22, 1, .36, 1) both; }
 .quiz-card-exit-right { animation: quiz-card-exit-right 650ms cubic-bezier(.22, 1, .36, 1) both; }
 
+@keyframes preview-card-arrive {
+  from { transform: translate3d(9%, 4%, -40px) rotate(3deg) scale(.94); opacity: .25; }
+  to { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); opacity: 1; }
+}
+
+@keyframes preview-card-leave-left {
+  from { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); opacity: 1; }
+  to { transform: translate3d(-115%, 5%, 0) rotate(-8deg) scale(.97); opacity: 0; }
+}
+
+@keyframes preview-card-leave-right {
+  from { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); opacity: 1; }
+  to { transform: translate3d(115%, 5%, 0) rotate(8deg) scale(.97); opacity: 0; }
+}
+
+.preview-card-arrive { animation: preview-card-arrive 600ms cubic-bezier(.22, 1, .36, 1) both; }
+.preview-card-leave-left { animation: preview-card-leave-left 550ms cubic-bezier(.4, 0, .2, 1) both; }
+.preview-card-leave-right { animation: preview-card-leave-right 550ms cubic-bezier(.4, 0, .2, 1) both; }
+.preview-card-image { animation: preview-card-arrive 350ms cubic-bezier(.22, 1, .36, 1) both; }
+
 ::view-transition-group(.logo-morph) {
   animation-duration: 850ms;
   animation-timing-function: cubic-bezier(.22, 1, .36, 1);
@@ -225,6 +245,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .preview-card-arrive,
+  .preview-card-leave-left,
+  .preview-card-leave-right,
+  .preview-card-image {
+    animation-duration: 1ms;
+  }
+
   ::view-transition-group(.logo-morph) {
     animation-duration: 1ms;
   }
