@@ -222,12 +222,14 @@ export default function GenieChatDialogue({
   const [error, setError] = useState<string | null>(null)
   const [recordingState, setRecordingState] = useState<RecordingState>("idle")
   const [recordingError, setRecordingError] = useState<string | null>(null)
+  const [recordingSeconds, setRecordingSeconds] = useState(0)
   const nextId = useRef(0)
   const endRef = useRef<HTMLDivElement>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const recordedChunksRef = useRef<Blob[]>([])
   const holdActiveRef = useRef(false)
+  const recordingStartedAtRef = useRef<number | null>(null)
 
   const chatDisabled = loading || history.length === 0
   const recordingActive =
@@ -260,6 +262,19 @@ export default function GenieChatDialogue({
     recorder.stop()
   }, [recordingState])
 
+  // Live counter while the mic button is held, so short taps are visible.
+  useEffect(() => {
+    if (recordingState !== "recording") return
+    const timer = window.setInterval(() => {
+      setRecordingSeconds((seconds) =>
+        recordingStartedAtRef.current
+          ? Math.floor((Date.now() - recordingStartedAtRef.current) / 1000)
+          : seconds + 1
+      )
+    }, 500)
+    return () => window.clearInterval(timer)
+  }, [recordingState])
+
   const startRecording = useCallback(async () => {
     const asrSupportedInBrowser =
       typeof window !== "undefined" &&
@@ -280,7 +295,19 @@ export default function GenieChatDialogue({
     setRecordingState("requesting")
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          // Vochai gets the cleanest input when the browser hands over the
+          // raw signal: Chrome's AGC (autoGainControl) pumps gain up and
+          // down mid-sentence on weak laptop mics, and noiseSuppression/
+          // echoCancellation mangle speech — all three hurt ASR accuracy.
+          // Mono channel keeps the file size and pipeline simple.
+          channelCount: 1,
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+        },
+      })
 
       if (!holdActiveRef.current) {
         stream.getTracks().forEach((track) => track.stop())
@@ -317,8 +344,24 @@ export default function GenieChatDialogue({
 
           resetRecorder()
 
+          const recordingSeconds =
+            recordingStartedAtRef.current !== null
+              ? (Date.now() - recordingStartedAtRef.current) / 1000
+              : 0
+          recordingStartedAtRef.current = null
+
           if (blob.size === 0) {
             setRecordingError("No audio was captured. Please try again.")
+            setRecordingState("idle")
+            return
+          }
+
+          // Clips under ~0.8s are usually accidental taps and produce
+          // unreliable transcripts — surface a clear hint instead.
+          if (recordingSeconds < 0.8) {
+            setRecordingError(
+              "Recording too short to transcribe. Hold the button while you speak your whole sentence."
+            )
             setRecordingState("idle")
             return
           }
@@ -363,6 +406,8 @@ export default function GenieChatDialogue({
       }
 
       mediaRecorderRef.current = recorder
+      recordingStartedAtRef.current = Date.now()
+      setRecordingSeconds(0)
       recorder.start()
       setRecordingState("recording")
     } catch (caught) {
@@ -608,7 +653,8 @@ export default function GenieChatDialogue({
             </p>
           ) : recordingState === "recording" ? (
             <p className="font-[family-name:var(--font-inter)] text-xs text-[#b91c1c]">
-              Recording... release to transcribe.
+              Recording ({recordingSeconds}s)... hold while you speak, release
+              to transcribe.
             </p>
           ) : transcriptionPending ? (
             <p className="font-[family-name:var(--font-inter)] text-xs text-muted-foreground">

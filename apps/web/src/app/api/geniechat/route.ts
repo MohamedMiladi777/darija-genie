@@ -146,22 +146,43 @@ function parseReply(rawReply: string): {
 }
 
 async function runAgent(history: HistoryEntry[]): Promise<string> {
-  let finalText = ""
-  for await (const event of runner.runEphemeral({
-    userId: crypto.randomUUID(),
-    newMessage: {
-      role: "user",
-      parts: [{ text: `INPUT:\n${JSON.stringify(history)}\nEnd of input.` }],
-    },
-  })) {
-    if (event.errorMessage) throw new Error(event.errorMessage)
-    if (isFinalResponse(event)) {
-      const text = stringifyContent(event).trim()
-      if (text) finalText = text
+  const maxAttempts = 3
+  let lastError: unknown
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    let finalText = ""
+    try {
+      for await (const event of runner.runEphemeral({
+        userId: crypto.randomUUID(),
+        newMessage: {
+          role: "user",
+          parts: [{ text: `INPUT:\n${JSON.stringify(history)}\nEnd of input.` }],
+        },
+      })) {
+        if (event.errorMessage) throw new Error(event.errorMessage)
+        if (isFinalResponse(event)) {
+          const text = stringifyContent(event).trim()
+          if (text) finalText = text
+        }
+      }
+    } catch (error) {
+      lastError = error
+      // Brand-new models (e.g. gemini-3.8-flash) can return transient
+      // "high demand" 503s — retry briefly before surfacing the failure.
+      const message = error instanceof Error ? error.message : ""
+      const transient =
+        /high demand|UNAVAILABLE|overloaded|RESOURCE_EXHAUSTED/i.test(message)
+      if (transient && attempt < maxAttempts) {
+        await new Promise((resolve) => setTimeout(resolve, attempt * 2000))
+        continue
+      }
+      throw error
     }
+
+    return finalText
   }
 
-  return finalText
+  throw lastError
 }
 
 async function runOpenAiAgent(history: HistoryEntry[]): Promise<string> {
