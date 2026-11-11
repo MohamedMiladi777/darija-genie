@@ -2,6 +2,7 @@ import Image from "next/image"
 
 const logo = "/assets/images/logo.svg"
 const logoDark = "/assets/images/logo-dark-mode.svg"
+const logoMark = "/assets/images/logo-mark.svg"
 
 export default function LogoMark({
   className = "w-70 sm:w-70 md:w-90 lg:w-100 xl:w-100 2xl:w-120",
@@ -48,5 +49,26 @@ export function LogoMarkDark({
         className="size-full"
       />
     </div>
+  )
+}
+
+/**
+ * Compact "D" monogram cropped from the brand mark.
+ * Used by the sidebar when it collapses to the icon rail.
+ */
+export function LogoMarkCompact({
+  className = "h-8 w-auto",
+}: {
+  className?: string
+}) {
+  return (
+    <Image
+      src={logoMark}
+      alt="Darija Genie"
+      width={119}
+      height={96}
+      priority
+      className={className}
+    />
   )
 }

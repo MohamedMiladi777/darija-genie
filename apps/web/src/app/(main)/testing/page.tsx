@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -40,7 +41,13 @@ export default function TestingPage(): React.JSX.Element {
               Choose specific scenario units and a difficulty level
             </p>
           </div>
-          <TestingQuizDeck />
+          <Suspense
+            fallback={
+              <div className="h-64 animate-pulse rounded-2xl border border-border bg-muted" />
+            }
+          >
+            <TestingQuizDeck />
+          </Suspense>
         </section>
       </div>
     </main>
