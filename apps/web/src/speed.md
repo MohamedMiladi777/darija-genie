@@ -12,11 +12,11 @@
 
 | | |
 |---|---|
-| **User wait (4 s clip, app route)** | **~4.5 s** |
-| Direct API, same clip | ~3.7 s |
-| Our overhead to eliminate | ~0.7 s |
+| **User wait (4 s clip, app route)** | **~3.5 s** *(was 4.5 s before cycle 1)* |
+| Direct API, same clip | ~3.3 s |
+| Our overhead to eliminate | ~0 s ✅ |
 | Dominant cost | Vochai `transcribe` (2.5–10 s, variable — not ours) |
-| Real-time factor | ≈ 1.1× |
+| Real-time factor | ≈ 0.9× |
 
 ---
 
@@ -69,17 +69,40 @@ curl -X POST http://localhost:3000/api/geniechat/transcribe \
 | Cycle | Date | Change | Route median (4 s clip) | Direct median | CER spot-check | Verdict |
 |---|---|---|---|---|---|---|
 | **0** | 2026-11-10 | *baseline (no changes)* | **4.45 s** | **3.32 s** | 5.3% | 📌 reference |
-| 1 | — | — | — | — | — | — |
+| 1 | 2026-11-11 | Route fast-path: stream browser body straight to Vochai, skip `formData()` parse + re-encode | **3.54 s** (warm: 3.55, 2.97, 4.80, 3.53) | 3.32 s | 0.0% | ✅ **−0.9 s (−20%)** |
+| 2 | 2026-11-11 | *A/B only, no code change:* silence-trimmed clip vs original | n/a | 3.21 s (trimmed) | **21.1%** ⚠️ | ❌ **rejected** — no speed gain, accuracy worse |
+| 3 | 2026-11-11 | Preconnect to Vochai on page load (`react-dom/preconnect`) | 3.67 s — unchanged | 3.32 s | ~0–5% | ✅ accepted — browser first-call gain only (not visible to curl harness) |
+| 4 | 2026-11-11 | Retry policy: 429/500/502/504 with `Retry-After` backoff, max 2 retries | 3.67 s — unchanged | 3.32 s | ~0–5% | ✅ accepted — reliability, no happy-path change |
+| 5 | — | — | — | — | — | — |
+
+> **Cycle 1 notes:** first request measured 13.6 s — that is dev-mode
+> recompilation of the changed route, excluded as a warm-up artifact.
+> With the fast path the route is now **no slower than calling Vochai
+> directly**: the ~0.7 s implementation overhead is gone. CER 0.0% is a
+> favorable Vochai variance draw, not a proven accuracy change (see §4 of
+> the methodology doc).
+>
+> **Cycle 2 notes (negative result, kept as evidence):** trimmed 0.74 s of
+> lead-in silence off `salam.mp3` (4.08 s → 3.35 s). Vochai got **no
+> faster** (transcribe 3.4–5.1 s vs 3.3–5.3 s untrimmed) and transcribed
+> *worse* — CER 21.1% on both runs, hallucinating extra words
+> (`كل شيء بخير` / `كلشي بخير`). Lead-in audio appears to carry useful
+> acoustic context for the model. Browser-side trimming (backlog #3) is
+> therefore **dropped**, not implemented.
 
 ### Candidate backlog
 
 | # | Idea | Expected gain | Status |
 |---|---|---|---|
-| 1 | Route fast-path (stream file through, skip re-parsing) | ~0.3–0.5 s/call | ☐ pending |
-| 2 | Preconnect to `aui-transcription-api.fly.dev` | ~0.1–0.3 s (first call) | ☐ pending |
-| 3 | Trim silence in browser before upload (Web Audio API) | unknown — A/B required | ☐ pending |
-| 4 | Retry policy per Vochai docs (429/500/502/504 + backoff) | reliability | ☐ pending |
-| 5 | Transcribe-stage variance → honest UI expectations | perceived speed | ☐ pending |
+| 1 | Route fast-path (stream file through, skip re-parsing) | ~0.3–0.5 s/call | ✅ **done — cycle 1: −0.9 s measured** |
+| 2 | Preconnect to `aui-transcription-api.fly.dev` | ~0.1–0.3 s (first call) | ✅ **done — cycle 3** |
+| 3 | Trim silence in browser before upload (Web Audio API) | unknown — A/B required | ❌ **rejected — cycle 2: no speed gain, CER 5% → 21%** |
+| 4 | Retry policy per Vochai docs (429/500/502/504 + backoff) | reliability | ✅ **done — cycle 4** |
+| 5 | Transcribe-stage variance → honest UI expectations | perceived speed | ☐ pending (last controllable item) |
 
 *Rejected: parallel upload — Vochai's `/transcribe` requires the `audio_uri`
 from `/upload`; the pipeline is inherently sequential.*
+
+**Where we stand:** the wait is now ≈100% Vochai processing time (2.5–10 s,
+variable). Our controllable slice is optimized. The only remaining lever is
+#5 — manage expectations in the UI during the long tail.

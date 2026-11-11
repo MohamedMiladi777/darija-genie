@@ -6,7 +6,10 @@
     "GEMINI_MODEL",
     "VOCHAI_API_KEY",
     "VOCHAI_BASE_URL",
-    "VOCHAI_TOKEN"
+    "VOCHAI_TOKEN",
+    "DATABASE_URL",
+    "AZURE_STORAGE_CONNECTION_STRING",
+    "AZURE_STORAGE_CONTAINER"
   ],
   "ui": "tui",
   "tasks": {

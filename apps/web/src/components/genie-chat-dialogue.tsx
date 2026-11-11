@@ -1,6 +1,7 @@
 "use client"
 
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react"
+import { preconnect } from "react-dom"
 import Image from "next/image"
 import { LoaderCircle, Mic, RefreshCw, Send } from "lucide-react"
 
@@ -232,6 +233,13 @@ export default function GenieChatDialogue({
   const recordingStartedAtRef = useRef<number | null>(null)
 
   const chatDisabled = loading || history.length === 0
+
+  // Warm the TLS connection to Vochai while the page loads, so the first
+  // voice note doesn't pay the handshake cost (~0.1–0.3 s).
+  useEffect(() => {
+    preconnect("https://aui-transcription-api.fly.dev")
+  }, [])
+
   const recordingActive =
     recordingState === "recording" || recordingState === "requesting"
   const transcriptionPending = recordingState === "transcribing"

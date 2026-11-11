@@ -95,10 +95,10 @@ Work top-down; one change per cycle, re-measure §2 after each.
 
 | # | Idea | Expected gain | Cost/risk | Status |
 |---|---|---|---|---|
-| 1 | **Trim silence** before upload: Web Audio API strips leading/trailing silence in the browser before the blob is sent. Shorter audio → smaller upload, possibly faster Vochai processing | unknown — needs A/B (could be 0, could cut transcribe time; Vochai's processing didn't scale cleanly with clip length in our data) | low | ☐ not started |
-| 2 | **Route fast-path**: skip JSON re-parse; stream the file through. Target: cut the ~0.7 s overhead toward ~0.2 s | ~0.3–0.5 s/call | low | ☐ not started |
-| 3 | **Preconnect**: `<link rel="preconnect">` to `aui-transcription-api.fly.dev` so the browser opens TLS early | ~0.1–0.3 s on first call | trivial | ☐ not started |
-| 4 | **Retry policy** (from Vochai docs: retry 429/500/502/504 only, with backoff) — reliability, not speed, but prevents user-visible failures from eating "speed" retries in the UI | reliability | low | ☐ not started |
+| 1 | **Trim silence** before upload: Web Audio API strips leading/trailing silence in the browser before the blob is sent. Shorter audio → smaller upload, possibly faster Vochai processing | **A/B result: rejected** — no speed gain (3.4–5.1 s vs 3.3–5.3 s) and CER degraded 5% → 21%; lead-in audio carries useful context for the model | low | ❌ rejected (2026-11-11, cycle 2) |
+| 2 | **Route fast-path**: skip JSON re-parse; stream the file through | measured **−0.9 s** (4.45 → 3.54 s median) | low | ✅ done (2026-11-11, cycle 1) |
+| 3 | **Preconnect**: `<link rel="preconnect">` to `aui-transcription-api.fly.dev` so the browser opens TLS early | ~0.1–0.3 s on first call (browser-side; invisible to the curl harness) | trivial | ✅ done (2026-11-11, cycle 3) |
+| 4 | **Retry policy** (from Vochai docs: retry 429/500/502/504 only, with backoff) — reliability, not speed, but prevents user-visible failures from eating "speed" retries in the UI | reliability | low | ✅ done (2026-11-11, cycle 4) |
 | 5 | **UX smoothing**: show elapsed timer during "Transcribing…" (exists), disable input minimally — perception of speed when the 10 s tail hits | perceived only | trivial | ☐ not started |
 | 6 | Batch/parallel — ❌ rejected: transcribe needs the upload's `audio_uri`; API is inherently sequential | — | — | rejected |
 
