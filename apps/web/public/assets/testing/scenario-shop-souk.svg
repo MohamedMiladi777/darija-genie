@@ -1,0 +1,35 @@
+<svg width="1200" height="675" viewBox="0 0 1200 675" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="675" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F4C5C"/>
+      <stop offset="1" stop-color="#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="ground" x1="600" y1="420" x2="600" y2="675" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E7D7B1"/>
+      <stop offset="1" stop-color="#B08968"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <rect y="420" width="1200" height="255" fill="url(#ground)"/>
+
+  <rect x="210" y="260" width="780" height="190" rx="18" fill="#F8E7C5"/>
+  <path d="M180 285C180 238 218 200 265 200H935C982 200 1020 238 1020 285V300H180V285Z" fill="#E11D48"/>
+  <path d="M220 214H980L952 164H248L220 214Z" fill="#F59E0B"/>
+
+  <rect x="300" y="300" width="140" height="120" rx="10" fill="#0EA5E9" fill-opacity="0.7"/>
+  <rect x="460" y="300" width="140" height="120" rx="10" fill="#22C55E" fill-opacity="0.72"/>
+  <rect x="620" y="300" width="140" height="120" rx="10" fill="#F97316" fill-opacity="0.72"/>
+  <rect x="780" y="300" width="140" height="120" rx="10" fill="#A855F7" fill-opacity="0.72"/>
+
+  <path d="M328 332L372 314L416 332L372 350L328 332Z" fill="#F8FAFC"/>
+  <path d="M488 334L530 312L572 334L530 356L488 334Z" fill="#ECFCCB"/>
+  <path d="M648 332L690 314L732 332L690 350L648 332Z" fill="#FFEDD5"/>
+  <path d="M808 334L850 312L892 334L850 356L808 334Z" fill="#F5F3FF"/>
+
+  <circle cx="340" cy="470" r="16" fill="#7C2D12"/>
+  <circle cx="860" cy="470" r="16" fill="#7C2D12"/>
+  <rect x="324" y="470" width="552" height="18" rx="9" fill="#92400E"/>
+
+  <text x="600" y="560" text-anchor="middle" fill="#FFF7E6" font-family="Inter, system-ui, sans-serif" font-size="46" font-weight="700">Souk Shop</text>
+</svg>

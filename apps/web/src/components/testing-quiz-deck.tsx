@@ -1,83 +1,58 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useMemo, useState } from "react"
 import Image from "next/image"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 
 import { scenarioIds, type ScenarioId } from "@/app/(main)/learning/scenarios/scenario-data"
-import { getScenarioFamily, getScenarioTitle } from "@/lib/scenario-learning-content"
+import { getScenarioProfile } from "@/lib/scenario-learning-content"
+import { Button } from "@workspace/ui/components/button"
+import { Card, CardContent } from "@workspace/ui/components/card"
 
-interface Quiz {
-  id: string
+type Difficulty = "beginner" | "advanced"
+type TestingScenarioKey = "restaurant" | "shop" | "market"
+
+interface TestingScenarioCard {
+  key: TestingScenarioKey
   title: string
-  arabic: string
+  subtitle: string
   description: string
-  questions: number
-  duration: number
   image: string
-  track: "all" | "restaurant" | "shopping"
+  units: ScenarioId[]
 }
 
-const quizzes: readonly Quiz[] = [
+interface Question {
+  id: string
+  unitId: ScenarioId
+  prompt: string
+  options: string[]
+  answer: string
+}
+
+const testingScenarios: readonly TestingScenarioCard[] = [
   {
-    id: "grammar",
-    title: "Grammar",
-    arabic: "القواعد",
-    description: "Test plural forms, adjective agreement, and sentence shape",
-    questions: 15,
-    duration: 12,
-    image: "/assets/testing/grammar.jpg",
-    track: "all",
+    key: "restaurant",
+    title: "Restaurant",
+    subtitle: "Ordering & requests",
+    description: "Practice menu, table, tea, and paying phrases.",
+    image: "/assets/testing/scenario-restaurant-morocco.svg",
+    units: ["restaurant-1", "restaurant-2"],
   },
   {
-    id: "vocabulary",
-    title: "Vocabulary",
-    arabic: "الكلمات",
-    description: "Measure command of everyday Darija words and expressions",
-    questions: 20,
-    duration: 10,
-    image: "/assets/testing/vocabulary.jpg",
-    track: "all",
+    key: "shop",
+    title: "Shop",
+    subtitle: "Items & prices",
+    description: "Short store interactions with practical vocabulary.",
+    image: "/assets/testing/scenario-shop-souk.svg",
+    units: ["shopping-1"],
   },
   {
-    id: "restaurant-dialogue",
-    title: "Restaurant Scenario",
-    arabic: "مطعم",
-    description: "Ordering, requests, and bill-taking in realistic dialogue turns",
-    questions: 14,
-    duration: 10,
-    image: "/assets/genie-chat/restaurant.jpg",
-    track: "restaurant",
-  },
-  {
-    id: "shopping-dialogue",
-    title: "Shopping Scenario",
-    arabic: "تسوق",
-    description: "Bargaining language, prices, and item selection in the souk",
-    questions: 14,
-    duration: 10,
-    image: "/assets/scenarios/shopping.jpg",
-    track: "shopping",
-  },
-  {
-    id: "phrases",
-    title: "Phrases",
-    arabic: "العبارات",
-    description: "Practical fixed expressions used in daily conversations",
-    questions: 25,
-    duration: 15,
-    image: "/assets/testing/phrases.jpg",
-    track: "all",
-  },
-  {
-    id: "culture",
-    title: "Culture",
-    arabic: "الثقافة",
-    description: "Contextual etiquette, hospitality cues, and social norms",
-    questions: 12,
-    duration: 10,
-    image: "/assets/testing/culture.jpg",
-    track: "all",
+    key: "market",
+    title: "Market",
+    subtitle: "Bargaining in souk",
+    description: "Focus on negotiation and price-lowering language.",
+    image: "/assets/testing/scenario-market-morocco.svg",
+    units: ["shopping-2"],
   },
 ]
 
@@ -85,435 +60,345 @@ function isScenarioIdValue(value: string): value is ScenarioId {
   return scenarioIds.some((scenarioId) => scenarioId === value)
 }
 
-function getScenarioOptionLabel(scenarioId: ScenarioId): string {
-  const title = getScenarioTitle(scenarioId)
-  const index = scenarioId.split("-")[1]
-  return `${title} ${index}`
+function unitLabel(unitId: ScenarioId): string {
+  const [family, rawUnit] = unitId.split("-")
+  const title = family === "restaurant" ? "Restaurant" : "Shopping"
+  return `${title} · Unit ${rawUnit}`
+}
+
+function shuffle<T>(items: readonly T[]): T[] {
+  const copy = [...items]
+  for (let index = copy.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1))
+    const current = copy[index]!
+    copy[index] = copy[randomIndex]!
+    copy[randomIndex] = current
+  }
+  return copy
+}
+
+function getDistractors(pool: readonly string[], answer: string): string[] {
+  return shuffle(pool.filter((item) => item !== answer)).slice(0, 3)
+}
+
+function buildQuestions(selectedUnits: readonly ScenarioId[], difficulty: Difficulty): Question[] {
+  const englishPool = Array.from(
+    new Set(
+      selectedUnits.flatMap((unitId) =>
+        getScenarioProfile(unitId).words.map((word) => word.english)
+      )
+    )
+  )
+
+  const darijaPool = Array.from(
+    new Set(
+      selectedUnits.flatMap((unitId) =>
+        getScenarioProfile(unitId).words.map((word) => word.darija)
+      )
+    )
+  )
+
+  const questions = selectedUnits.flatMap((unitId) => {
+    const profile = getScenarioProfile(unitId)
+
+    return profile.words.map((word) => {
+      if (difficulty === "beginner") {
+        const answer = word.english
+        const options = shuffle([answer, ...getDistractors(englishPool, answer)])
+        return {
+          id: `${unitId}-${word.id}-beginner`,
+          unitId,
+          prompt: `What does “${word.darija}” (${word.transliteration}) mean?`,
+          options,
+          answer,
+        }
+      }
+
+      const answer = word.darija
+      const options = shuffle([answer, ...getDistractors(darijaPool, answer)])
+      return {
+        id: `${unitId}-${word.id}-advanced`,
+        unitId,
+        prompt: `Choose the Darija word for “${word.english}” (${word.cue})`,
+        options,
+        answer,
+      }
+    })
+  })
+
+  const size = difficulty === "beginner" ? 8 : 12
+  return shuffle(questions).slice(0, size)
 }
 
 export default function TestingQuizDeck(): React.JSX.Element {
   const searchParams = useSearchParams()
-  const pathname = usePathname()
-  const router = useRouter()
 
   const scenarioParam = searchParams.get("scenario")
-  const selectedScenario =
-    scenarioParam && isScenarioIdValue(scenarioParam) ? scenarioParam : "all"
+  const initialUnit =
+    scenarioParam && isScenarioIdValue(scenarioParam) ? scenarioParam : null
 
-  const selectedTrack =
-    selectedScenario === "all" ? "all" : getScenarioFamily(selectedScenario)
-
-  const filteredQuizzes = useMemo(() => {
-    if (selectedTrack === "all") return quizzes
-    return quizzes.filter(
-      (quiz) => quiz.track === "all" || quiz.track === selectedTrack
+  const initialScenario = useMemo(() => {
+    if (!initialUnit) return null
+    return (
+      testingScenarios.find((scenario) => scenario.units.includes(initialUnit)) ?? null
     )
-  }, [selectedTrack])
+  }, [initialUnit])
 
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [direction, setDirection] = useState<"left" | "right">("right")
-  const [exitingQuiz, setExitingQuiz] = useState<Quiz | null>(null)
-  const [launching, setLaunching] = useState(false)
-  const launchTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const deckTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  useEffect(
-    () => () => {
-      if (launchTimer.current) clearTimeout(launchTimer.current)
-      if (deckTimer.current) clearTimeout(deckTimer.current)
-    },
-    []
+  const [selectedScenario, setSelectedScenario] = useState<TestingScenarioKey | null>(
+    initialScenario?.key ?? null
   )
+  const [selectedUnits, setSelectedUnits] = useState<ScenarioId[]>(
+    initialUnit ? [initialUnit] : []
+  )
+  const [difficulty, setDifficulty] = useState<Difficulty>("beginner")
 
-  const quiz = filteredQuizzes[activeIndex] ?? filteredQuizzes[0]!
+  const [sessionState, setSessionState] = useState<"setup" | "running" | "done">("setup")
+  const [questions, setQuestions] = useState<Question[]>([])
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [answers, setAnswers] = useState<Record<string, string>>({})
 
-  const setScenarioFilter = (scenario: "all" | ScenarioId) => {
-    setActiveIndex(0)
-    setExitingQuiz(null)
+  const scenario =
+    testingScenarios.find((entry) => entry.key === selectedScenario) ?? null
 
-    const nextParams = new URLSearchParams(searchParams.toString())
-    if (scenario === "all") {
-      nextParams.delete("scenario")
-    } else {
-      nextParams.set("scenario", scenario)
-    }
+  const currentQuestion = questions[currentIndex] ?? null
+  const selectedAnswer = currentQuestion ? answers[currentQuestion.id] : undefined
+  const score = questions.reduce((total, question) => {
+    if (answers[question.id] === question.answer) return total + 1
+    return total
+  }, 0)
 
-    const query = nextParams.toString()
-    router.replace(query ? `${pathname}?${query}` : pathname)
+  const selectScenario = (key: TestingScenarioKey) => {
+    setSelectedScenario(key)
+    const nextScenario = testingScenarios.find((entry) => entry.key === key)
+    setSelectedUnits(nextScenario ? [...nextScenario.units] : [])
   }
 
-  const selectQuiz = (index: number) => {
-    if (index === activeIndex || exitingQuiz) return
-    const nextDirection = index > activeIndex ? "right" : "left"
-    setDirection(nextDirection)
-    setExitingQuiz(quiz)
-    setActiveIndex(index)
-    deckTimer.current = setTimeout(() => setExitingQuiz(null), 650)
-  }
-
-  const move = (step: number) => {
-    if (exitingQuiz || filteredQuizzes.length < 2) return
-    selectQuiz((activeIndex + step + filteredQuizzes.length) % filteredQuizzes.length)
+  const toggleUnit = (unitId: ScenarioId) => {
+    setSelectedUnits((previous) => {
+      if (previous.includes(unitId)) {
+        return previous.filter((item) => item !== unitId)
+      }
+      return [...previous, unitId]
+    })
   }
 
   const startQuiz = () => {
-    if (launchTimer.current) clearTimeout(launchTimer.current)
-    setLaunching(true)
-    launchTimer.current = setTimeout(() => setLaunching(false), 900)
+    if (!scenario || selectedUnits.length === 0) return
+    const generatedQuestions = buildQuestions(selectedUnits, difficulty)
+    setQuestions(generatedQuestions)
+    setAnswers({})
+    setCurrentIndex(0)
+    setSessionState("running")
   }
 
-  const motionClass =
-    direction === "right" ? "slide-in-from-right-5" : "slide-in-from-left-5"
-  const transitionClass = `animate-in fade-in-0 ${motionClass} duration-500 motion-reduce:animate-none`
+  const chooseAnswer = (option: string) => {
+    if (!currentQuestion) return
+    setAnswers((previous) => ({
+      ...previous,
+      [currentQuestion.id]: option,
+    }))
+  }
 
-  return (
-    <div className="grid items-start gap-6 pt-6 lg:grid-cols-[220px_minmax(280px,1fr)] lg:gap-8">
-      <aside className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-        <h3 className="font-[family-name:var(--font-inter)] text-xs leading-[18px] font-semibold tracking-[0.3px] text-muted-foreground uppercase">
-          Testing tracks
-        </h3>
-        <div className="mt-3 flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible">
-          <TrackButton
-            selected={selectedScenario === "all"}
-            title="All scenarios"
-            subtitle="General mastery"
-            onClick={() => setScenarioFilter("all")}
-          />
-          {scenarioIds.map((scenarioId) => (
-            <TrackButton
-              key={scenarioId}
-              selected={selectedScenario === scenarioId}
-              title={getScenarioOptionLabel(scenarioId)}
-              subtitle={`${getScenarioTitle(scenarioId)} focus`}
-              onClick={() => setScenarioFilter(scenarioId)}
-            />
-          ))}
-        </div>
-      </aside>
+  const nextQuestion = () => {
+    const isLast = currentIndex >= questions.length - 1
+    if (isLast) {
+      setSessionState("done")
+      return
+    }
+    setCurrentIndex((previous) => previous + 1)
+  }
 
-      <div className="min-w-0">
-        <div className="grid items-start gap-8 lg:grid-cols-[minmax(300px,360px)_minmax(280px,1fr)] lg:gap-10">
-          <div className="relative mx-auto aspect-[3/4] w-full max-w-[360px] [perspective:1200px]">
-            {filteredQuizzes.map((card, index) => {
-              const position =
-                (index - activeIndex + filteredQuizzes.length) % filteredQuizzes.length
-              if (position > 2) return null
+  const resetSession = () => {
+    setSessionState("setup")
+    setQuestions([])
+    setAnswers({})
+    setCurrentIndex(0)
+  }
 
-              const deckStyle =
-                position === 0
-                  ? {
-                      zIndex: 30,
-                      transform: "translate3d(0, 0, 0) rotate(0deg) scale(1)",
-                      opacity: 1,
-                    }
-                  : position === 1
-                    ? {
-                        zIndex: 20,
-                        transform:
-                          "translate3d(4.5%, 4%, -30px) rotate(2deg) scale(.97)",
-                        opacity: 0.8,
-                      }
-                    : {
-                        zIndex: 10,
-                        transform:
-                          "translate3d(7%, 8%, -60px) rotate(-2deg) scale(.94)",
-                        opacity: 0.55,
-                      }
+  if (sessionState === "running" && currentQuestion) {
+    return (
+      <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+        <p className="text-sm text-muted-foreground">
+          Question {currentIndex + 1} of {questions.length} · {difficulty}
+        </p>
+        <h3 className="pt-2 text-lg leading-7 font-bold text-foreground">{currentQuestion.prompt}</h3>
 
-              return (
-                <article
-                  key={card.id}
-                  aria-hidden={position !== 0}
-                  className="absolute inset-0 origin-top overflow-hidden rounded-2xl text-white shadow-sm transition-[transform,opacity] duration-[650ms] ease-[cubic-bezier(.22,1,.36,1)] motion-reduce:transition-none"
-                  style={deckStyle}
-                >
-                  <QuizCardFace
-                    quiz={card}
-                    active={position === 0}
-                    priority={index === 0}
-                    onStart={startQuiz}
-                  />
-                </article>
-              )
-            })}
-
-            {exitingQuiz ? (
-              <article
-                aria-hidden="true"
-                className={`pointer-events-none absolute inset-0 z-40 origin-center overflow-hidden rounded-2xl text-white shadow-xl motion-reduce:hidden ${direction === "right" ? "quiz-card-exit-left" : "quiz-card-exit-right"}`}
-              >
-                <QuizCardFace
-                  quiz={exitingQuiz}
-                  active
-                  priority={false}
-                  onStart={startQuiz}
-                />
-              </article>
-            ) : null}
-          </div>
-
-          <div className="min-w-0">
-            <div key={`details-${quiz.id}-${selectedTrack}`} className={transitionClass}>
-              <p className="text-xs text-muted-foreground">
-                {activeIndex + 1} of {filteredQuizzes.length}
-              </p>
-              <h3 className="pt-1.5 text-[28px] leading-[35px] font-bold text-foreground">
-                {quiz.title}
-              </h3>
-              <p className="pt-1 font-[family-name:var(--font-inter)] text-[13px] leading-5 text-[#c6b89b]">
-                {quiz.arabic}
-              </p>
-              <p className="max-w-xl pt-3 font-[family-name:var(--font-lato)] text-[15px] leading-[22px] text-muted-foreground">
-                {quiz.description}
-              </p>
-
-              <div className="grid grid-cols-2 gap-3 pt-6">
-                <MetricCard label="Questions" value={quiz.questions} />
-                <MetricCard label="Duration" value={quiz.duration} suffix="min" />
-              </div>
-
-              <button
+        <div className="mt-4 grid gap-2">
+          {currentQuestion.options.map((option) => {
+            const active = selectedAnswer === option
+            return (
+              <Button
+                key={option}
                 type="button"
-                onClick={startQuiz}
-                aria-live="polite"
-                className="mt-6 flex h-[50px] w-full items-center justify-center gap-2 rounded-xl bg-[#162456] font-[family-name:var(--font-inter)] text-[15px] font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-[#1d2d64] active:translate-y-0 disabled:cursor-wait"
-                disabled={launching}
+                variant={active ? "secondary" : "outline"}
+                onClick={() => chooseAnswer(option)}
+                className="h-auto justify-start rounded-xl px-4 py-3 text-left text-sm"
               >
-                <Image
-                  src="/assets/testing/play.svg"
-                  alt=""
-                  width={16}
-                  height={16}
-                  className={`size-4 ${launching ? "animate-pulse" : ""}`}
-                />
-                {launching ? `Preparing ${quiz.title}...` : "Start Quiz"}
-              </button>
+                {option}
+              </Button>
+            )
+          })}
+        </div>
 
-              <div className="grid h-12 grid-cols-[1fr_auto_1fr] items-center">
-                <button
-                  type="button"
-                  onClick={() => move(-1)}
-                  className="flex items-center gap-1.5 justify-self-start text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  <Image
-                    src="/assets/testing/previous.svg"
-                    alt=""
-                    width={16}
-                    height={16}
-                    className="size-4"
-                  />
-                  Previous
-                </button>
-                <div className="flex items-center gap-1.5" aria-label="Quiz position">
-                  {filteredQuizzes.map((item, index) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => selectQuiz(index)}
-                      aria-label={`Show ${item.title} quiz`}
-                      aria-current={index === activeIndex ? "true" : undefined}
-                      className={`h-2 rounded-full transition-[width,background-color] duration-300 ${index === activeIndex ? "w-5 bg-[#162456]" : "w-2 bg-[#c6b89b] hover:bg-[#a99b80]"}`}
-                    />
-                  ))}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => move(1)}
-                  className="flex items-center gap-1.5 justify-self-end text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  Next
-                  <Image
-                    src="/assets/testing/next.svg"
-                    alt=""
-                    width={16}
-                    height={16}
-                    className="size-4"
-                  />
-                </button>
-              </div>
-            </div>
-
-            <div className="pt-2">
-              <h3 className="font-[family-name:var(--font-inter)] text-xs leading-[18px] font-semibold tracking-[0.3px] text-muted-foreground uppercase">
-                Available quizzes
-              </h3>
-              <div className="flex flex-col gap-2 pt-3">
-                {filteredQuizzes.map((item, index) => {
-                  const selected = index === activeIndex
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => selectQuiz(index)}
-                      aria-pressed={selected}
-                      className={`flex min-h-[65px] w-full items-center gap-3 rounded-xl border p-3 text-left transition-all duration-300 hover:-translate-y-0.5 ${selected ? "border-[#162456]/20 bg-card shadow-sm" : "border-transparent bg-card/50 hover:bg-card/80"}`}
-                    >
-                      <span className="relative size-10 shrink-0 overflow-hidden rounded-xl">
-                        <Image
-                          src={item.image}
-                          alt=""
-                          fill
-                          sizes="40px"
-                          className="object-cover"
-                        />
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="flex items-baseline gap-1.5">
-                          <span className="truncate font-[family-name:var(--font-inter)] text-[13px] leading-4 font-semibold text-foreground">
-                            {item.title}
-                          </span>
-                          <span className="truncate text-[11px] leading-4 text-[#c6b89b]">
-                            {item.arabic}
-                          </span>
-                        </span>
-                        <span className="mt-0.5 block text-[11px] leading-4 text-muted-foreground">
-                          {item.questions} questions · {item.duration} min
-                        </span>
-                      </span>
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-          </div>
+        <div className="mt-5 flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">Unit: {unitLabel(currentQuestion.unitId)}</p>
+          <Button type="button" disabled={!selectedAnswer} onClick={nextQuestion}>
+            {currentIndex === questions.length - 1 ? "Finish" : "Next"}
+          </Button>
         </div>
       </div>
-    </div>
-  )
-}
+    )
+  }
 
-function TrackButton({
-  selected,
-  title,
-  subtitle,
-  onClick,
-}: {
-  selected: boolean
-  title: string
-  subtitle: string
-  onClick: () => void
-}): React.JSX.Element {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`min-w-[150px] rounded-xl border px-3 py-2.5 text-left transition-colors lg:min-w-0 ${
-        selected
-          ? "border-[#162456]/20 bg-[#ebe5d5] dark:bg-[#203a63]"
-          : "border-border bg-background hover:bg-muted"
-      }`}
-    >
-      <p className="font-[family-name:var(--font-inter)] text-[13px] leading-5 font-semibold text-foreground">
-        {title}
-      </p>
-      <p className="font-[family-name:var(--font-lato)] text-[11px] leading-4 text-muted-foreground">
-        {subtitle}
-      </p>
-    </button>
-  )
-}
+  if (sessionState === "done") {
+    return (
+      <Card className="rounded-2xl bg-card py-0 shadow-sm ring-border">
+        <CardContent className="space-y-4 p-5">
+          <h3 className="text-xl font-bold text-foreground">Results</h3>
+          <p className="text-sm text-muted-foreground">
+            You scored <span className="font-semibold text-foreground">{score}</span> / {questions.length}
+          </p>
 
-function QuizCardFace({
-  quiz,
-  active,
-  priority,
-  onStart,
-}: {
-  quiz: Quiz
-  active: boolean
-  priority: boolean
-  onStart: () => void
-}): React.JSX.Element {
-  return (
-    <>
-      <Image
-        src={quiz.image}
-        alt=""
-        fill
-        priority={priority}
-        sizes="(max-width: 767px) calc(100vw - 32px), 360px"
-        className="object-cover"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/10" />
-      {active ? (
-        <>
-          <div className="absolute inset-x-0 bottom-0 p-5">
-            <p className="font-[family-name:var(--font-inter)] text-[13px] leading-[19.5px] font-medium text-white/70">
-              {quiz.arabic}
+          <div className="space-y-1 text-sm text-muted-foreground">
+            <p>
+              <span className="font-medium text-foreground">Scenario:</span> {scenario?.title ?? "—"}
             </p>
-            <h3 className="pt-0.5 text-[28px] leading-[35px] font-bold">{quiz.title}</h3>
-            <p className="max-w-[320px] pt-1 font-[family-name:var(--font-inter)] text-[13px] leading-[18.2px] text-white/75">
-              {quiz.description}
+            <p>
+              <span className="font-medium text-foreground">Difficulty:</span> {difficulty}
             </p>
-            <div className="flex items-center justify-between gap-3 pt-4">
-              <div className="flex gap-3">
-                <StatPill icon="/assets/testing/clock.svg" label={`${quiz.duration} min`} />
-                <StatPill
-                  icon="/assets/testing/questions.svg"
-                  label={`${quiz.questions} questions`}
-                />
-              </div>
-              <button
-                type="button"
-                onClick={onStart}
-                className="flex h-10 shrink-0 items-center gap-2 rounded-xl bg-card px-4 font-[family-name:var(--font-inter)] text-[13px] font-semibold text-foreground shadow-sm transition-transform hover:-translate-y-0.5 active:translate-y-0"
-              >
-                <Image
-                  src="/assets/testing/card-play.svg"
-                  alt=""
-                  width={13}
-                  height={13}
-                  className="size-[13px]"
-                />
-                Start Quiz
-              </button>
-            </div>
+            <p>
+              <span className="font-medium text-foreground">Units:</span>{" "}
+              {selectedUnits.map((unitId) => unitLabel(unitId)).join(", ")}
+            </p>
           </div>
-        </>
-      ) : (
-        <div className="absolute inset-0 bg-black/20" />
-      )}
-    </>
-  )
-}
 
-function StatPill({
-  icon,
-  label,
-}: {
-  icon: string
-  label: string
-}): React.JSX.Element {
-  return (
-    <span className="flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 font-[family-name:var(--font-inter)] text-[10px] leading-[15px] font-semibold text-white">
-      <Image src={icon} alt="" width={12} height={12} className="size-3" />
-      {label}
-    </span>
-  )
-}
+          <div className="flex gap-2">
+            <Button type="button" onClick={startQuiz}>
+              Retake
+            </Button>
+            <Button type="button" variant="outline" onClick={resetSession}>
+              Back to setup
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
 
-function MetricCard({
-  label,
-  value,
-  suffix,
-}: {
-  label: string
-  value: number
-  suffix?: string
-}): React.JSX.Element {
   return (
-    <div className="min-h-[90px] rounded-2xl border border-border bg-card p-4 shadow-sm">
-      <p className="font-[family-name:var(--font-inter)] text-[11px] leading-[17px] font-medium tracking-[0.25px] text-muted-foreground uppercase">
-        {label}
-      </p>
-      <p className="pt-1 text-2xl leading-9 font-bold text-foreground">
-        {value}
-        {suffix ? (
-          <span className="pl-1 font-[family-name:var(--font-lato)] text-sm font-normal text-muted-foreground">
-            {suffix}
-          </span>
-        ) : null}
-      </p>
+    <div className="space-y-6">
+      <section className="space-y-3">
+        <h3 className="text-lg font-bold text-foreground">1) Choose a scenario</h3>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {testingScenarios.map((item) => {
+            const selected = item.key === selectedScenario
+            return (
+              <button
+                key={item.key}
+                type="button"
+                onClick={() => selectScenario(item.key)}
+                className="group rounded-[14px] text-left outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 md:rounded-2xl"
+              >
+                <Card
+                  className={`gap-0 rounded-[inherit] bg-card py-0 shadow-[0_1px_2px_rgba(0,0,0,0.05)] transition-all ${
+                    selected
+                      ? "ring-2 ring-[#162456] dark:ring-[#8ab4ff]"
+                      : "ring-border group-hover:-translate-y-0.5"
+                  }`}
+                >
+                  <div className="relative aspect-video w-full overflow-hidden">
+                    <Image
+                      src={item.image}
+                      alt=""
+                      fill
+                      sizes="(min-width: 768px) 33vw, 100vw"
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
+                    {selected ? (
+                      <span className="absolute top-3 right-3 rounded-full bg-background/90 px-2 py-1 text-[11px] font-semibold text-foreground">
+                        Selected
+                      </span>
+                    ) : null}
+                  </div>
+
+                  <CardContent className="min-h-[112px] px-4 py-3">
+                    <p className="text-xs font-semibold tracking-[0.2px] text-[#c6b89b] uppercase">
+                      {item.subtitle}
+                    </p>
+                    <h4 className="pt-0.5 text-base font-semibold text-foreground">{item.title}</h4>
+                    <p className="pt-1 text-sm text-muted-foreground">{item.description}</p>
+                  </CardContent>
+                </Card>
+              </button>
+            )
+          })}
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+        <h3 className="text-lg font-bold text-foreground">2) Choose units</h3>
+        {!scenario ? (
+          <p className="pt-2 text-sm text-muted-foreground">
+            Select a scenario card above to unlock unit selection.
+          </p>
+        ) : (
+          <>
+            <p className="pt-1 text-sm text-muted-foreground">
+              Scenario: <span className="font-medium text-foreground">{scenario.title}</span>
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {scenario.units.map((unitId) => {
+                const selected = selectedUnits.includes(unitId)
+                return (
+                  <Button
+                    key={unitId}
+                    type="button"
+                    variant={selected ? "secondary" : "outline"}
+                    onClick={() => toggleUnit(unitId)}
+                    className="rounded-full"
+                  >
+                    {unitLabel(unitId)}
+                  </Button>
+                )
+              })}
+            </div>
+          </>
+        )}
+      </section>
+
+      <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+        <h3 className="text-lg font-bold text-foreground">3) Choose difficulty</h3>
+        <div className="mt-3 flex gap-2">
+          <Button
+            type="button"
+            variant={difficulty === "beginner" ? "secondary" : "outline"}
+            onClick={() => setDifficulty("beginner")}
+          >
+            Beginner
+          </Button>
+          <Button
+            type="button"
+            variant={difficulty === "advanced" ? "secondary" : "outline"}
+            onClick={() => setDifficulty("advanced")}
+          >
+            Advanced
+          </Button>
+        </div>
+
+        <Button
+          type="button"
+          className="mt-6 h-10 rounded-xl px-6"
+          disabled={!scenario || selectedUnits.length === 0}
+          onClick={startQuiz}
+        >
+          {!scenario
+            ? "Select a scenario first"
+            : selectedUnits.length === 0
+              ? "Select at least one unit"
+              : "Start quiz"}
+        </Button>
+      </section>
     </div>
   )
 }

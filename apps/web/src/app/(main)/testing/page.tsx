@@ -35,11 +35,9 @@ export default function TestingPage(): React.JSX.Element {
 
         <section className="px-4 pt-6 pb-24 sm:px-6 sm:pb-28 md:px-8 md:pb-8">
           <div>
-            <h2 className="text-xl leading-7 font-bold text-foreground">
-              Pick a quiz
-            </h2>
+            <h2 className="text-xl leading-7 font-bold text-foreground">Set up your test</h2>
             <p className="font-[family-name:var(--font-lato)] text-sm leading-5 text-muted-foreground">
-              Choose your challenge and test your Darija
+              Choose specific scenario units and a difficulty level
             </p>
           </div>
           <TestingQuizDeck />
