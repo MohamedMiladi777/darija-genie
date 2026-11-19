@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowLeft, ArrowRight, Eye, EyeOff } from "lucide-react"
+import { ArrowLeftIcon, ArrowRightIcon, EyeIcon, EyeOffIcon } from "@/components/icons"
 
 import { Button, buttonVariants } from "@workspace/ui/components/button"
 import {
@@ -270,7 +270,7 @@ export default function ScenarioPreviewMorphingCards({
                 aria-label="Previous word"
                 className="size-[42px] rounded-full border-[#d7c29e]/30 bg-transparent text-[#eee3d0] hover:bg-white/10 hover:text-white disabled:opacity-30"
               >
-                <ArrowLeft className="size-4" />
+                <ArrowLeftIcon aria-hidden="true" className="size-4" />
               </Button>
               <Button
                 type="button"
@@ -279,7 +279,7 @@ export default function ScenarioPreviewMorphingCards({
                 className="h-[42px] rounded-full bg-[#b77b52] px-5 font-[family-name:var(--font-inter)] text-xs font-semibold text-white hover:bg-[#c58a61]"
               >
                 {activeIndex === cards.length - 1 ? "Complete preview" : "Next word"}
-                <ArrowRight className="size-4" />
+                <ArrowRightIcon aria-hidden="true" className="size-4" />
               </Button>
             </div>
 
@@ -364,7 +364,11 @@ function LearningCard({
               className="flex size-10 shrink-0 items-center justify-center rounded-full border border-[#9c7b5b]/40 text-[#74533d] transition-colors hover:bg-[#e7d8bf]"
               aria-label={showImage ? "Hide visual reference" : "Show visual reference"}
             >
-              {showImage ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+              {showImage ? (
+                <EyeOffIcon aria-hidden="true" className="size-4" />
+              ) : (
+                <EyeIcon aria-hidden="true" className="size-4" />
+              )}
             </button>
           </div>
         </div>

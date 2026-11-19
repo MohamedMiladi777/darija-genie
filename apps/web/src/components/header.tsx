@@ -1,8 +1,7 @@
-import Image from "next/image"
-
 import { Button } from "@workspace/ui/components/button"
 
 import { LogoMarkDark } from "./assets/logo"
+import { ThemeIcon } from "./icons"
 import { SidebarTrigger } from "@workspace/ui/components/sidebar"
 
 export const Header = (): React.JSX.Element => {
@@ -22,13 +21,7 @@ export const Header = (): React.JSX.Element => {
             aria-label="Open display settings"
           >
             <span className="flex size-4 items-center justify-center">
-              <Image
-                src="/assets/learning/theme.svg"
-                alt=""
-                width={14.333}
-                height={14.333}
-                className="size-[14.333px]"
-              />
+              <ThemeIcon aria-hidden="true" className="size-4" />
             </span>
           </Button>
         </div>
@@ -65,13 +58,7 @@ export const Header = (): React.JSX.Element => {
           className="size-9 rounded-lg p-0 hover:bg-white/50"
           aria-label="Open settings"
         >
-          <Image
-            src="/assets/learning/desktop-theme.svg"
-            alt=""
-            width={16}
-            height={16}
-            className="size-4"
-          />
+          <ThemeIcon aria-hidden="true" className="size-4" />
         </Button>
       </header>
     </>

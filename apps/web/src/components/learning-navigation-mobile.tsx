@@ -1,42 +1,36 @@
 "use client"
 
-import Image from "next/image"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 
 import type { LearningNavigationItem } from "./learning-navigation"
+import { LearningIcon, SettingsIcon, TestingIcon, type AppIcon } from "./icons"
 
 interface NavigationItem {
   value: LearningNavigationItem
   label: string
-  icon: string
-  iconClassName: string
+  icon: AppIcon
   href?: string
-  activeIcon?: string
 }
 
 const navigationItems: readonly NavigationItem[] = [
   {
     value: "testing",
     label: "Testing",
-    icon: "/assets/learning/nav-testing.svg",
+    icon: TestingIcon,
     href: "/testing",
-    iconClassName: "h-[14.333px] w-[14.333px]",
   },
   {
     value: "learning",
     label: "Learning",
     href: "/learning",
-    icon: "/assets/learning/nav-learning.svg",
-    iconClassName: "h-[13.666px] w-[13px]",
+    icon: LearningIcon,
   },
   {
     value: "settings",
     label: "Settings",
     href: "/settings",
-    icon: "/assets/learning/nav-settings.svg",
-    activeIcon: "/assets/settings/nav-settings-active.svg",
-    iconClassName: "h-[14.333px] w-[13.023px]",
+    icon: SettingsIcon,
   },
 ]
 
@@ -58,6 +52,7 @@ export default function LearningMobileNavigation(): React.JSX.Element | null {
       <div className="grid h-[55px] grid-cols-[126fr_140fr_136fr] items-center sm:grid-cols-3">
         {navigationItems.map((item) => {
           const isActive = item.value === activeItem
+          const Icon = item.icon
           const className = `flex h-full min-w-0 items-center justify-center gap-1 rounded-md font-[family-name:var(--font-inter)] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-[#1447e6] ${
             isActive
               ? "bg-[#193cb8] text-base text-[#f2efe4]"
@@ -65,17 +60,7 @@ export default function LearningMobileNavigation(): React.JSX.Element | null {
           }`
           const content = (
             <>
-              <span className="flex size-4 shrink-0 items-center justify-center">
-                <Image
-                  src={
-                    isActive && item.activeIcon ? item.activeIcon : item.icon
-                  }
-                  alt=""
-                  width={16}
-                  height={16}
-                  className={`${item.iconClassName} ${isActive && item.value === "testing" ? "brightness-0 invert" : ""}`}
-                />
-              </span>
+              <Icon aria-hidden="true" className="size-4 shrink-0" />
               <span className="truncate">{item.label}</span>
             </>
           )

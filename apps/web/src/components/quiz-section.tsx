@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react"
+import { ArrowRightIcon } from "./icons"
 
 const quizzes = [
   { title: "General Quiz", subtitle: "All topics · Any level" },
@@ -41,7 +41,7 @@ const QuizSection = (): React.JSX.Element => (
             </span>
           </span>
           <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#1e40af] text-white">
-            <ArrowRight className="size-[14px]" />
+            <ArrowRightIcon aria-hidden="true" className="size-[14px]" />
           </span>
         </button>
       ))}

@@ -3,11 +3,17 @@
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react"
 import { preconnect } from "react-dom"
 import Image from "next/image"
-import { LoaderCircle, Mic, RefreshCw, Send } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
 import { Card } from "@workspace/ui/components/card"
 import { useStoredPreference } from "@/components/preference-selector"
+
+import {
+  LoaderIcon,
+  MicIcon,
+  RefreshIcon,
+  SendIcon,
+} from "@/components/icons"
 
 type SlotState = Record<string, unknown>
 type HistoryEntry =
@@ -294,7 +300,7 @@ export default function GenieChatDialogue({
       return
     }
 
-    if (chatDisabled || transcriptionPending || recordingActive) {
+    if (transcriptionPending || recordingActive) {
       return
     }
 
@@ -428,7 +434,6 @@ export default function GenieChatDialogue({
       )
     }
   }, [
-    chatDisabled,
     recordingActive,
     resetRecorder,
     transcriptionPending,
@@ -546,7 +551,7 @@ export default function GenieChatDialogue({
                 S
               </span>
               <span className="flex items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3 text-xs">
-                <LoaderCircle className="size-4 animate-spin" /> Genie is
+                <LoaderIcon className="size-4 animate-spin" /> Genie is
                 thinking
               </span>
             </div>
@@ -565,7 +570,7 @@ export default function GenieChatDialogue({
                   onClick={() => void initialize()}
                   className="shrink-0"
                 >
-                  <RefreshCw className="size-3.5" /> Retry
+                  <RefreshIcon className="size-3.5" /> Retry
                 </Button>
               ) : null}
             </div>
@@ -603,7 +608,7 @@ export default function GenieChatDialogue({
             aria-label={
               recordingActive ? "Release to stop recording" : "Hold to record voice"
             }
-            disabled={chatDisabled || transcriptionPending}
+            disabled={transcriptionPending}
             onPointerDown={(event) => {
               event.preventDefault()
               event.currentTarget.setPointerCapture(event.pointerId)
@@ -635,9 +640,9 @@ export default function GenieChatDialogue({
             }`}
           >
             {transcriptionPending ? (
-              <LoaderCircle className="size-4 animate-spin" />
+              <LoaderIcon className="size-4 animate-spin" />
             ) : (
-              <Mic className="size-4" />
+              <MicIcon className="size-4" />
             )}
           </Button>
           <Button
@@ -648,9 +653,9 @@ export default function GenieChatDialogue({
             className="size-10 rounded-xl bg-[#162456] text-white hover:bg-[#1e40af]"
           >
             {loading ? (
-              <LoaderCircle className="size-4 animate-spin" />
+              <LoaderIcon className="size-4 animate-spin" />
             ) : (
-              <Send className="size-4" />
+              <SendIcon className="size-4" />
             )}
           </Button>
         </form>

@@ -1,12 +1,5 @@
 "use client"
 
-import {
-  ArrowRight,
-  Check,
-  Languages,
-  MessageCircleMore,
-  Type,
-} from "lucide-react"
 import { useRouter } from "next/navigation"
 
 import {
@@ -14,6 +7,14 @@ import {
   useStoredPreference,
 } from "@/components/preference-selector"
 import { Button } from "@workspace/ui/components/button"
+
+import {
+  ArrowRightIcon,
+  CheckIcon,
+  LanguagesIcon,
+  MessageIcon,
+  TextSizeIcon,
+} from "@/components/icons"
 
 type OnboardingPreferenceKind = "fontSize" | "script" | "interaction"
 
@@ -122,16 +123,20 @@ export default function OnboardingPreference({
 
   const Illustration =
     kind === "fontSize"
-      ? Type
+      ? TextSizeIcon
       : kind === "script"
-        ? Languages
-        : MessageCircleMore
+        ? LanguagesIcon
+        : MessageIcon
 
   return (
     <main className="flex min-h-svh items-center justify-center px-6 py-10">
       <div className="flex w-full max-w-4xl flex-col items-center gap-10 lg:flex-row lg:justify-center lg:gap-16">
         <div className="flex size-44 shrink-0 items-center justify-center rounded-full bg-[#e0e7ff] text-blue-950 shadow-sm md:size-52">
-          <Illustration className="size-20 md:size-24" strokeWidth={1.4} />
+          <Illustration
+            aria-hidden="true"
+            className="size-20 md:size-24"
+            strokeWidth={1.4}
+          />
         </div>
 
         <section className="w-full max-w-md">
@@ -196,7 +201,7 @@ export default function OnboardingPreference({
                     }`}
                     aria-hidden="true"
                   >
-                    {selected ? <Check className="size-3.5" /> : null}
+                    {selected ? <CheckIcon aria-hidden="true" className="size-3.5" /> : null}
                   </span>
                 </button>
               )
@@ -208,7 +213,7 @@ export default function OnboardingPreference({
             onClick={() => router.push(nextHref)}
             className="mt-7 h-12 w-full rounded-full bg-blue-950 text-neutral-50 hover:bg-blue-900"
           >
-            Continue <ArrowRight className="size-4" />
+            Continue <ArrowRightIcon aria-hidden="true" className="size-4" />
           </Button>
         </section>
       </div>

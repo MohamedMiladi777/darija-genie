@@ -1,7 +1,8 @@
 import LampMark from "@/components/assets/lamp"
-import { Sun, Moon } from "lucide-react"
 import { buttonVariants } from "@workspace/ui/components/button"
 import Link from "next/link"
+
+import { MoonIcon, SunIcon } from "@/components/icons"
 
 function MainContent() {
   return (
@@ -28,7 +29,7 @@ function MainContent() {
                 "flex items-center justify-center gap-2 rounded-full bg-blue-950 px-6 py-3 text-sm font-medium text-neutral-50 shadow-md hover:bg-blue-900",
             })}
           >
-            <Sun data-icon="inline-start" />
+            <SunIcon aria-hidden="true" />
             Light Mode{" "}
           </Link>
 
@@ -42,7 +43,7 @@ function MainContent() {
             })}
           >
             {" "}
-            <Moon data-icon="inline-start" />
+            <MoonIcon aria-hidden="true" />
             Dark Mode
           </Link>
         </div>

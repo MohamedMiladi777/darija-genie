@@ -1,7 +1,8 @@
 import AtayMark from "@/components/assets/atay"
 import { buttonVariants } from "@workspace/ui/components/button"
-import { ArrowRight } from "lucide-react"
 import Link from "next/link"
+
+import { ArrowRightIcon } from "@/components/icons"
 
 export default function OnboardingCompletePage(): React.JSX.Element {
   return (
@@ -28,7 +29,7 @@ export default function OnboardingCompletePage(): React.JSX.Element {
                   "flex items-center justify-center rounded-full bg-blue-950 px-6 py-3 text-neutral-50 shadow-md hover:bg-blue-900",
               })}
             >
-              <ArrowRight />
+              <ArrowRightIcon aria-hidden="true" />
             </Link>
           </div>
         </div>

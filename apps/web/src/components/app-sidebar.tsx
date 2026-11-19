@@ -1,11 +1,16 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 import type { LearningNavigationItem } from "./learning-navigation"
 import { LogoMarkCompact, LogoMarkDark } from "./assets/logo"
+import {
+  LearningIcon,
+  SettingsIcon,
+  TestingIcon,
+  type AppIcon,
+} from "./icons"
 import {
   Sidebar,
   SidebarContent,
@@ -24,30 +29,28 @@ import { cn } from "@workspace/ui/lib/utils"
 interface NavigationItem {
   value: LearningNavigationItem
   label: string
-  icon: string
+  icon: AppIcon
   href: string
-  activeIcon?: string
 }
 
 const navigationItems: readonly NavigationItem[] = [
   {
     value: "testing",
     label: "Testing",
-    icon: "/assets/learning/desktop-nav-testing.svg",
+    icon: TestingIcon,
     href: "/testing",
   },
   {
     value: "learning",
     label: "Learning",
     href: "/learning",
-    icon: "/assets/learning/desktop-nav-learning.svg",
+    icon: LearningIcon,
   },
   {
     value: "settings",
     label: "Settings",
     href: "/settings",
-    icon: "/assets/learning/desktop-nav-settings.svg",
-    activeIcon: "/assets/settings/sidebar-settings-active.svg",
+    icon: SettingsIcon,
   },
 ]
 
@@ -88,6 +91,7 @@ export function AppSidebar(): React.JSX.Element | null {
                 const isActive =
                   pathname === item.href ||
                   pathname.startsWith(`${item.href}/`)
+                const Icon = item.icon
 
                 return (
                   <SidebarMenuItem key={item.value}>
@@ -102,17 +106,7 @@ export function AppSidebar(): React.JSX.Element | null {
                       tooltip={item.label}
                       className="data-active:bg-sidebar-primary! data-active:text-sidebar-primary-foreground!"
                     >
-                      <Image
-                        src={
-                          isActive && item.activeIcon
-                            ? item.activeIcon
-                            : item.icon
-                        }
-                        alt=""
-                        width={16}
-                        height={16}
-                        className="size-4 shrink-0"
-                      />
+                      <Icon aria-hidden="true" className="size-4 shrink-0" />
                       <span>{item.label}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

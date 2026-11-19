@@ -1,31 +1,38 @@
-import Image from "next/image"
 import Link from "next/link"
 
 import SettingsChrome from "@/components/settings-chrome"
+import {
+  ChevronRightIcon,
+  DownloadIcon,
+  LanguagesIcon,
+  MicIcon,
+  TextSizeIcon,
+  ThemeIcon,
+} from "@/components/icons"
 
 const settingsItems = [
   {
     title: "Theme Settings",
     description: "Change between light and dark mode",
-    icon: "/assets/settings/theme.svg",
+    icon: ThemeIcon,
     href: "/settings/theme",
   },
   {
     title: "Text Script",
     description: "Change between Arabic, Latin scripts",
-    icon: "/assets/settings/language.svg",
+    icon: LanguagesIcon,
     href: "/settings/script",
   },
   {
     title: "Interaction Settings",
     description: "Enable Audio interaction, text, or both",
-    icon: "/assets/settings/microphone.svg",
+    icon: MicIcon,
     href: "/settings/interaction",
   },
   {
     title: "Font Size",
     description: "Choose a comfortable dialogue text size",
-    icon: "/assets/genie-chat/text.svg",
+    icon: TextSizeIcon,
     href: "/settings/font-size",
   },
 ] as const
@@ -35,16 +42,12 @@ function SettingsRow({
 }: {
   item: (typeof settingsItems)[number]
 }): React.JSX.Element {
+  const Icon = item.icon
+
   const content = (
     <>
-      <span className="hidden size-9 shrink-0 items-center justify-center rounded-lg bg-[#e0e7ff] md:flex dark:bg-[#263a57]">
-        <Image
-          src={item.icon}
-          alt=""
-          width={18}
-          height={18}
-          className="size-[18px]"
-        />
+      <span className="hidden size-9 shrink-0 items-center justify-center rounded-lg bg-[#e0e7ff] text-[#193cb8] md:flex dark:bg-[#263a57] dark:text-[#c6b89b]">
+        <Icon aria-hidden="true" className="size-[18px]" />
       </span>
       <span className="min-w-0 flex-1">
         <span className="block font-[family-name:var(--font-inter)] text-base leading-6 font-medium text-foreground">
@@ -54,12 +57,9 @@ function SettingsRow({
           {item.description}
         </span>
       </span>
-      <Image
-        src="/assets/settings/arrow-right.svg"
-        alt=""
-        width={16}
-        height={16}
-        className="size-4 shrink-0"
+      <ChevronRightIcon
+        aria-hidden="true"
+        className="size-4 shrink-0 text-muted-foreground"
       />
     </>
   )
@@ -102,11 +102,8 @@ export default function SettingsPage(): React.JSX.Element {
               aria-selected="false"
               className="flex items-start justify-center gap-2 font-[family-name:var(--font-inter)] text-sm leading-5 font-medium text-[#999] outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-inset md:items-center dark:text-[#c6b89b]/70"
             >
-              <Image
-                src="/assets/settings/download.svg"
-                alt=""
-                width={13}
-                height={13}
+              <DownloadIcon
+                aria-hidden="true"
                 className="mt-0.5 hidden size-[13px] md:block"
               />
               Downloads

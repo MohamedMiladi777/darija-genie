@@ -3,7 +3,6 @@
 import { useState, useSyncExternalStore, type CSSProperties } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Clock3 } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -14,6 +13,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+
+import { ClockIcon } from "./icons"
 
 const sessions = [
   {
@@ -187,7 +188,7 @@ export default function ContinueSessionSection(): React.JSX.Element {
                   </span>
                   {"recent" in session && session.recent && (
                     <span className="flex items-center gap-1 rounded-full bg-background/95 px-1.5 py-0.5 text-[11px] leading-4 text-foreground">
-                      <Clock3 aria-hidden="true" className="size-3" />
+                      <ClockIcon aria-hidden="true" className="size-3" />
                       Recent
                     </span>
                   )}
@@ -230,7 +231,7 @@ export default function ContinueSessionSection(): React.JSX.Element {
                   </div>
                 ) : (
                   <p className="flex items-center gap-1.5 text-[11px] leading-4 text-muted-foreground">
-                    <Clock3 aria-hidden="true" className="size-3" />
+                    <ClockIcon aria-hidden="true" className="size-3" />
                     {session.timestamp}
                   </p>
                 )}
