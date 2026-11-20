@@ -1,4 +1,4 @@
-import { drizzle } from "drizzle-orm/postgres-js";
+import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "./schema";
 
@@ -12,7 +12,7 @@ import * as schema from "./schema";
  */
 
 let client: postgres.Sql | null = null;
-let db: ReturnType<typeof drizzle<typeof schema>> | null = null;
+let db: PostgresJsDatabase | null = null;
 
 export function getDb() {
   const url = process.env.DATABASE_URL;
@@ -23,7 +23,10 @@ export function getDb() {
   }
   if (!db) {
     client = postgres(url, { prepare: false, max: 10 });
-    db = drizzle(client, { schema });
+    // drizzle-orm v1 takes the client inside the config object and replaced
+    // `schema` with `relations` (defineRelations). This project has no
+    // relational-query definitions yet, so the client alone is sufficient.
+    db = drizzle({ client });
   }
   return db;
 }

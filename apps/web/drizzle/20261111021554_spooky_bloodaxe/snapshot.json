@@ -1,0 +1,1189 @@
+{
+  "type": "base",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "b62dcb36-b0b7-4011-841f-d7fc417b7e42",
+  "prevIds": [
+    "00000000-0000-0000-0000-000000000000"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "audio_kind"
+      ],
+      "writes": [
+        "s|enum|public.audio_kind",
+        "n|enum|public.audio_kind",
+        "e|enum|public.audio_kind",
+        "n|type|public.audio_kind"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "vocabulary_audio_role"
+      ],
+      "writes": [
+        "s|enum|public.vocabulary_audio_role",
+        "n|enum|public.vocabulary_audio_role",
+        "e|enum|public.vocabulary_audio_role",
+        "n|type|public.vocabulary_audio_role"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "audio_assets"
+      ],
+      "writes": [
+        "s|tbl|public.audio_assets",
+        "n|tbl|public.audio_assets",
+        "e|tbl|public.audio_assets",
+        "n|rel|public.audio_assets",
+        "n|type|public.audio_assets",
+        "n|rel|public.audio_assets_pkey"
+      ],
+      "reads": [
+        "n|sch|public",
+        "n|enum|public.audio_kind"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "examples"
+      ],
+      "writes": [
+        "s|tbl|public.examples",
+        "n|tbl|public.examples",
+        "e|tbl|public.examples",
+        "n|rel|public.examples",
+        "n|type|public.examples",
+        "n|rel|public.examples_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "grammar_points"
+      ],
+      "writes": [
+        "s|tbl|public.grammar_points",
+        "n|tbl|public.grammar_points",
+        "e|tbl|public.grammar_points",
+        "n|rel|public.grammar_points",
+        "n|type|public.grammar_points",
+        "n|rel|public.grammar_points_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "lessons"
+      ],
+      "writes": [
+        "s|tbl|public.lessons",
+        "n|tbl|public.lessons",
+        "e|tbl|public.lessons",
+        "n|rel|public.lessons",
+        "n|type|public.lessons",
+        "n|rel|public.lessons_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "vocabulary"
+      ],
+      "writes": [
+        "s|tbl|public.vocabulary",
+        "n|tbl|public.vocabulary",
+        "e|tbl|public.vocabulary",
+        "n|rel|public.vocabulary",
+        "n|type|public.vocabulary",
+        "n|rel|public.vocabulary_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "vocabulary_audio"
+      ],
+      "writes": [
+        "s|tbl|public.vocabulary_audio",
+        "n|tbl|public.vocabulary_audio",
+        "e|tbl|public.vocabulary_audio",
+        "n|rel|public.vocabulary_audio",
+        "n|type|public.vocabulary_audio",
+        "n|rel|public.vocabulary_audio_vocabulary_id_audio_asset_id_role_pk"
+      ],
+      "reads": [
+        "n|sch|public",
+        "n|enum|public.vocabulary_audio_role"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "audio_assets",
+        "audio_assets_container_key_unique"
+      ],
+      "writes": [
+        "s|idx|public.audio_assets_container_key_unique",
+        "n|idx|public.audio_assets_container_key_unique",
+        "e|idx|public.audio_assets_container_key_unique",
+        "n|rel|public.audio_assets_container_key_unique"
+      ],
+      "reads": [
+        "n|tbl|public.audio_assets",
+        "n|sch|public",
+        "n|col|public.audio_assets.container",
+        "n|col|public.audio_assets.storage_key"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "examples",
+        "examples_vocabulary_idx"
+      ],
+      "writes": [
+        "s|idx|public.examples_vocabulary_idx",
+        "n|idx|public.examples_vocabulary_idx",
+        "e|idx|public.examples_vocabulary_idx",
+        "n|rel|public.examples_vocabulary_idx"
+      ],
+      "reads": [
+        "n|tbl|public.examples",
+        "n|sch|public",
+        "n|col|public.examples.vocabulary_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "grammar_points",
+        "grammar_points_lesson_idx"
+      ],
+      "writes": [
+        "s|idx|public.grammar_points_lesson_idx",
+        "n|idx|public.grammar_points_lesson_idx",
+        "e|idx|public.grammar_points_lesson_idx",
+        "n|rel|public.grammar_points_lesson_idx"
+      ],
+      "reads": [
+        "n|tbl|public.grammar_points",
+        "n|sch|public",
+        "n|col|public.grammar_points.lesson_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "lessons",
+        "lessons_slug_unique"
+      ],
+      "writes": [
+        "s|idx|public.lessons_slug_unique",
+        "n|idx|public.lessons_slug_unique",
+        "e|idx|public.lessons_slug_unique",
+        "n|rel|public.lessons_slug_unique"
+      ],
+      "reads": [
+        "n|tbl|public.lessons",
+        "n|sch|public",
+        "n|col|public.lessons.slug"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "vocabulary",
+        "vocabulary_lesson_idx"
+      ],
+      "writes": [
+        "s|idx|public.vocabulary_lesson_idx",
+        "n|idx|public.vocabulary_lesson_idx",
+        "e|idx|public.vocabulary_lesson_idx",
+        "n|rel|public.vocabulary_lesson_idx"
+      ],
+      "reads": [
+        "n|tbl|public.vocabulary",
+        "n|sch|public",
+        "n|col|public.vocabulary.lesson_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "vocabulary_audio",
+        "vocabulary_audio_audio_idx"
+      ],
+      "writes": [
+        "s|idx|public.vocabulary_audio_audio_idx",
+        "n|idx|public.vocabulary_audio_audio_idx",
+        "e|idx|public.vocabulary_audio_audio_idx",
+        "n|rel|public.vocabulary_audio_audio_idx"
+      ],
+      "reads": [
+        "n|tbl|public.vocabulary_audio",
+        "n|sch|public",
+        "n|col|public.vocabulary_audio.audio_asset_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "examples"
+      ],
+      "writes": [
+        "s|fk|public.examples.examples_vocabulary_id_vocabulary_id_fk",
+        "n|fk|public.examples.examples_vocabulary_id_vocabulary_id_fk",
+        "e|fk|public.examples.examples_vocabulary_id_vocabulary_id_fk",
+        "n|con|public.examples.examples_vocabulary_id_vocabulary_id_fk"
+      ],
+      "reads": [
+        "n|tbl|public.examples",
+        "n|sch|public",
+        "n|tbl|public.vocabulary",
+        "n|sch|public",
+        "n|col|public.examples.vocabulary_id",
+        "n|col|public.vocabulary.id",
+        "e|uniqueness|public.vocabulary.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "grammar_points"
+      ],
+      "writes": [
+        "s|fk|public.grammar_points.grammar_points_lesson_id_lessons_id_fk",
+        "n|fk|public.grammar_points.grammar_points_lesson_id_lessons_id_fk",
+        "e|fk|public.grammar_points.grammar_points_lesson_id_lessons_id_fk",
+        "n|con|public.grammar_points.grammar_points_lesson_id_lessons_id_fk"
+      ],
+      "reads": [
+        "n|tbl|public.grammar_points",
+        "n|sch|public",
+        "n|tbl|public.lessons",
+        "n|sch|public",
+        "n|col|public.grammar_points.lesson_id",
+        "n|col|public.lessons.id",
+        "e|uniqueness|public.lessons.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "vocabulary"
+      ],
+      "writes": [
+        "s|fk|public.vocabulary.vocabulary_lesson_id_lessons_id_fk",
+        "n|fk|public.vocabulary.vocabulary_lesson_id_lessons_id_fk",
+        "e|fk|public.vocabulary.vocabulary_lesson_id_lessons_id_fk",
+        "n|con|public.vocabulary.vocabulary_lesson_id_lessons_id_fk"
+      ],
+      "reads": [
+        "n|tbl|public.vocabulary",
+        "n|sch|public",
+        "n|tbl|public.lessons",
+        "n|sch|public",
+        "n|col|public.vocabulary.lesson_id",
+        "n|col|public.lessons.id",
+        "e|uniqueness|public.lessons.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "vocabulary_audio"
+      ],
+      "writes": [
+        "s|fk|public.vocabulary_audio.vocabulary_audio_vocabulary_id_vocabulary_id_fk",
+        "n|fk|public.vocabulary_audio.vocabulary_audio_vocabulary_id_vocabulary_id_fk",
+        "e|fk|public.vocabulary_audio.vocabulary_audio_vocabulary_id_vocabulary_id_fk",
+        "n|con|public.vocabulary_audio.vocabulary_audio_vocabulary_id_vocabulary_id_fk"
+      ],
+      "reads": [
+        "n|tbl|public.vocabulary_audio",
+        "n|sch|public",
+        "n|tbl|public.vocabulary",
+        "n|sch|public",
+        "n|col|public.vocabulary_audio.vocabulary_id",
+        "n|col|public.vocabulary.id",
+        "e|uniqueness|public.vocabulary.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "vocabulary_audio"
+      ],
+      "writes": [
+        "s|fk|public.vocabulary_audio.vocabulary_audio_audio_asset_id_audio_assets_id_fk",
+        "n|fk|public.vocabulary_audio.vocabulary_audio_audio_asset_id_audio_assets_id_fk",
+        "e|fk|public.vocabulary_audio.vocabulary_audio_audio_asset_id_audio_assets_id_fk",
+        "n|con|public.vocabulary_audio.vocabulary_audio_audio_asset_id_audio_assets_id_fk"
+      ],
+      "reads": [
+        "n|tbl|public.vocabulary_audio",
+        "n|sch|public",
+        "n|tbl|public.audio_assets",
+        "n|sch|public",
+        "n|col|public.vocabulary_audio.audio_asset_id",
+        "n|col|public.audio_assets.id",
+        "e|uniqueness|public.audio_assets.id"
+      ]
+    }
+  ],
+  "ddl": [
+    {
+      "schema": "public",
+      "name": "audio_assets",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "examples",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "grammar_points",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "lessons",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "vocabulary",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "vocabulary_audio",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "audio_kind",
+      "values": [
+        "vocab",
+        "grammar",
+        "dialogue"
+      ],
+      "entityType": "enums"
+    },
+    {
+      "schema": "public",
+      "name": "vocabulary_audio_role",
+      "values": [
+        "pronunciation",
+        "example"
+      ],
+      "entityType": "enums"
+    },
+    {
+      "schema": "public",
+      "table": "audio_assets",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "audio_assets",
+      "name": "kind",
+      "type": "audio_kind",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "audio_assets",
+      "name": "container",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'audio'",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "audio_assets",
+      "name": "storage_key",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "audio_assets",
+      "name": "content_type",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "audio_assets",
+      "name": "duration_seconds",
+      "type": "real",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "audio_assets",
+      "name": "transcript",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "audio_assets",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "examples",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "examples",
+      "name": "vocabulary_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "examples",
+      "name": "darija_text",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "examples",
+      "name": "translation",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "examples",
+      "name": "sort_order",
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "0",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "grammar_points",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "grammar_points",
+      "name": "lesson_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "grammar_points",
+      "name": "title",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "grammar_points",
+      "name": "explanation",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "grammar_points",
+      "name": "sort_order",
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "0",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lessons",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lessons",
+      "name": "slug",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lessons",
+      "name": "title",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lessons",
+      "name": "level",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'beginner'",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lessons",
+      "name": "sort_order",
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "0",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lessons",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lessons",
+      "name": "updated_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "vocabulary",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "vocabulary",
+      "name": "lesson_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "vocabulary",
+      "name": "term",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "vocabulary",
+      "name": "translation",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "vocabulary",
+      "name": "transliteration",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "vocabulary",
+      "name": "notes",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "vocabulary",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "vocabulary_audio",
+      "name": "vocabulary_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "vocabulary_audio",
+      "name": "audio_asset_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "vocabulary_audio",
+      "name": "role",
+      "type": "vocabulary_audio_role",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'pronunciation'",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "audio_assets",
+      "name": "audio_assets_container_key_unique",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "container",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "storage_key",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "examples",
+      "name": "examples_vocabulary_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "vocabulary_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "grammar_points",
+      "name": "grammar_points_lesson_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "lesson_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "lessons",
+      "name": "lessons_slug_unique",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "slug",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "vocabulary",
+      "name": "vocabulary_lesson_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "lesson_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "vocabulary_audio",
+      "name": "vocabulary_audio_audio_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "audio_asset_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "examples",
+      "name": "examples_vocabulary_id_vocabulary_id_fk",
+      "nameExplicit": false,
+      "columns": [
+        "vocabulary_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "vocabulary",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "grammar_points",
+      "name": "grammar_points_lesson_id_lessons_id_fk",
+      "nameExplicit": false,
+      "columns": [
+        "lesson_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "lessons",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "vocabulary",
+      "name": "vocabulary_lesson_id_lessons_id_fk",
+      "nameExplicit": false,
+      "columns": [
+        "lesson_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "lessons",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "SET NULL",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "vocabulary_audio",
+      "name": "vocabulary_audio_vocabulary_id_vocabulary_id_fk",
+      "nameExplicit": false,
+      "columns": [
+        "vocabulary_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "vocabulary",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "vocabulary_audio",
+      "name": "vocabulary_audio_audio_asset_id_audio_assets_id_fk",
+      "nameExplicit": false,
+      "columns": [
+        "audio_asset_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "audio_assets",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "audio_assets",
+      "name": "audio_assets_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "examples",
+      "name": "examples_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "grammar_points",
+      "name": "grammar_points_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "lessons",
+      "name": "lessons_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "vocabulary",
+      "name": "vocabulary_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "vocabulary_audio",
+      "name": "vocabulary_audio_vocabulary_id_audio_asset_id_role_pk",
+      "columns": [
+        "vocabulary_id",
+        "audio_asset_id",
+        "role"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    }
+  ]
+}
