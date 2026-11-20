@@ -28,6 +28,9 @@ dist
 .DS_Store
 *.pem
 
+# LibreOffice / Excel lock files
+.~lock.*#
+
 # debug
 npm-debug.log*
 yarn-debug.log*

@@ -1,0 +1,1576 @@
+{
+  "scenario": "restaurant",
+  "version": 2,
+  "source": {
+    "file": "content/value-bank/restaurant-v2.xlsx",
+    "sha256": "1eb96752f5e7522ddf517c2e4c2589cfefcb61306a8e5b559e9e34b37e383ef8"
+  },
+  "pools": [
+    {
+      "key": "starters",
+      "slot": "starter",
+      "label": "Starters",
+      "sortOrder": 0,
+      "categories": [
+        "salads_starters"
+      ]
+    },
+    {
+      "key": "mains",
+      "slot": "dish",
+      "label": "Mains",
+      "sortOrder": 1,
+      "categories": [
+        "tajines",
+        "couscous",
+        "pastilla_briouates",
+        "mains_other"
+      ]
+    },
+    {
+      "key": "desserts",
+      "slot": "dessert",
+      "label": "Desserts",
+      "sortOrder": 2,
+      "categories": [
+        "desserts"
+      ]
+    },
+    {
+      "key": "drinks",
+      "slot": "drink",
+      "label": "Drinks",
+      "sortOrder": 3,
+      "categories": [
+        "drinks"
+      ]
+    },
+    {
+      "key": "guest_names",
+      "slot": "guest_name",
+      "label": "Guest names",
+      "sortOrder": 4,
+      "categories": [
+        "Customer names"
+      ]
+    },
+    {
+      "key": "seating_options",
+      "slot": "seating",
+      "label": "Seating options",
+      "sortOrder": 5,
+      "categories": [
+        "Seating"
+      ]
+    },
+    {
+      "key": "diet_options",
+      "slot": "diet",
+      "label": "Diet options",
+      "sortOrder": 6,
+      "categories": [
+        "Diet"
+      ]
+    },
+    {
+      "key": "request_options",
+      "slot": "special_requests",
+      "label": "Special requests",
+      "sortOrder": 7,
+      "categories": [
+        "Special requests"
+      ]
+    },
+    {
+      "key": "wait_times",
+      "slot": "wait_time",
+      "label": "Wait times",
+      "sortOrder": 8,
+      "categories": [
+        "Waiting time"
+      ]
+    },
+    {
+      "key": "guest_questions",
+      "slot": "guest_question",
+      "label": "Guest questions",
+      "sortOrder": 9,
+      "categories": [
+        "Questions the customer asks"
+      ]
+    },
+    {
+      "key": "payment_options",
+      "slot": "payment",
+      "label": "Payment options",
+      "sortOrder": 10,
+      "categories": [
+        "Payment"
+      ]
+    },
+    {
+      "key": "split_options",
+      "slot": "split_bill",
+      "label": "Split bill",
+      "sortOrder": 11,
+      "categories": [
+        "Splitting the bill"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "pool": "starters",
+      "itemKey": "harira",
+      "category": "salads_starters",
+      "kind": "vocab",
+      "canonical": "حريرة",
+      "forms": [
+        "حريرة"
+      ],
+      "sortOrder": 0
+    },
+    {
+      "pool": "starters",
+      "itemKey": "salade_matissa_basla",
+      "category": "salads_starters",
+      "kind": "vocab",
+      "canonical": "شلاظة د مطيشة وبصلة",
+      "forms": [
+        "شلاظة د مطيشة وبصلة"
+      ],
+      "sortOrder": 1
+    },
+    {
+      "pool": "starters",
+      "itemKey": "zaalouk",
+      "category": "salads_starters",
+      "kind": "vocab",
+      "canonical": "زعلوك",
+      "forms": [
+        "زعلوك"
+      ],
+      "sortOrder": 2
+    },
+    {
+      "pool": "starters",
+      "itemKey": "taktouka",
+      "category": "salads_starters",
+      "kind": "vocab",
+      "canonical": "تكتوكة",
+      "forms": [
+        "تكتوكة"
+      ],
+      "sortOrder": 3
+    },
+    {
+      "pool": "starters",
+      "itemKey": "khobz_dar",
+      "category": "salads_starters",
+      "kind": "vocab",
+      "canonical": "خبز",
+      "forms": [
+        "خبز"
+      ],
+      "sortOrder": 4
+    },
+    {
+      "pool": "starters",
+      "itemKey": "chlada_d_lbarba",
+      "category": "salads_starters",
+      "kind": "vocab",
+      "canonical": "شلاظة د الباربا",
+      "forms": [
+        "شلاظة د الباربا",
+        "الباربا",
+        "الباربا مشرملة"
+      ],
+      "sortOrder": 5
+    },
+    {
+      "pool": "starters",
+      "itemKey": "chlada_d_lkhyar_b_zza3tar",
+      "category": "salads_starters",
+      "kind": "vocab",
+      "canonical": "شلاظة د الخيار بالزعتر",
+      "forms": [
+        "شلاظة د الخيار بالزعتر",
+        "الخيار محكوك بالزعتر",
+        "شلاظة د الخيار"
+      ],
+      "sortOrder": 6
+    },
+    {
+      "pool": "starters",
+      "itemKey": "bissara",
+      "category": "salads_starters",
+      "kind": "vocab",
+      "canonical": "بيصارة",
+      "forms": [
+        "بيصارة",
+        "البيصارة د الفول"
+      ],
+      "sortOrder": 7
+    },
+    {
+      "pool": "starters",
+      "itemKey": "hssoua_d_lbelboula",
+      "category": "salads_starters",
+      "kind": "vocab",
+      "canonical": "حسوة د البلبولة بالحليب",
+      "forms": [
+        "حسوة د البلبولة بالحليب",
+        "الحسوة",
+        "حسوة د الشعير"
+      ],
+      "sortOrder": 8
+    },
+    {
+      "pool": "starters",
+      "itemKey": "kebda_mchermla",
+      "category": "salads_starters",
+      "kind": "vocab",
+      "canonical": "كبدة مشرملة",
+      "forms": [
+        "كبدة مشرملة",
+        "الكبدة مشرملة"
+      ],
+      "sortOrder": 9
+    },
+    {
+      "pool": "starters",
+      "itemKey": "chorba_d_lhout",
+      "category": "salads_starters",
+      "kind": "vocab",
+      "canonical": "شوربة د الحوت",
+      "forms": [
+        "شوربة د الحوت",
+        "شوربة فواكه البحر"
+      ],
+      "sortOrder": 10
+    },
+    {
+      "pool": "starters",
+      "itemKey": "briwat_d_lhout",
+      "category": "salads_starters",
+      "kind": "vocab",
+      "canonical": "بريوات د الحوت",
+      "forms": [
+        "بريوات د الحوت",
+        "بريوات بفواكه البحر"
+      ],
+      "sortOrder": 11
+    },
+    {
+      "pool": "starters",
+      "itemKey": "msemen_m3emmer",
+      "category": "salads_starters",
+      "kind": "vocab",
+      "canonical": "مسمن معمر",
+      "forms": [
+        "مسمن معمر",
+        "رغايف معمرين"
+      ],
+      "sortOrder": 12
+    },
+    {
+      "pool": "mains",
+      "itemKey": "tajine_djaj_zitoun",
+      "category": "tajines",
+      "kind": "vocab",
+      "canonical": "طاجين دجاج بالزيتون والحامض",
+      "forms": [
+        "طاجين دجاج بالزيتون والحامض"
+      ],
+      "sortOrder": 13
+    },
+    {
+      "pool": "mains",
+      "itemKey": "tajine_lham_barqoq",
+      "category": "tajines",
+      "kind": "vocab",
+      "canonical": "طاجين اللحم بالبرقوق واللوز",
+      "forms": [
+        "طاجين اللحم بالبرقوق واللوز"
+      ],
+      "sortOrder": 14
+    },
+    {
+      "pool": "mains",
+      "itemKey": "tajine_kefta_bid",
+      "category": "tajines",
+      "kind": "vocab",
+      "canonical": "طاجين الكفتة بالبيض",
+      "forms": [
+        "طاجين الكفتة بالبيض"
+      ],
+      "sortOrder": 15
+    },
+    {
+      "pool": "mains",
+      "itemKey": "tajine_ghanmi_khodra",
+      "category": "tajines",
+      "kind": "vocab",
+      "canonical": "طاجين الغنمي بالخضرة",
+      "forms": [
+        "طاجين الغنمي بالخضرة"
+      ],
+      "sortOrder": 16
+    },
+    {
+      "pool": "mains",
+      "itemKey": "tanjia",
+      "category": "tajines",
+      "kind": "vocab",
+      "canonical": "طنجية",
+      "forms": [
+        "طنجية"
+      ],
+      "sortOrder": 17
+    },
+    {
+      "pool": "mains",
+      "itemKey": "couscous_sba_khdari",
+      "category": "couscous",
+      "kind": "vocab",
+      "canonical": "كسكس باللحم",
+      "forms": [
+        "كسكس باللحم"
+      ],
+      "sortOrder": 18
+    },
+    {
+      "pool": "mains",
+      "itemKey": "pastilla_djaj",
+      "category": "pastilla_briouates",
+      "kind": "vocab",
+      "canonical": "بسطيلة د الدجاج",
+      "forms": [
+        "بسطيلة د الدجاج"
+      ],
+      "sortOrder": 19
+    },
+    {
+      "pool": "mains",
+      "itemKey": "pastilla_hout",
+      "category": "pastilla_briouates",
+      "kind": "vocab",
+      "canonical": "بسطيلة د الحوت",
+      "forms": [
+        "بسطيلة د الحوت"
+      ],
+      "sortOrder": 20
+    },
+    {
+      "pool": "mains",
+      "itemKey": "briouates_kefta",
+      "category": "pastilla_briouates",
+      "kind": "vocab",
+      "canonical": "بريوات د الكفتة",
+      "forms": [
+        "بريوات د الكفتة"
+      ],
+      "sortOrder": 21
+    },
+    {
+      "pool": "mains",
+      "itemKey": "briouates_jben",
+      "category": "pastilla_briouates",
+      "kind": "vocab",
+      "canonical": "بريوات د الجبن",
+      "forms": [
+        "بريوات د الجبن"
+      ],
+      "sortOrder": 22
+    },
+    {
+      "pool": "mains",
+      "itemKey": "rfissa",
+      "category": "mains_other",
+      "kind": "vocab",
+      "canonical": "رفيسة",
+      "forms": [
+        "رفيسة",
+        "الرفيسة",
+        "رفيسة بالدجاج البلدي"
+      ],
+      "sortOrder": 23
+    },
+    {
+      "pool": "mains",
+      "itemKey": "djaj_mhemmer_b_ddghmira",
+      "category": "mains_other",
+      "kind": "vocab",
+      "canonical": "الدجاج محمر بالدغميرة",
+      "forms": [
+        "الدجاج محمر بالدغميرة",
+        "دجاج محمر",
+        "الدجاج بالدغميرة"
+      ],
+      "sortOrder": 24
+    },
+    {
+      "pool": "mains",
+      "itemKey": "sserdin_mqli",
+      "category": "mains_other",
+      "kind": "vocab",
+      "canonical": "السردين مقلي",
+      "forms": [
+        "السردين مقلي"
+      ],
+      "sortOrder": 25
+    },
+    {
+      "pool": "mains",
+      "itemKey": "friture_d_lhout",
+      "category": "mains_other",
+      "kind": "vocab",
+      "canonical": "فريتور د الحوت",
+      "forms": [
+        "فريتور د الحوت",
+        "طبسيل د الحوت مقلي",
+        "حوت مقلي مخلط"
+      ],
+      "sortOrder": 26
+    },
+    {
+      "pool": "mains",
+      "itemKey": "lhem_rras_mbekher",
+      "category": "mains_other",
+      "kind": "vocab",
+      "canonical": "اللحم د الراس مبخر",
+      "forms": [
+        "اللحم د الراس مبخر",
+        "راس مبخر",
+        "لحم الراس"
+      ],
+      "sortOrder": 27
+    },
+    {
+      "pool": "mains",
+      "itemKey": "qotban_d_llhem",
+      "category": "mains_other",
+      "kind": "vocab",
+      "canonical": "قطبان د اللحم",
+      "forms": [
+        "قطبان د اللحم",
+        "القطبان",
+        "بروشيط د اللحم"
+      ],
+      "sortOrder": 28
+    },
+    {
+      "pool": "mains",
+      "itemKey": "mchwi",
+      "category": "mains_other",
+      "kind": "vocab",
+      "canonical": "مشوي",
+      "forms": [
+        "مشوي",
+        "لحم مشوي",
+        "الغنمي مشوي"
+      ],
+      "sortOrder": 29
+    },
+    {
+      "pool": "mains",
+      "itemKey": "tajine_llhem_b_ljelbana_w_lqoq",
+      "category": "tajines",
+      "kind": "vocab",
+      "canonical": "طاجين اللحم بالجلبانة والقوق",
+      "forms": [
+        "طاجين اللحم بالجلبانة والقوق",
+        "طاجين القوق والجلبانة",
+        "اللحم بالقوق والجلبانة"
+      ],
+      "sortOrder": 30
+    },
+    {
+      "pool": "mains",
+      "itemKey": "tajine_llhem_b_lmchmach",
+      "category": "tajines",
+      "kind": "vocab",
+      "canonical": "طاجين اللحم بالمشماش واللوز",
+      "forms": [
+        "طاجين اللحم بالمشماش واللوز",
+        "طاجين اللحم بالمشماش"
+      ],
+      "sortOrder": 31
+    },
+    {
+      "pool": "mains",
+      "itemKey": "tajine_bouzroug",
+      "category": "tajines",
+      "kind": "vocab",
+      "canonical": "طاجين بوزروك",
+      "forms": [
+        "طاجين بوزروك",
+        "طاجين د بوزروك بمطيشة",
+        "بوزروك مشرمل"
+      ],
+      "sortOrder": 32
+    },
+    {
+      "pool": "mains",
+      "itemKey": "tajine_chtoun",
+      "category": "tajines",
+      "kind": "vocab",
+      "canonical": "طاجين الشطون",
+      "forms": [
+        "طاجين الشطون",
+        "طاجين لانشوبة",
+        "الشطون في الطاجين"
+      ],
+      "sortOrder": 33
+    },
+    {
+      "pool": "mains",
+      "itemKey": "ksksou_b_ddjaj_w_lkhodra",
+      "category": "couscous",
+      "kind": "vocab",
+      "canonical": "كسكس بالدجاج",
+      "forms": [
+        "كسكس بالدجاج"
+      ],
+      "sortOrder": 34
+    },
+    {
+      "pool": "mains",
+      "itemKey": "loubiya",
+      "category": "mains_other",
+      "kind": "vocab",
+      "canonical": "اللوبيا",
+      "forms": [
+        "اللوبيا",
+        "اللوبيا البيضا",
+        "طبسيل د اللوبيا"
+      ],
+      "sortOrder": 35
+    },
+    {
+      "pool": "mains",
+      "itemKey": "l3des",
+      "category": "mains_other",
+      "kind": "vocab",
+      "canonical": "العدس",
+      "forms": [
+        "العدس",
+        "طبسيل د العدس"
+      ],
+      "sortOrder": 36
+    },
+    {
+      "pool": "mains",
+      "itemKey": "rrouz_b_ddjaj",
+      "category": "mains_other",
+      "kind": "vocab",
+      "canonical": "الروز بالدجاج",
+      "forms": [
+        "الروز بالدجاج",
+        "الروز بالخضرة والدجاج"
+      ],
+      "sortOrder": 37
+    },
+    {
+      "pool": "mains",
+      "itemKey": "paella_b_lhout",
+      "category": "mains_other",
+      "kind": "vocab",
+      "canonical": "بايلا بالحوت",
+      "forms": [
+        "بايلا بالحوت",
+        "بايلا فواكه البحر",
+        "بايلا رويال"
+      ],
+      "sortOrder": 38
+    },
+    {
+      "pool": "mains",
+      "itemKey": "kefta_mchwiya",
+      "category": "mains_other",
+      "kind": "vocab",
+      "canonical": "كفتة مشوية",
+      "forms": [
+        "كفتة مشوية",
+        "الكفتة على الفاخر"
+      ],
+      "sortOrder": 39
+    },
+    {
+      "pool": "mains",
+      "itemKey": "qotban_d_ladand",
+      "category": "mains_other",
+      "kind": "vocab",
+      "canonical": "قطبان د لاداند",
+      "forms": [
+        "قطبان د لاداند",
+        "قطبان د الدجاج",
+        "بروشيط د لاداند"
+      ],
+      "sortOrder": 40
+    },
+    {
+      "pool": "mains",
+      "itemKey": "kotlet_mchwi",
+      "category": "mains_other",
+      "kind": "vocab",
+      "canonical": "كوطليط مشوي",
+      "forms": [
+        "كوطليط مشوي",
+        "الكوطليط على الفاخر",
+        "كوطليط د الغنمي"
+      ],
+      "sortOrder": 41
+    },
+    {
+      "pool": "mains",
+      "itemKey": "lkhli3_b_lbid",
+      "category": "mains_other",
+      "kind": "vocab",
+      "canonical": "الخليع بالبيض",
+      "forms": [
+        "الخليع بالبيض",
+        "طاجين الخليع بالبيض",
+        "مقيلة د الخليع بالبيض"
+      ],
+      "sortOrder": 42
+    },
+    {
+      "pool": "mains",
+      "itemKey": "seffa_medfouna_b_ddjaj",
+      "category": "mains_other",
+      "kind": "vocab",
+      "canonical": "السفة مدفونة بالدجاج",
+      "forms": [
+        "السفة مدفونة بالدجاج",
+        "سفة مدفونة",
+        "السفة بالشعرية والدجاج"
+      ],
+      "sortOrder": 43
+    },
+    {
+      "pool": "desserts",
+      "itemKey": "llimoun_b_lqerfa",
+      "category": "desserts",
+      "kind": "vocab",
+      "canonical": "الليمون بالقرفة",
+      "forms": [
+        "الليمون بالقرفة",
+        "شلاظة د الليمون بالقرفة",
+        "الليمون بالزهر والقرفة"
+      ],
+      "sortOrder": 44
+    },
+    {
+      "pool": "desserts",
+      "itemKey": "jjowhara",
+      "category": "desserts",
+      "kind": "vocab",
+      "canonical": "الجوهرة",
+      "forms": [
+        "الجوهرة"
+      ],
+      "sortOrder": 45
+    },
+    {
+      "pool": "desserts",
+      "itemKey": "rrayb_lbeldi",
+      "category": "desserts",
+      "kind": "vocab",
+      "canonical": "الرايب البلدي",
+      "forms": [
+        "الرايب البلدي",
+        "الرايب"
+      ],
+      "sortOrder": 46
+    },
+    {
+      "pool": "desserts",
+      "itemKey": "salade_d_lfruit",
+      "category": "desserts",
+      "kind": "vocab",
+      "canonical": "سلاد د الفروي",
+      "forms": [
+        "سلاد د الفروي",
+        "سلاد د لي فروي"
+      ],
+      "sortOrder": 47
+    },
+    {
+      "pool": "desserts",
+      "itemKey": "tebsil_d_ddisir",
+      "category": "desserts",
+      "kind": "vocab",
+      "canonical": "طبسيل د الديسير",
+      "forms": [
+        "طبسيل د الديسير",
+        "الديسير"
+      ],
+      "sortOrder": 48
+    },
+    {
+      "pool": "desserts",
+      "itemKey": "briwat_b_llouz",
+      "category": "desserts",
+      "kind": "vocab",
+      "canonical": "بريوات باللوز",
+      "forms": [
+        "بريوات باللوز",
+        "بريوات د اللوز"
+      ],
+      "sortOrder": 49
+    },
+    {
+      "pool": "desserts",
+      "itemKey": "k3eb_ghzal",
+      "category": "desserts",
+      "kind": "vocab",
+      "canonical": "كعب غزال",
+      "forms": [
+        "كعب غزال",
+        "كعب الغزال"
+      ],
+      "sortOrder": 50
+    },
+    {
+      "pool": "desserts",
+      "itemKey": "flan",
+      "category": "desserts",
+      "kind": "vocab",
+      "canonical": "فلان",
+      "forms": [
+        "فلان",
+        "الفلان",
+        "فلان كراميل"
+      ],
+      "sortOrder": 51
+    },
+    {
+      "pool": "desserts",
+      "itemKey": "mhancha_b_llouz",
+      "category": "desserts",
+      "kind": "vocab",
+      "canonical": "المحنشة باللوز",
+      "forms": [
+        "المحنشة باللوز",
+        "محنشة",
+        "محنشة صغيرة باللوز"
+      ],
+      "sortOrder": 52
+    },
+    {
+      "pool": "desserts",
+      "itemKey": "chebbakiya",
+      "category": "desserts",
+      "kind": "vocab",
+      "canonical": "الشباكية",
+      "forms": [
+        "الشباكية"
+      ],
+      "sortOrder": 53
+    },
+    {
+      "pool": "desserts",
+      "itemKey": "ghriba_b_llouz",
+      "category": "desserts",
+      "kind": "vocab",
+      "canonical": "غريبة",
+      "forms": [
+        "غريبة"
+      ],
+      "sortOrder": 54
+    },
+    {
+      "pool": "drinks",
+      "itemKey": "atay_naanaa",
+      "category": "drinks",
+      "kind": "vocab",
+      "canonical": "أتاي بالنعناع",
+      "forms": [
+        "أتاي بالنعناع"
+      ],
+      "sortOrder": 55
+    },
+    {
+      "pool": "drinks",
+      "itemKey": "atay_mchahar",
+      "category": "drinks",
+      "kind": "vocab",
+      "canonical": "أتاي مشحر بلا نعناع",
+      "forms": [
+        "أتاي مشحر بلا نعناع"
+      ],
+      "sortOrder": 56
+    },
+    {
+      "pool": "drinks",
+      "itemKey": "assir_avocat",
+      "category": "drinks",
+      "kind": "vocab",
+      "canonical": "عصير لافوكا",
+      "forms": [
+        "عصير لافوكا"
+      ],
+      "sortOrder": 57
+    },
+    {
+      "pool": "drinks",
+      "itemKey": "assir_limon",
+      "category": "drinks",
+      "kind": "vocab",
+      "canonical": "عصير الليمون",
+      "forms": [
+        "عصير الليمون"
+      ],
+      "sortOrder": 58
+    },
+    {
+      "pool": "drinks",
+      "itemKey": "monada",
+      "category": "drinks",
+      "kind": "vocab",
+      "canonical": "موناضة",
+      "forms": [
+        "موناضة"
+      ],
+      "sortOrder": 59
+    },
+    {
+      "pool": "drinks",
+      "itemKey": "qaraa_ma_sghira",
+      "category": "drinks",
+      "kind": "vocab",
+      "canonical": "قرعة د الما صغيرة",
+      "forms": [
+        "قرعة د الما صغيرة"
+      ],
+      "sortOrder": 60
+    },
+    {
+      "pool": "drinks",
+      "itemKey": "qaraa_ma_kbira",
+      "category": "drinks",
+      "kind": "vocab",
+      "canonical": "قرعة د الما كبيرة",
+      "forms": [
+        "قرعة د الما كبيرة"
+      ],
+      "sortOrder": 61
+    },
+    {
+      "pool": "drinks",
+      "itemKey": "qehwa_nss_nss",
+      "category": "drinks",
+      "kind": "vocab",
+      "canonical": "قهوة نص نص",
+      "forms": [
+        "قهوة نص نص",
+        "نص نص",
+        "قهوة بالحليب"
+      ],
+      "sortOrder": 62
+    },
+    {
+      "pool": "drinks",
+      "itemKey": "qehwa_kehla",
+      "category": "drinks",
+      "kind": "vocab",
+      "canonical": "قهوة كحلة",
+      "forms": [
+        "قهوة كحلة",
+        "نوار"
+      ],
+      "sortOrder": 63
+    },
+    {
+      "pool": "drinks",
+      "itemKey": "atay_b_chiba",
+      "category": "drinks",
+      "kind": "vocab",
+      "canonical": "أتاي بالشيبة",
+      "forms": [
+        "أتاي بالشيبة",
+        "براد د أتاي بالشيبة",
+        "كاس د أتاي بالشيبة"
+      ],
+      "sortOrder": 64
+    },
+    {
+      "pool": "drinks",
+      "itemKey": "llwiza",
+      "category": "drinks",
+      "kind": "vocab",
+      "canonical": "اللويزة",
+      "forms": [
+        "اللويزة",
+        "كاس د اللويزة",
+        "اللويزة بالحليب"
+      ],
+      "sortOrder": 65
+    },
+    {
+      "pool": "drinks",
+      "itemKey": "llben",
+      "category": "drinks",
+      "kind": "vocab",
+      "canonical": "اللبن",
+      "forms": [
+        "اللبن",
+        "كاس د اللبن",
+        "لبن بلدي"
+      ],
+      "sortOrder": 66
+    },
+    {
+      "pool": "drinks",
+      "itemKey": "3asir_lhamd",
+      "category": "drinks",
+      "kind": "vocab",
+      "canonical": "عصير الحامض",
+      "forms": [
+        "عصير الحامض",
+        "سيتروناد"
+      ],
+      "sortOrder": 67
+    },
+    {
+      "pool": "drinks",
+      "itemKey": "3asir_lbanan_b_lhlib",
+      "category": "drinks",
+      "kind": "vocab",
+      "canonical": "عصير البنان بالحليب",
+      "forms": [
+        "عصير البنان بالحليب",
+        "عصير البنان",
+        "عصير د البنان"
+      ],
+      "sortOrder": 68
+    },
+    {
+      "pool": "drinks",
+      "itemKey": "3asir_panache",
+      "category": "drinks",
+      "kind": "vocab",
+      "canonical": "عصير باناشي",
+      "forms": [
+        "عصير باناشي",
+        "باناشي"
+      ],
+      "sortOrder": 69
+    },
+    {
+      "pool": "drinks",
+      "itemKey": "3asir_zz3za3",
+      "category": "drinks",
+      "kind": "vocab",
+      "canonical": "زعزع",
+      "forms": [
+        "زعزع",
+        "كاس د زعزع"
+      ],
+      "sortOrder": 70
+    },
+    {
+      "pool": "drinks",
+      "itemKey": "qehwa_m3ettra",
+      "category": "drinks",
+      "kind": "vocab",
+      "canonical": "قهوة معطرة",
+      "forms": [
+        "قهوة معطرة"
+      ],
+      "sortOrder": 71
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_youssef",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "يوسف",
+      "forms": [
+        "يوسف"
+      ],
+      "sortOrder": 72
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_mehdi",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "مهدي",
+      "forms": [
+        "مهدي",
+        "المهدي"
+      ],
+      "sortOrder": 73
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_amine",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "أمين",
+      "forms": [
+        "أمين"
+      ],
+      "sortOrder": 74
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_karim",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "كريم",
+      "forms": [
+        "كريم"
+      ],
+      "sortOrder": 75
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_yassine",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "ياسين",
+      "forms": [
+        "ياسين"
+      ],
+      "sortOrder": 76
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_omar",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "عمر",
+      "forms": [
+        "عمر"
+      ],
+      "sortOrder": 77
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_ayoub",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "أيوب",
+      "forms": [
+        "أيوب"
+      ],
+      "sortOrder": 78
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_hamza",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "حمزة",
+      "forms": [
+        "حمزة"
+      ],
+      "sortOrder": 79
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_saad",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "سعد",
+      "forms": [
+        "سعد"
+      ],
+      "sortOrder": 80
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_anas",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "أنس",
+      "forms": [
+        "أنس"
+      ],
+      "sortOrder": 81
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_hicham",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "هشام",
+      "forms": [
+        "هشام"
+      ],
+      "sortOrder": 82
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_rachid",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "رشيد",
+      "forms": [
+        "رشيد"
+      ],
+      "sortOrder": 83
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_tariq",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "طارق",
+      "forms": [
+        "طارق"
+      ],
+      "sortOrder": 84
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_hassan",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "حسن",
+      "forms": [
+        "حسن"
+      ],
+      "sortOrder": 85
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_khalid",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "خالد",
+      "forms": [
+        "خالد"
+      ],
+      "sortOrder": 86
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_fatima",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "فاطمة",
+      "forms": [
+        "فاطمة"
+      ],
+      "sortOrder": 87
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_khadija",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "خديجة",
+      "forms": [
+        "خديجة"
+      ],
+      "sortOrder": 88
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_salma",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "سلمى",
+      "forms": [
+        "سلمى"
+      ],
+      "sortOrder": 89
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_sara",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "سارة",
+      "forms": [
+        "سارة"
+      ],
+      "sortOrder": 90
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_hiba",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "هبة",
+      "forms": [
+        "هبة"
+      ],
+      "sortOrder": 91
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_meryem",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "مريم",
+      "forms": [
+        "مريم"
+      ],
+      "sortOrder": 92
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_houda",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "هدى",
+      "forms": [
+        "هدى"
+      ],
+      "sortOrder": 93
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_imane",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "إيمان",
+      "forms": [
+        "إيمان"
+      ],
+      "sortOrder": 94
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_sanae",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "سناء",
+      "forms": [
+        "سناء"
+      ],
+      "sortOrder": 95
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_asmae",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "أسماء",
+      "forms": [
+        "أسماء"
+      ],
+      "sortOrder": 96
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_nada",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "ندى",
+      "forms": [
+        "ندى"
+      ],
+      "sortOrder": 97
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_zineb",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "زينب",
+      "forms": [
+        "زينب"
+      ],
+      "sortOrder": 98
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_ibtissam",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "ابتسام",
+      "forms": [
+        "ابتسام"
+      ],
+      "sortOrder": 99
+    },
+    {
+      "pool": "guest_names",
+      "itemKey": "name_kenza",
+      "category": "Customer names",
+      "kind": "vocab",
+      "canonical": "كنزة",
+      "forms": [
+        "كنزة"
+      ],
+      "sortOrder": 100
+    },
+    {
+      "pool": "seating_options",
+      "itemKey": "indoor",
+      "category": "Seating",
+      "kind": "vocab",
+      "canonical": "داخل",
+      "forms": [
+        "داخل"
+      ],
+      "sortOrder": 101
+    },
+    {
+      "pool": "seating_options",
+      "itemKey": "terrace",
+      "category": "Seating",
+      "kind": "vocab",
+      "canonical": "برا",
+      "forms": [
+        "برا"
+      ],
+      "sortOrder": 102
+    },
+    {
+      "pool": "seating_options",
+      "itemKey": "window_table",
+      "category": "Seating",
+      "kind": "vocab",
+      "canonical": "طبلة حدا الشرجم",
+      "forms": [
+        "طبلة حدا الشرجم"
+      ],
+      "sortOrder": 103
+    },
+    {
+      "pool": "diet_options",
+      "itemKey": "no_meat",
+      "category": "Diet",
+      "kind": "vocab",
+      "canonical": "بلا لحم",
+      "forms": [
+        "بلا لحم",
+        "ما كناكلش اللحم"
+      ],
+      "sortOrder": 104
+    },
+    {
+      "pool": "diet_options",
+      "itemKey": "no_fish",
+      "category": "Diet",
+      "kind": "vocab",
+      "canonical": "بلا حوت",
+      "forms": [
+        "بلا حوت",
+        "ما كناكلش الحوت"
+      ],
+      "sortOrder": 105
+    },
+    {
+      "pool": "diet_options",
+      "itemKey": "vegetarian",
+      "category": "Diet",
+      "kind": "vocab",
+      "canonical": "ڤيجيطاريان",
+      "forms": [
+        "ڤيجيطاريان",
+        "ڤيجيطاريين",
+        "غير بالخضرة"
+      ],
+      "sortOrder": 106
+    },
+    {
+      "pool": "diet_options",
+      "itemKey": "nut_allergy",
+      "category": "Diet",
+      "kind": "vocab",
+      "canonical": "عندي حساسية من اللوز",
+      "forms": [
+        "عندي حساسية من اللوز"
+      ],
+      "sortOrder": 107
+    },
+    {
+      "pool": "request_options",
+      "itemKey": "less_spicy",
+      "category": "Special requests",
+      "kind": "vocab",
+      "canonical": "ما يكونش حار بزاف",
+      "forms": [
+        "ما يكونش حار بزاف"
+      ],
+      "sortOrder": 108
+    },
+    {
+      "pool": "request_options",
+      "itemKey": "no_salt",
+      "category": "Special requests",
+      "kind": "vocab",
+      "canonical": "بلا ملحة",
+      "forms": [
+        "بلا ملحة"
+      ],
+      "sortOrder": 109
+    },
+    {
+      "pool": "request_options",
+      "itemKey": "extra_bread",
+      "category": "Special requests",
+      "kind": "vocab",
+      "canonical": "زيدنا الخبز عافاك",
+      "forms": [
+        "زيدنا الخبز عافاك"
+      ],
+      "sortOrder": 110
+    },
+    {
+      "pool": "wait_times",
+      "itemKey": "wait_10",
+      "category": "Waiting time",
+      "kind": "instruction",
+      "canonical": "Staff announce a wait of about 10 minutes (the agent writes the Darija)",
+      "forms": [
+        "Staff announce a wait of about 10 minutes (the agent writes the Darija)"
+      ],
+      "sortOrder": 111
+    },
+    {
+      "pool": "wait_times",
+      "itemKey": "wait_20",
+      "category": "Waiting time",
+      "kind": "instruction",
+      "canonical": "Staff announce a wait of about 20 minutes (the agent writes the Darija)",
+      "forms": [
+        "Staff announce a wait of about 20 minutes (the agent writes the Darija)"
+      ],
+      "sortOrder": 112
+    },
+    {
+      "pool": "guest_questions",
+      "itemKey": "q_kefta_egg",
+      "category": "Questions the customer asks",
+      "kind": "intent",
+      "canonical": "Customer asks about طاجين الكفتة بالبيض (tajine_kefta_bid): how long the kefta tajine takes. Staff answer: It takes about fifteen minutes. (the agent writes the Darija)",
+      "forms": [
+        "Customer asks about طاجين الكفتة بالبيض (tajine_kefta_bid): how long the kefta tajine takes. Staff answer: It takes about fifteen minutes. (the agent writes the Darija)"
+      ],
+      "sortOrder": 113
+    },
+    {
+      "pool": "guest_questions",
+      "itemKey": "q_djaj_zitoun",
+      "category": "Questions the customer asks",
+      "kind": "intent",
+      "canonical": "Customer asks about طاجين دجاج بالزيتون والحامض (tajine_djaj_zitoun): whether it is spicy. Staff answer: It is not spicy. (the agent writes the Darija)",
+      "forms": [
+        "Customer asks about طاجين دجاج بالزيتون والحامض (tajine_djaj_zitoun): whether it is spicy. Staff answer: It is not spicy. (the agent writes the Darija)"
+      ],
+      "sortOrder": 114
+    },
+    {
+      "pool": "guest_questions",
+      "itemKey": "q_lham_barqoq",
+      "category": "Questions the customer asks",
+      "kind": "intent",
+      "canonical": "Customer asks about طاجين اللحم بالبرقوق واللوز (tajine_lham_barqoq): whether it is sweet. Staff answer: It is a little sweet. (the agent writes the Darija)",
+      "forms": [
+        "Customer asks about طاجين اللحم بالبرقوق واللوز (tajine_lham_barqoq): whether it is sweet. Staff answer: It is a little sweet. (the agent writes the Darija)"
+      ],
+      "sortOrder": 115
+    },
+    {
+      "pool": "guest_questions",
+      "itemKey": "q_couscous_seven",
+      "category": "Questions the customer asks",
+      "kind": "intent",
+      "canonical": "Customer asks about كسكس باللحم (couscous_sba_khdari): whether it is only on Fridays. Staff answer: It is served every day. (the agent writes the Darija)",
+      "forms": [
+        "Customer asks about كسكس باللحم (couscous_sba_khdari): whether it is only on Fridays. Staff answer: It is served every day. (the agent writes the Darija)"
+      ],
+      "sortOrder": 116
+    },
+    {
+      "pool": "guest_questions",
+      "itemKey": "q_pastilla_hout",
+      "category": "Questions the customer asks",
+      "kind": "intent",
+      "canonical": "Customer asks about بسطيلة د الحوت (pastilla_hout): whether it has nuts. Staff answer: It has no nuts. (the agent writes the Darija)",
+      "forms": [
+        "Customer asks about بسطيلة د الحوت (pastilla_hout): whether it has nuts. Staff answer: It has no nuts. (the agent writes the Darija)"
+      ],
+      "sortOrder": 117
+    },
+    {
+      "pool": "guest_questions",
+      "itemKey": "q_briouates_jben",
+      "category": "Questions the customer asks",
+      "kind": "intent",
+      "canonical": "Customer asks about بريوات د الجبن (briouates_jben): whether they are fried or baked. Staff answer: They are fried. (the agent writes the Darija)",
+      "forms": [
+        "Customer asks about بريوات د الجبن (briouates_jben): whether they are fried or baked. Staff answer: They are fried. (the agent writes the Darija)"
+      ],
+      "sortOrder": 118
+    },
+    {
+      "pool": "guest_questions",
+      "itemKey": "q_tea_no_mint",
+      "category": "Questions the customer asks",
+      "kind": "intent",
+      "canonical": "Customer asks about أتاي مشحر بلا نعناع (atay_mchahar): how the tea without mint is served. Staff answer: It is served in a pot for two. (the agent writes the Darija)",
+      "forms": [
+        "Customer asks about أتاي مشحر بلا نعناع (atay_mchahar): how the tea without mint is served. Staff answer: It is served in a pot for two. (the agent writes the Darija)"
+      ],
+      "sortOrder": 119
+    },
+    {
+      "pool": "guest_questions",
+      "itemKey": "q_water_big",
+      "category": "Questions the customer asks",
+      "kind": "intent",
+      "canonical": "Customer asks about قرعة د الما كبيرة (qaraa_ma_kbira): how big the large water bottle is. Staff answer: It is one and a half litres. (the agent writes the Darija)",
+      "forms": [
+        "Customer asks about قرعة د الما كبيرة (qaraa_ma_kbira): how big the large water bottle is. Staff answer: It is one and a half litres. (the agent writes the Darija)"
+      ],
+      "sortOrder": 120
+    },
+    {
+      "pool": "payment_options",
+      "itemKey": "card",
+      "category": "Payment",
+      "kind": "vocab",
+      "canonical": "ب لاكارط",
+      "forms": [
+        "ب لاكارط"
+      ],
+      "sortOrder": 121
+    },
+    {
+      "pool": "payment_options",
+      "itemKey": "cash",
+      "category": "Payment",
+      "kind": "vocab",
+      "canonical": "ب ليسپيس",
+      "forms": [
+        "ب ليسپيس",
+        "كاش"
+      ],
+      "sortOrder": 122
+    },
+    {
+      "pool": "split_options",
+      "itemKey": "together",
+      "category": "Splitting the bill",
+      "kind": "vocab",
+      "canonical": "نخلصو مجموعين",
+      "forms": [
+        "نخلصو مجموعين",
+        "دير لينا الحساب مجموع"
+      ],
+      "sortOrder": 123
+    },
+    {
+      "pool": "split_options",
+      "itemKey": "separate",
+      "category": "Splitting the bill",
+      "kind": "vocab",
+      "canonical": "كل واحد بوحدو",
+      "forms": [
+        "كل واحد بوحدو",
+        "قسم لينا الحساب"
+      ],
+      "sortOrder": 124
+    }
+  ]
+}
