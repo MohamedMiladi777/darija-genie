@@ -5,7 +5,7 @@ import Image from "next/image"
 import { useSearchParams } from "next/navigation"
 
 import { scenarioIds, type ScenarioId } from "@/app/(main)/learning/scenarios/scenario-data"
-import { getScenarioProfile } from "@/lib/scenario-learning-content"
+import type { PreviewCardWord } from "@/lib/scenario-learning-content"
 import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent } from "@workspace/ui/components/card"
 
@@ -27,6 +27,10 @@ interface Question {
   prompt: string
   options: string[]
   answer: string
+}
+
+interface TestingQuizDeckProps {
+  unitWordBank: Record<ScenarioId, PreviewCardWord[]>
 }
 
 const testingScenarios: readonly TestingScenarioCard[] = [
@@ -81,27 +85,25 @@ function getDistractors(pool: readonly string[], answer: string): string[] {
   return shuffle(pool.filter((item) => item !== answer)).slice(0, 3)
 }
 
-function buildQuestions(selectedUnits: readonly ScenarioId[], difficulty: Difficulty): Question[] {
+function buildQuestions(
+  selectedUnits: readonly ScenarioId[],
+  difficulty: Difficulty,
+  unitWordBank: Record<ScenarioId, PreviewCardWord[]>
+): Question[] {
+  const selectedWords = selectedUnits.flatMap((unitId) => unitWordBank[unitId] ?? [])
+
   const englishPool = Array.from(
-    new Set(
-      selectedUnits.flatMap((unitId) =>
-        getScenarioProfile(unitId).words.map((word) => word.english)
-      )
-    )
+    new Set(selectedWords.map((word) => word.english))
   )
 
   const darijaPool = Array.from(
-    new Set(
-      selectedUnits.flatMap((unitId) =>
-        getScenarioProfile(unitId).words.map((word) => word.darija)
-      )
-    )
+    new Set(selectedWords.map((word) => word.darija))
   )
 
   const questions = selectedUnits.flatMap((unitId) => {
-    const profile = getScenarioProfile(unitId)
+    const words = unitWordBank[unitId] ?? []
 
-    return profile.words.map((word) => {
+    return words.map((word) => {
       if (difficulty === "beginner") {
         const answer = word.english
         const options = shuffle([answer, ...getDistractors(englishPool, answer)])
@@ -130,7 +132,9 @@ function buildQuestions(selectedUnits: readonly ScenarioId[], difficulty: Diffic
   return shuffle(questions).slice(0, size)
 }
 
-export default function TestingQuizDeck(): React.JSX.Element {
+export default function TestingQuizDeck({
+  unitWordBank,
+}: TestingQuizDeckProps): React.JSX.Element {
   const searchParams = useSearchParams()
 
   const scenarioParam = searchParams.get("scenario")
@@ -184,7 +188,7 @@ export default function TestingQuizDeck(): React.JSX.Element {
 
   const startQuiz = () => {
     if (!scenario || selectedUnits.length === 0) return
-    const generatedQuestions = buildQuestions(selectedUnits, difficulty)
+    const generatedQuestions = buildQuestions(selectedUnits, difficulty, unitWordBank)
     setQuestions(generatedQuestions)
     setAnswers({})
     setCurrentIndex(0)

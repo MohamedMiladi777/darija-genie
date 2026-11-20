@@ -3,8 +3,11 @@ import Image from "next/image"
 import Link from "next/link"
 
 import TestingQuizDeck from "@/components/testing-quiz-deck"
+import { loadUnitWordBank } from "@/lib/scenario-learning-content.server"
 
-export default function TestingPage(): React.JSX.Element {
+export default async function TestingPage(): Promise<React.JSX.Element> {
+  const unitWordBank = await loadUnitWordBank()
+
   return (
     <main className="min-h-dvh w-full bg-background text-foreground">
       <div className="min-w-0 bg-background md:h-dvh md:overflow-y-auto">
@@ -46,7 +49,7 @@ export default function TestingPage(): React.JSX.Element {
               <div className="h-64 animate-pulse rounded-2xl border border-border bg-muted" />
             }
           >
-            <TestingQuizDeck />
+            <TestingQuizDeck unitWordBank={unitWordBank} />
           </Suspense>
         </section>
       </div>

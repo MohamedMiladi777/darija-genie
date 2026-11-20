@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 
 import ScenarioPageChrome from "@/components/scenario-page-chrome"
 import ScenarioPreviewMorphingCards from "@/components/scenario-preview-morphing-cards"
+import { loadScenarioProfile } from "@/lib/scenario-learning-content.server"
 import { isScenarioId, scenarioIds } from "../../scenario-data"
 
 export function generateStaticParams(): Array<{ scenario: string }> {
@@ -18,6 +19,7 @@ export default async function ScenarioPreviewPage({
   if (!isScenarioId(scenario)) {
     notFound()
   }
+  const profile = await loadScenarioProfile(scenario)
 
   return (
     <main className="min-h-dvh w-full bg-card text-foreground md:flex">
@@ -27,7 +29,7 @@ export default async function ScenarioPreviewPage({
           desktopSubtitle="Build confidence with core words before speaking"
         />
         <div className="pt-2 md:pt-6">
-          <ScenarioPreviewMorphingCards scenario={scenario} />
+          <ScenarioPreviewMorphingCards scenario={scenario} profile={profile} />
         </div>
       </div>
     </main>

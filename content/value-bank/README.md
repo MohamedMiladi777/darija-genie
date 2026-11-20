@@ -9,6 +9,7 @@ a spreadsheet that lists, per slot, the Darija forms a speaker may use.
 | --- | --- |
 | `restaurant-v2.xlsx` | **Source of truth.** Edited by the content author. |
 | `restaurant-v2.json` | Generated snapshot. Reviewable diff, consumed by code and imports. |
+| `shopping-v1.json` | Starter shopping snapshot until a workbook is authored. |
 
 Never edit the JSON by hand — it is regenerated from the workbook.
 
@@ -38,6 +39,7 @@ Review the JSON diff first, then:
 cd apps/web
 pnpm db:migrate          # only when the schema changed
 pnpm db:seed:value-bank  # upsert the snapshot
+pnpm db:seed:value-bank -- --file ../../content/value-bank/shopping-v1.json
 ```
 
 The seed is idempotent. It matches pools on `(scenario_slug, key)` and items on

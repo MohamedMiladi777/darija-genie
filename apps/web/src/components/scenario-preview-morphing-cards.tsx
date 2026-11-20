@@ -8,8 +8,8 @@ import { ArrowLeftIcon, ArrowRightIcon, EyeIcon, EyeOffIcon } from "@/components
 import { Button, buttonVariants } from "@workspace/ui/components/button"
 import {
   getPreviewProgressKey,
-  getScenarioProfile,
   type PreviewCardWord,
+  type ScenarioProfile,
   type WordType,
 } from "@/lib/scenario-learning-content"
 import type { ScenarioId } from "@/app/(main)/learning/scenarios/scenario-data"
@@ -30,11 +30,12 @@ const typeNumbers: Record<WordType, string> = {
 
 export default function ScenarioPreviewMorphingCards({
   scenario,
+  profile,
 }: {
   scenario: ScenarioId
+  profile: ScenarioProfile
 }): React.JSX.Element {
-  const profile = useMemo(() => getScenarioProfile(scenario), [scenario])
-  const cards = profile.words
+  const cards = useMemo(() => profile.words, [profile.words])
   const [activeIndex, setActiveIndex] = useState(0)
   const [showImage, setShowImage] = useState(false)
   const [completed, setCompleted] = useState(false)

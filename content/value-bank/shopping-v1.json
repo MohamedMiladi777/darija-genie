@@ -1,0 +1,128 @@
+{
+  "scenario": "shopping",
+  "version": 1,
+  "source": {
+    "file": "legacy scenario-learning-content fallback",
+    "sha256": "n/a"
+  },
+  "pools": [
+    {
+      "key": "shopping_core",
+      "slot": "item",
+      "label": "Shopping Essentials",
+      "sortOrder": 0
+    }
+  ],
+  "items": [
+    {
+      "pool": "shopping_core",
+      "itemKey": "price",
+      "category": "noun",
+      "kind": "vocab",
+      "canonical": "الثمن",
+      "forms": ["الثمن"],
+      "english": "price",
+      "transliteration": "ttaman",
+      "sortOrder": 0
+    },
+    {
+      "pool": "shopping_core",
+      "itemKey": "market",
+      "category": "noun",
+      "kind": "vocab",
+      "canonical": "السوق",
+      "forms": ["السوق"],
+      "english": "market",
+      "transliteration": "ssouq",
+      "sortOrder": 1
+    },
+    {
+      "pool": "shopping_core",
+      "itemKey": "bag",
+      "category": "noun",
+      "kind": "vocab",
+      "canonical": "الشكارة",
+      "forms": ["الشكارة"],
+      "english": "bag",
+      "transliteration": "shkara",
+      "sortOrder": 2
+    },
+    {
+      "pool": "shopping_core",
+      "itemKey": "size",
+      "category": "noun",
+      "kind": "vocab",
+      "canonical": "المقاس",
+      "forms": ["المقاس"],
+      "english": "size",
+      "transliteration": "lme9yas",
+      "sortOrder": 3
+    },
+    {
+      "pool": "shopping_core",
+      "itemKey": "color",
+      "category": "noun",
+      "kind": "vocab",
+      "canonical": "اللون",
+      "forms": ["اللون"],
+      "english": "color",
+      "transliteration": "llawn",
+      "sortOrder": 4
+    },
+    {
+      "pool": "shopping_core",
+      "itemKey": "cheap",
+      "category": "adjective",
+      "kind": "vocab",
+      "canonical": "رخيص",
+      "forms": ["رخيص"],
+      "english": "cheap",
+      "transliteration": "rkhis",
+      "sortOrder": 5
+    },
+    {
+      "pool": "shopping_core",
+      "itemKey": "expensive",
+      "category": "adjective",
+      "kind": "vocab",
+      "canonical": "غالي",
+      "forms": ["غالي"],
+      "english": "expensive",
+      "transliteration": "ghali",
+      "sortOrder": 6
+    },
+    {
+      "pool": "shopping_core",
+      "itemKey": "beautiful",
+      "category": "adjective",
+      "kind": "vocab",
+      "canonical": "زوين",
+      "forms": ["زوين"],
+      "english": "beautiful / nice",
+      "transliteration": "zwin",
+      "sortOrder": 7
+    },
+    {
+      "pool": "shopping_core",
+      "itemKey": "buy",
+      "category": "verb",
+      "kind": "vocab",
+      "canonical": "نشري",
+      "forms": ["نشري"],
+      "english": "I buy / to buy",
+      "transliteration": "nshri",
+      "sortOrder": 8
+    },
+    {
+      "pool": "shopping_core",
+      "itemKey": "reduce",
+      "category": "verb",
+      "kind": "vocab",
+      "canonical": "نقص",
+      "forms": ["نقص"],
+      "english": "reduce",
+      "transliteration": "n9es",
+      "sortOrder": 9
+    }
+  ]
+}
