@@ -143,7 +143,7 @@ function SelectionBox({
       aria-hidden="true"
       className={`flex shrink-0 items-center justify-center rounded-[4px] border shadow-[0_1px_2px_rgba(0,0,0,0.05)] ${sizeClassName} ${
         selected
-          ? "border-[#1e40af] bg-[#1e40af]"
+          ? "border-[#1e40af] bg-[#1e40af] dark:border-primary dark:bg-primary"
           : "border-[#d4d4d4] bg-card dark:border-border"
       }`}
     >
@@ -269,7 +269,7 @@ export default function PreferenceSelector({
                 onClick={() => togglePreference(option.value)}
                 className={`flex h-[90px] w-full items-center gap-4 rounded-2xl border bg-card p-4 text-left transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                   selected
-                    ? "border-[#162456]"
+                    ? "border-[#162456] dark:border-primary"
                     : "border-border shadow-[0_1px_1px_rgba(0,0,0,0.05)]"
                 }`}
               >
@@ -321,7 +321,7 @@ export default function PreferenceSelector({
         </div>
 
         {kind === "interaction" ? (
-          <div className="mt-6 flex min-h-11 items-start gap-3 rounded-xl bg-[#e0e7ff] px-4 py-3 dark:bg-[#263a57]">
+          <div className="mt-6 flex min-h-11 items-start gap-3 rounded-xl bg-[#e0e7ff] px-4 py-3 dark:bg-[#302e27]">
             <Image
               src="/assets/settings/interaction-info.svg"
               alt=""
@@ -329,7 +329,7 @@ export default function PreferenceSelector({
               height={16}
               className="mt-0.5 size-4 shrink-0"
             />
-            <p className="font-[family-name:var(--font-inter)] text-xs leading-[19.5px] text-[#1e40af] dark:text-[#8fc6ff]">
+            <p className="font-[family-name:var(--font-inter)] text-xs leading-[19.5px] text-[#1e40af] dark:text-[#f4efe3]">
               You can enable <strong className="font-bold">both</strong> modes
               at once. Audio mode requires microphone access.
             </p>

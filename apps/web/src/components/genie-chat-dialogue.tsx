@@ -163,7 +163,7 @@ function MessageBubble({ message }: { message: Message }): React.JSX.Element {
       className={`flex items-end gap-2.5 ${assistant ? "" : "justify-end"}`}
     >
       {assistant ? (
-        <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#162456] pb-px font-[family-name:var(--font-inter)] text-xs font-bold text-[#f2efe4]">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sidebar pb-px font-[family-name:var(--font-inter)] text-xs font-bold text-sidebar-foreground">
           S
         </div>
       ) : null}
@@ -177,7 +177,7 @@ function MessageBubble({ message }: { message: Message }): React.JSX.Element {
           className={`mt-1.5 px-4 py-2.5 shadow-xs ${
             assistant
               ? "rounded-t-2xl rounded-br-2xl rounded-bl-sm border border-border bg-card text-foreground"
-              : "rounded-t-2xl rounded-br-sm rounded-bl-2xl bg-[#162456] text-white"
+              : "rounded-t-2xl rounded-br-sm rounded-bl-2xl bg-primary text-primary-foreground"
           }`}
         >
           <p
@@ -552,7 +552,10 @@ export default function GenieChatDialogue({
 
     const previousHistory = history
     const userTurn: HistoryEntry = { user: { utterance: text } }
-    const nextHistory = [...history, userTurn]
+    let nextHistory = [...history, userTurn]
+    if (nextHistory.length > 120) {
+      nextHistory = nextHistory.slice(-120)
+    }
 
     setInput("")
     setError(null)
@@ -572,6 +575,9 @@ export default function GenieChatDialogue({
       ])
     } catch (caught) {
       setHistory(previousHistory)
+      setMessages((current) =>
+        current.at(-1)?.sender === "user" ? current.slice(0, -1) : current
+      )
       setError(
         caught instanceof Error ? caught.message : "Unable to retrieve a reply."
       )
@@ -593,7 +599,7 @@ export default function GenieChatDialogue({
           ))}
           {loading ? (
             <div className="flex items-center gap-2.5 text-muted-foreground">
-              <span className="flex size-8 items-center justify-center rounded-full bg-[#162456] text-[#f2efe4]">
+              <span className="flex size-8 items-center justify-center rounded-full bg-sidebar text-sidebar-foreground">
                 S
               </span>
               <span className="flex items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3 text-xs">
@@ -646,7 +652,7 @@ export default function GenieChatDialogue({
             placeholder="Write your response..."
             rows={1}
             disabled={loading || history.length === 0}
-            className="max-h-32 min-h-12 flex-1 resize-none rounded-xl border border-input bg-background px-3 py-2.5 font-[family-name:var(--font-simplified-arabic)] text-base leading-7 text-foreground outline-none placeholder:text-muted-foreground focus:border-[#1447e6] focus:ring-2 focus:ring-[#1447e6]/20 disabled:cursor-not-allowed disabled:opacity-60"
+          className="max-h-32 min-h-12 flex-1 resize-none rounded-xl border border-input bg-background px-3 py-2.5 font-[family-name:var(--font-simplified-arabic)] text-base leading-7 text-foreground outline-none placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 disabled:cursor-not-allowed disabled:opacity-60"
           />
           <Button
             type="button"
@@ -679,9 +685,9 @@ export default function GenieChatDialogue({
                 stopRecording()
               }
             }}
-            className={`size-10 rounded-xl border border-border p-0 text-[#1e40af] hover:bg-muted ${
+            className={`size-10 rounded-xl border border-border p-0 text-primary hover:bg-muted ${
               recordingState === "recording"
-                ? "border-[#ef4444] bg-[#ef4444] text-white hover:bg-[#dc2626]"
+                ? "border-destructive bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 : "bg-card"
             }`}
           >
@@ -696,7 +702,7 @@ export default function GenieChatDialogue({
             size="icon"
             aria-label="Send message"
             disabled={chatDisabled || recordingActive || transcriptionPending || !input.trim()}
-            className="size-10 rounded-xl bg-[#162456] text-white hover:bg-[#1e40af]"
+            className="size-10 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90"
           >
             {loading ? (
               <LoaderIcon className="size-4 animate-spin" />

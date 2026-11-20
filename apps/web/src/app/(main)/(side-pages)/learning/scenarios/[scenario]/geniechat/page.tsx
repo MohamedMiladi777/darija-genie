@@ -66,7 +66,7 @@ function DialogueHeader({ scenario }: { scenario: string }): React.JSX.Element {
       </header>
       <div className="flex h-[53px] shrink-0 items-center justify-between border-b border-border bg-card px-4">
         <div className="flex items-center gap-2">
-          <span className="flex size-7 items-center justify-center rounded-full bg-[#162456]">
+          <span className="flex size-7 items-center justify-center rounded-full bg-sidebar">
             <Image
               src="/assets/genie-chat/dialogue.svg"
               alt=""

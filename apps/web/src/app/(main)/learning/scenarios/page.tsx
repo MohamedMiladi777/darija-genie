@@ -2,6 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 
 import ScenarioPageChrome from "@/components/scenario-page-chrome"
+import { ArrowRightIcon } from "@/components/icons"
 import { Card, CardContent } from "@workspace/ui/components/card"
 
 const scenarios = [
@@ -9,24 +10,28 @@ const scenarios = [
     id: "restaurant-1",
     title: "Restaurant",
     description: "Practice Moroccan restaurant",
+    lesson: "Lesson 1",
     image: "/assets/scenarios/restaurant.jpg",
   },
   {
     id: "shopping-1",
     title: "Shopping",
     description: "Practice Shopping in Souks",
+    lesson: "Lesson 1",
     image: "/assets/scenarios/shopping.jpg",
   },
   {
     id: "restaurant-2",
     title: "Restaurant",
     description: "Practice Moroccan restaurant",
+    lesson: "Lesson 2",
     image: "/assets/scenarios/restaurant.jpg",
   },
   {
     id: "shopping-2",
     title: "Shopping",
     description: "Practice Shopping in Souks",
+    lesson: "Lesson 2",
     image: "/assets/scenarios/shopping.jpg",
   },
 ] as const
@@ -39,36 +44,30 @@ function ScenarioCard({
   return (
     <Link
       href={`/learning/scenarios/${scenario.id}`}
-      aria-label={`Open ${scenario.title} scenario`}
-      className="group rounded-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 md:rounded-2xl"
+      aria-label={`Open ${scenario.title}, ${scenario.lesson}`}
+      className="group block rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
-      <Card className="gap-0 rounded-[inherit] bg-card py-0 shadow-[0_1px_2px_rgba(0,0,0,0.05)] ring-border transition-transform group-hover:-translate-y-0.5">
-        <div className="relative aspect-video w-full overflow-hidden">
+      <Card className="gap-0 overflow-hidden rounded-2xl border border-border bg-card p-0 shadow-sm transition-[box-shadow,transform] group-hover:-translate-y-0.5 group-hover:shadow-md">
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted">
           <Image
             src={scenario.image}
             alt=""
             fill
-            sizes="(min-width: 768px) 50vw, 100vw"
-            className="object-cover"
+            sizes="(min-width: 1024px) 420px, (min-width: 768px) 45vw, 100vw"
+            className="object-cover object-center transition-transform duration-300 group-hover:scale-[1.02] motion-reduce:transition-none"
           />
         </div>
         <CardContent className="flex min-h-[62px] items-center justify-between gap-3 px-3 py-[11px] md:min-h-[66px] md:py-3">
-          <div className="min-w-0 font-[family-name:var(--font-inter)] text-sm leading-5">
+          <div className="min-w-0 text-sm leading-5">
             <h3 className="truncate font-medium text-foreground">
-              {scenario.title}
+              {scenario.title} <span className="font-normal text-muted-foreground">· {scenario.lesson}</span>
             </h3>
             <p className="truncate font-normal text-muted-foreground">
               {scenario.description}
             </p>
           </div>
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-transparent md:bg-[#162456]">
-            <Image
-              src="/assets/learning/scenario-arrow.svg"
-              alt=""
-              width={14}
-              height={14}
-              className="size-3.5 brightness-0 md:brightness-100"
-            />
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition-colors group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
+            <ArrowRightIcon aria-hidden="true" className="size-4" />
           </span>
         </CardContent>
       </Card>

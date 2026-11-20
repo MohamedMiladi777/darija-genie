@@ -35,29 +35,29 @@ function MiniatureContent({
 }): React.JSX.Element {
   return (
     <div
-      className={`flex h-full w-full overflow-hidden rounded-[9px] ${dark ? "bg-[#111827]" : "bg-[#f8f6ef]"}`}
+      className={`flex h-full w-full overflow-hidden rounded-[9px] ${dark ? "bg-[#191916]" : "bg-[#f8f6ef]"}`}
     >
       <div
-        className={`w-[31%] shrink-0 px-2 py-3 ${dark ? "bg-[#0f172a]" : "bg-[#162456]"}`}
+        className={`w-[31%] shrink-0 px-2 py-3 ${dark ? "bg-[#141411]" : "bg-[#162456]"}`}
       >
         <div className="mb-3 h-2 w-5 rounded-full bg-background/85" />
         <div className="space-y-1.5">
-          <div className="h-1.5 rounded-full bg-[#1447e6]" />
+          <div className={`h-1.5 rounded-full ${dark ? "bg-[#d3b16d]" : "bg-[#1447e6]"}`} />
           <div className="h-1.5 rounded-full bg-white/20" />
           <div className="h-1.5 rounded-full bg-white/20" />
         </div>
       </div>
       <div className="min-w-0 flex-1">
         <div
-          className={`flex h-7 items-center border-b px-2 ${dark ? "border-white/10 bg-[#1f2937]" : "border-border bg-card"}`}
+          className={`flex h-7 items-center border-b px-2 ${dark ? "border-white/10 bg-[#24231e]" : "border-border bg-card"}`}
         >
           <div
-            className={`h-1.5 w-9 rounded-full ${dark ? "bg-white/40" : "bg-[#162456]/45"}`}
+            className={`h-1.5 w-9 rounded-full ${dark ? "bg-[#d3b16d]/70" : "bg-[#162456]/45"}`}
           />
         </div>
         <div className="space-y-2 p-2">
           <div
-            className={`h-2 w-1/2 rounded-full ${dark ? "bg-white/35" : "bg-[#162456]/40"}`}
+            className={`h-2 w-1/2 rounded-full ${dark ? "bg-[#f4efe3]/45" : "bg-[#162456]/40"}`}
           />
           <div className="grid grid-cols-2 gap-1.5">
             <div
@@ -132,10 +132,10 @@ export default function ThemeSelector(): React.JSX.Element {
               <span
                 className={`block h-[148px] rounded-2xl p-[11px] transition-colors ${
                   isSelected
-                    ? "border-[3px] border-[#162456] bg-[#dedbd0] dark:border-[#c6b89b] dark:bg-[#263346]"
+                    ? "border-[3px] border-[#162456] bg-[#dedbd0] dark:border-primary dark:bg-muted"
                     : choice.value === "dark"
-                      ? "border border-[#374151] bg-[#252b38]"
-                      : "border border-[#d6d3ca] bg-[#dedbd0] dark:border-border dark:bg-[#263346]"
+                      ? "border border-border bg-card"
+                      : "border border-[#d6d3ca] bg-[#dedbd0] dark:border-border dark:bg-card"
                 }`}
               >
                 <ThemePreview theme={choice.value} />
@@ -159,7 +159,7 @@ export default function ThemeSelector(): React.JSX.Element {
                   {choice.label}
                 </span>
                 {isSelected ? (
-                  <span className="flex size-[18px] shrink-0 items-center justify-center rounded-full bg-[#162456]">
+                    <span className="flex size-[18px] shrink-0 items-center justify-center rounded-full bg-primary">
                     <Image
                       src="/assets/settings/check.svg"
                       alt=""
@@ -169,7 +169,7 @@ export default function ThemeSelector(): React.JSX.Element {
                     />
                   </span>
                 ) : (
-                  <span className="size-4 shrink-0 rounded-full border border-[#a3a3a3] dark:border-[#c6b89b]" />
+                  <span className="size-4 shrink-0 rounded-full border border-[#a3a3a3] dark:border-[#d3b16d]" />
                 )}
               </span>
             </button>
@@ -177,7 +177,7 @@ export default function ThemeSelector(): React.JSX.Element {
         })}
       </div>
 
-      <div className="mt-6 flex min-h-11 items-center gap-3 rounded-xl bg-[#dbeafe] px-4 py-2 dark:bg-[#263a57]">
+      <div className="mt-6 flex min-h-11 items-center gap-3 rounded-xl bg-[#dbeafe] px-4 py-2 dark:bg-[#302e27]">
         <Image
           src="/assets/settings/system-info.svg"
           alt=""
@@ -185,7 +185,7 @@ export default function ThemeSelector(): React.JSX.Element {
           height={16}
           className="size-4 shrink-0"
         />
-        <p className="font-[family-name:var(--font-inter)] text-xs leading-4 text-[#1e40af] dark:text-[#8fc6ff]">
+        <p className="font-[family-name:var(--font-inter)] text-xs leading-4 text-[#1e40af] dark:text-[#f4efe3]">
           <strong className="font-semibold">System</strong> automatically
           switches between light and dark based on your device settings.
         </p>

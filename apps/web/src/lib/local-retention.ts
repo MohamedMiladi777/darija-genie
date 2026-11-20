@@ -36,6 +36,15 @@ type ProfileSnapshotV1 = {
 
 export const PROFILE_STORAGE_KEY = "darija-genie:profile:v1"
 export const RESTAURANT_CHAT_STORAGE_KEY = "darija-genie:restaurant-chat:v1"
+export const QUIZ_PROGRESS_PREFIX = "darija-genie:quiz-progress:v1:"
+export const LOCAL_RETENTION_CHANGE_EVENT = "darija-genie:local-retention-change"
+
+export type QuizProgressSnapshotV1 = {
+  version: 1
+  scenario: string
+  updatedAt: string
+  state: Record<string, unknown>
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value)
@@ -76,7 +85,13 @@ export function saveProfileSnapshotFromLocalPreferences(): void {
 }
 
 export function loadProfileSnapshot(): ProfileSnapshotV1 | null {
-  const parsed = safeParse(window.localStorage.getItem(PROFILE_STORAGE_KEY))
+  let raw: string | null
+  try {
+    raw = window.localStorage.getItem(PROFILE_STORAGE_KEY)
+  } catch {
+    return null
+  }
+  const parsed = safeParse(raw)
   if (!isRecord(parsed)) return null
   if (parsed.version !== 1) return null
   if (!isRecord(parsed.preferences)) return null
@@ -99,7 +114,13 @@ export function loadProfileSnapshot(): ProfileSnapshotV1 | null {
 }
 
 export function loadRestaurantChatSnapshot(): RestaurantChatSnapshotV1 | null {
-  const parsed = safeParse(window.localStorage.getItem(RESTAURANT_CHAT_STORAGE_KEY))
+  let raw: string | null
+  try {
+    raw = window.localStorage.getItem(RESTAURANT_CHAT_STORAGE_KEY)
+  } catch {
+    return null
+  }
+  const parsed = safeParse(raw)
   if (!isRecord(parsed) || parsed.version !== 1) return null
   if (
     typeof parsed.scenario !== "string" ||
@@ -191,12 +212,74 @@ export function saveRestaurantChatSnapshot(params: {
     })),
     nextId: params.nextId,
   }
-  window.localStorage.setItem(RESTAURANT_CHAT_STORAGE_KEY, JSON.stringify(snapshot))
+  try {
+    window.localStorage.setItem(RESTAURANT_CHAT_STORAGE_KEY, JSON.stringify(snapshot))
+    window.dispatchEvent(new Event(LOCAL_RETENTION_CHANGE_EVENT))
+  } catch {
+    // The chat remains usable if browser storage is disabled or full.
+  }
   return sessionId
 }
 
+export function getQuizProgressStorageKey(scenario: string): string {
+  return `${QUIZ_PROGRESS_PREFIX}${scenario}`
+}
+
+export function loadQuizProgressSnapshot(
+  scenario: string
+): QuizProgressSnapshotV1 | null {
+  const parsed = safeParse(
+    window.localStorage.getItem(getQuizProgressStorageKey(scenario))
+  )
+  if (!isRecord(parsed) || parsed.version !== 1 || parsed.scenario !== scenario) {
+    return null
+  }
+  if (typeof parsed.updatedAt !== "string" || !isRecord(parsed.state)) return null
+  return {
+    version: 1,
+    scenario,
+    updatedAt: parsed.updatedAt,
+    state: parsed.state,
+  }
+}
+
+export function saveQuizProgressSnapshot(
+  scenario: string,
+  state: Record<string, unknown>
+): void {
+  const snapshot: QuizProgressSnapshotV1 = {
+    version: 1,
+    scenario,
+    updatedAt: nowIso(),
+    state,
+  }
+  try {
+    window.localStorage.setItem(
+      getQuizProgressStorageKey(scenario),
+      JSON.stringify(snapshot)
+    )
+    window.dispatchEvent(new Event(LOCAL_RETENTION_CHANGE_EVENT))
+  } catch {
+    // The quiz remains usable if browser storage is disabled or full.
+  }
+}
+
+export function clearQuizProgressSnapshot(scenario: string): void {
+  try {
+    window.localStorage.removeItem(getQuizProgressStorageKey(scenario))
+    window.dispatchEvent(new Event(LOCAL_RETENTION_CHANGE_EVENT))
+  } catch {
+    // Ignore unavailable storage.
+  }
+}
+
 export function clearRestaurantChatSnapshot(): void {
-  window.localStorage.removeItem(RESTAURANT_CHAT_STORAGE_KEY)
+  try {
+    window.localStorage.removeItem(RESTAURANT_CHAT_STORAGE_KEY)
+    window.dispatchEvent(new Event(LOCAL_RETENTION_CHANGE_EVENT))
+  } catch {
+    // Ignore unavailable storage.
+  }
 }
 
 export function clearLocalProfileAndRestaurantChat(): void {

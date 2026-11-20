@@ -1,13 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { useMemo, useState, useSyncExternalStore } from "react"
+import { startTransition, useEffect, useMemo, useState, useSyncExternalStore } from "react"
 
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
   CheckIcon,
-  MicIcon,
   RestaurantIcon,
   ShoppingIcon,
   VolumeIcon,
@@ -15,6 +14,12 @@ import {
 import type { ScenarioId } from "@/app/(main)/learning/scenarios/scenario-data"
 import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent } from "@workspace/ui/components/card"
+import restaurantBank from "../../../../content/value-bank/restaurant-v2.json"
+import {
+  clearQuizProgressSnapshot,
+  loadQuizProgressSnapshot,
+  saveQuizProgressSnapshot,
+} from "@/lib/local-retention"
 
 type ExerciseKind = "build" | "complete" | "match" | "listen" | "speak" | "image"
 type FeedbackState = "success" | "error" | null
@@ -112,12 +117,34 @@ const buildWords = ["‘afak", "atay", "Bghit", "hada"]
 const buildAnswer = ["Bghit", "atay", "‘afak"]
 const completeWords = ["khobz", "atay", "lma"]
 const matchLeft = ["atay", "lma", "khobz", "lḥsab"]
-const matchRight = ["Bread", "Tea", "The bill", "Water"]
 const matchAnswer: Record<string, string> = {
   atay: "Tea",
   lma: "Water",
   khobz: "Bread",
   lḥsab: "The bill",
+}
+
+type RestaurantVocab = (typeof restaurantBank.items)[number]
+
+const restaurantVocab = restaurantBank.items.filter(
+  (item) => item.kind === "vocab"
+) as RestaurantVocab[]
+
+function restaurantPool(key: string): RestaurantVocab[] {
+  return restaurantVocab
+    .filter((item) => item.pool === key)
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+}
+
+const restaurantStarters = restaurantPool("starters")
+const restaurantMains = restaurantPool("mains")
+const restaurantDrinks = restaurantPool("drinks")
+const restaurantVariants = restaurantVocab
+  .filter((item) => item.forms.length > 1)
+  .slice(0, 4)
+
+function normalizeArabic(value: string): string {
+  return value.trim().replace(/\s+/g, " ")
 }
 
 function scenarioLabel(scenario: ScenarioId): string {
@@ -169,18 +196,18 @@ function storeAttempt(attempt: QuizAttempt): void {
 
 export function TestingScenarioChooser(): React.JSX.Element {
   return (
-    <main className="min-h-dvh w-full bg-[#f6f2e7] text-[#1f2f63]">
+    <main className="min-h-dvh w-full bg-background text-foreground">
       <div className="mx-auto w-full max-w-[1100px] px-5 py-7 sm:px-8 md:py-10">
-        <p className="text-[11px] tracking-[0.2em] text-[#8f8068] uppercase">Learn / Testing</p>
+        <p className="text-[11px] tracking-[0.2em] text-muted-foreground uppercase">Learn / Testing</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Test your Darija.</h1>
-        <p className="mt-1.5 text-sm text-[#6f6b61] sm:text-base">A little practice goes a long way.</p>
+        <p className="mt-1.5 text-sm text-muted-foreground sm:text-base">A little practice goes a long way.</p>
 
         <section className="mt-9" aria-labelledby="choose-scenario">
-          <p className="text-[11px] tracking-[0.2em] text-[#9b7a55] uppercase">Scenario practice</p>
+          <p className="text-[11px] tracking-[0.2em] text-primary uppercase">Scenario practice</p>
           <h2 id="choose-scenario" className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
             Where would you like to practise?
           </h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-[#6f6b61] sm:text-base">
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
             Choose a familiar situation. You&apos;ll work through a short set of exercises, one at a time.
           </p>
 
@@ -192,38 +219,40 @@ export function TestingScenarioChooser(): React.JSX.Element {
                 aria-label={`Start ${scenario.title} practice`}
                 className="group block rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-[#1f2f63] focus-visible:ring-offset-2"
               >
-                <Card className="h-full overflow-hidden rounded-2xl border border-[#d2c3a7] bg-[#fffdf8] p-0 shadow-[0_2px_0_#cabb9e] transition-transform group-hover:-translate-y-0.5">
+                <Card className="h-full overflow-hidden rounded-2xl border border-border bg-card p-0 shadow-sm transition-transform group-hover:-translate-y-0.5 group-hover:shadow-md">
                   <div
                     className={`relative flex h-36 items-center justify-center sm:h-40 ${
-                      scenario.id.startsWith("restaurant") ? "bg-[#ece1ca]" : "bg-[#e7e8dc]"
+                      scenario.id.startsWith("restaurant")
+                        ? "bg-[#ece1ca] dark:bg-[#302b20]"
+                        : "bg-[#e7e8dc] dark:bg-[#292b24]"
                     }`}
                   >
-                    <span className="absolute left-5 top-5 text-xs tracking-[0.18em] text-[#a86d3f]">
+                    <span className="absolute left-5 top-5 text-xs tracking-[0.18em] text-primary">
                       {String(index + 1).padStart(2, "0")}
                     </span>
-                    <span className="flex size-20 items-center justify-center rounded-t-[40px] rounded-b-md border border-[#d8c8ab] bg-[#f8f3e7] text-[#a86d3f] shadow-[0_2px_0_#d3c4a8]">
+                    <span className="flex size-20 items-center justify-center rounded-t-[40px] rounded-b-md border border-border bg-background text-primary shadow-sm">
                       {scenario.id.startsWith("restaurant") ? (
                         <RestaurantIcon aria-hidden="true" className="size-9" />
                       ) : (
                         <ShoppingIcon aria-hidden="true" className="size-9" />
                       )}
                     </span>
-                    <span className="absolute bottom-5 right-5 text-[10px] tracking-[0.16em] text-[#7e7463]">
+                    <span className="absolute bottom-5 right-5 text-[10px] tracking-[0.16em] text-muted-foreground">
                       LESSON 1
                     </span>
                   </div>
                   <CardContent className="flex min-h-[210px] flex-col px-5 py-5 sm:px-6">
                     <div className="flex items-center justify-between gap-3">
                       <h3 className="text-xl font-semibold sm:text-2xl">{scenario.title}</h3>
-                      <span lang="ary" dir="rtl" className="font-[family-name:var(--font-simplified-arabic)] text-xl text-[#a86d3f] sm:text-2xl">
+                      <span lang="ary" dir="rtl" className="font-[family-name:var(--font-simplified-arabic)] text-xl text-primary sm:text-2xl">
                         {scenario.titleArabic}
                       </span>
                     </div>
-                    <p className="mt-2 text-sm leading-5 text-[#6f6b61]">{scenario.description}</p>
-                    <p className="mt-3 text-xs text-[#a86d3f]">{scenario.topics}</p>
-                    <div className="mt-auto flex items-center justify-between gap-3 border-t border-[#e5decd] pt-4 text-xs text-[#7e7463] sm:text-sm">
+                    <p className="mt-2 text-sm leading-5 text-muted-foreground">{scenario.description}</p>
+                    <p className="mt-3 text-xs text-primary">{scenario.topics}</p>
+                    <div className="mt-auto flex items-center justify-between gap-3 border-t border-border pt-4 text-xs text-muted-foreground sm:text-sm">
                       <span>6 exercises · Beginner</span>
-                      <span className="inline-flex shrink-0 items-center font-semibold text-[#1f2f63]">
+                      <span className="inline-flex shrink-0 items-center font-semibold text-foreground">
                         Start practice
                         <ArrowRightIcon
                           aria-hidden="true"
@@ -255,8 +284,135 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
   const [matches, setMatches] = useState<Record<string, string>>({})
   const [listenText, setListenText] = useState("")
   const [selectedImage, setSelectedImage] = useState<number | null>(null)
+  const [restored, setRestored] = useState(false)
+
+  useEffect(() => {
+    const saved = loadQuizProgressSnapshot(scenario)?.state
+    startTransition(() => {
+      if (saved) {
+        if (typeof saved.exerciseIndex === "number") {
+          setExerciseIndex(
+            Math.max(0, Math.min(exercises.length - 1, saved.exerciseIndex))
+          )
+        }
+        if (saved.feedback === "success" || saved.feedback === "error") {
+          setFeedback(saved.feedback)
+        }
+        if (Array.isArray(saved.results)) setResults(saved.results as ExerciseResult[])
+        if (Array.isArray(saved.selectedBuildWords)) {
+          setSelectedBuildWords(
+            saved.selectedBuildWords.filter((word): word is string => typeof word === "string")
+          )
+        }
+        if (typeof saved.selectedCompleteWord === "string") {
+          setSelectedCompleteWord(saved.selectedCompleteWord)
+        }
+        if (typeof saved.leftChoice === "string") setLeftChoice(saved.leftChoice)
+        if (typeof saved.rightChoice === "string") setRightChoice(saved.rightChoice)
+        if (saved.matches && typeof saved.matches === "object") {
+          setMatches(saved.matches as Record<string, string>)
+        }
+        if (typeof saved.listenText === "string") setListenText(saved.listenText)
+        if (typeof saved.selectedImage === "number") setSelectedImage(saved.selectedImage)
+      }
+      setRestored(true)
+    })
+  }, [scenario])
+
+  useEffect(() => {
+    if (!restored || completed) return
+    const hasProgress =
+      exerciseIndex > 0 ||
+      results.length > 0 ||
+      Boolean(feedback) ||
+      selectedBuildWords.length > 0 ||
+      Boolean(selectedCompleteWord) ||
+      Object.keys(matches).length > 0 ||
+      Boolean(listenText) ||
+      selectedImage !== null
+
+    if (!hasProgress) {
+      clearQuizProgressSnapshot(scenario)
+      return
+    }
+
+    saveQuizProgressSnapshot(scenario, {
+      exerciseIndex,
+      feedback,
+      results,
+      selectedBuildWords,
+      selectedCompleteWord,
+      leftChoice,
+      rightChoice,
+      matches,
+      listenText,
+      selectedImage,
+    })
+  }, [
+    completed,
+    exerciseIndex,
+    feedback,
+    leftChoice,
+    listenText,
+    matches,
+    results,
+    restored,
+    scenario,
+    selectedBuildWords,
+    selectedCompleteWord,
+    selectedImage,
+    rightChoice,
+  ])
 
   const exercise = exercises[exerciseIndex]!
+  const restaurantMode = scenario.startsWith("restaurant")
+  const featuredMain = restaurantMains[0]!
+  const secondMain = restaurantMains[1]!
+  const featuredStarter = restaurantStarters[0]!
+  const featuredDrink = restaurantDrinks[0]!
+  const restaurantOrderWords = ["بغيت", featuredMain.canonical, "عافاك"]
+  const restaurantBuildChoices = [
+    "عافاك",
+    featuredMain.canonical,
+    "بغيت",
+    secondMain.canonical,
+  ]
+  const restaurantStarterChoices = [
+    featuredStarter,
+    featuredMain,
+    featuredDrink,
+  ]
+  const activeMatchPairs = restaurantMode
+    ? restaurantVariants.map((item) => ({
+        left: item.canonical,
+        right: item.forms[1]!,
+      }))
+    : matchLeft.map((left) => ({ left, right: matchAnswer[left]! }))
+  const activeMatchLeft = activeMatchPairs.map((pair) => pair.left)
+  const activeMatchRight = [...activeMatchPairs]
+    .map((pair) => pair.right)
+    .reverse()
+  const activeMatchAnswer = Object.fromEntries(
+    activeMatchPairs.map((pair) => [pair.left, pair.right])
+  )
+  const visibleExerciseTitle =
+    restaurantMode && exercise.id === "image"
+      ? "Identify the menu section"
+      : exercise.title
+  const visibleExerciseInstruction =
+    restaurantMode && exercise.id === "match"
+      ? "Match each menu item to another accepted form from the workbook."
+      : restaurantMode && exercise.id === "image"
+        ? "Choose which section of the menu contains this item."
+        : restaurantMode && exercise.id === "complete"
+          ? "Choose the item from the starter section."
+          : restaurantMode && exercise.id === "listen"
+            ? "Listen to a restaurant word, then type it in Arabic script."
+            : restaurantMode && exercise.id === "speak"
+              ? "Listen to the order phrase, then practise saying it aloud."
+              : restaurantMode && exercise.id === "build"
+                ? "Arrange the Darija words to make a polite order."
+                : exercise.instruction
   const progressValue = (exerciseIndex / exercises.length) * 100
   const correctCount = results.filter((result) => result.correct).length
 
@@ -276,9 +432,11 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
       case "build":
         return selectedBuildWords.length > 0
       case "complete":
-        return Boolean(selectedCompleteWord)
+        return restaurantMode
+          ? Boolean(selectedCompleteWord)
+          : Boolean(selectedCompleteWord)
       case "match":
-        return Object.keys(matches).length === matchLeft.length
+        return Object.keys(matches).length === activeMatchLeft.length
       case "listen":
         return listenText.trim().length > 0
       case "speak":
@@ -295,26 +453,42 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
     switch (exercise.id) {
       case "build":
         response = selectedBuildWords.join(" ")
-        correct = normalizeText(response) === normalizeText(buildAnswer.join(" "))
+        correct = restaurantMode
+          ? normalizeArabic(response) === normalizeArabic(restaurantOrderWords.join(" "))
+          : normalizeText(response) === normalizeText(buildAnswer.join(" "))
         break
       case "complete":
         response = selectedCompleteWord ?? ""
-        correct = response === "atay"
+        correct = restaurantMode
+          ? response === featuredStarter.canonical
+          : response === "atay"
         break
       case "match":
-        response = matchLeft.map((word) => `${word} → ${matches[word] ?? "—"}`).join(", ")
-        correct = matchLeft.every((word) => matches[word] === matchAnswer[word])
+        response = activeMatchLeft
+          .map((word) => `${word} → ${matches[word] ?? "—"}`)
+          .join(", ")
+        correct = activeMatchLeft.every(
+          (word) => matches[word] === activeMatchAnswer[word]
+        )
         break
       case "listen":
         response = listenText.trim()
-        correct = normalizeText(response) === normalizeText("bghit atay afak")
+        correct = restaurantMode
+          ? featuredDrink.forms.some(
+              (form) => normalizeArabic(response) === normalizeArabic(form)
+            )
+          : normalizeText(response) === normalizeText("bghit atay afak")
         break
       case "speak":
-        response = "Practised aloud"
+        response = restaurantMode ? restaurantOrderWords.join(" ") : "Practised aloud"
         correct = true
         break
       case "image":
-        response = selectedImage === null ? "" : `Image ${selectedImage}`
+        response = selectedImage === null
+          ? ""
+          : restaurantMode
+            ? ["", "Starters", "Main dishes", "Drinks"][selectedImage] ?? ""
+            : `Image ${selectedImage}`
         correct = selectedImage === 2
         break
     }
@@ -322,11 +496,26 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
     setResults((current) => [
       ...current.filter((result) => result.exerciseId !== exercise.id),
       {
-        exerciseId: exercise.id,
-        title: exercise.title,
-        correct,
-        response,
-        correctAnswer: exercise.correctAnswer,
+      exerciseId: exercise.id,
+      title: visibleExerciseTitle,
+      correct,
+      response,
+      correctAnswer:
+        restaurantMode && exercise.id === "build"
+          ? restaurantOrderWords.join(" ")
+          : restaurantMode && exercise.id === "complete"
+            ? featuredStarter.canonical
+            : restaurantMode && exercise.id === "match"
+              ? activeMatchPairs
+                  .map((pair) => `${pair.left} → ${pair.right}`)
+                  .join(", ")
+              : restaurantMode && exercise.id === "listen"
+                ? featuredDrink.canonical
+                : restaurantMode && exercise.id === "speak"
+                  ? restaurantOrderWords.join(" ")
+                  : restaurantMode && exercise.id === "image"
+                    ? "Main dishes"
+                    : exercise.correctAnswer,
       },
     ])
     setFeedback(correct ? "success" : "error")
@@ -348,18 +537,28 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
       results,
     }
     storeAttempt(attempt)
+    clearQuizProgressSnapshot(scenario)
     setCompleted(true)
+  }
+
+  if (!restored) {
+    return (
+      <main className="min-h-dvh bg-background px-5 py-8">
+        <div className="mx-auto h-2 max-w-3xl animate-pulse rounded-full bg-muted" />
+        <div className="mx-auto mt-8 h-48 max-w-3xl animate-pulse rounded-2xl bg-muted" />
+      </main>
+    )
   }
 
   if (completed) {
     const missed = results.filter((result) => !result.correct)
     return (
-      <main className="flex min-h-dvh items-center justify-center bg-[#f6f2e7] px-5 py-10 text-[#1f2f63]">
-        <Card className="w-full max-w-lg rounded-2xl border-[#d9ccb4] bg-[#fffdf8] p-6 shadow-[0_2px_0_#cabb9e] sm:p-8">
-          <p className="text-[11px] tracking-[0.2em] text-[#a86d3f] uppercase">Practice complete</p>
+      <main className="flex min-h-dvh items-center justify-center bg-background px-5 py-10 text-foreground">
+        <Card className="w-full max-w-lg rounded-2xl border-border bg-card p-6 shadow-sm sm:p-8">
+          <p className="text-[11px] tracking-[0.2em] text-primary uppercase">Practice complete</p>
           <h1 className="mt-2 text-3xl font-semibold">Nice work.</h1>
-          <p className="mt-2 text-sm leading-6 text-[#6f6b61]">
-            You got <span className="font-semibold text-[#1f2f63]">{correctCount} of {exercises.length}</span> correct.
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            You got <span className="font-semibold text-foreground">{correctCount} of {exercises.length}</span> correct.
             {missed.length > 0
               ? " Your missed answers are saved in Review for this scenario."
               : " You answered every exercise correctly."}
@@ -367,20 +566,27 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             <Link
               href={`/learning/scenarios/${scenario}/review`}
-              className="inline-flex h-11 items-center justify-center rounded-xl bg-[#1f2f63] px-4 text-sm font-medium text-white hover:bg-[#1a2858]"
+              className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
             >
               Review answers
             </Link>
-            <Link
-              href={`/learning/scenarios/${scenario}/quiz`}
-              className="inline-flex h-11 items-center justify-center rounded-xl border border-[#d9ccb4] bg-[#fffdf8] px-4 text-sm font-medium text-[#1f2f63] hover:bg-[#f1eadb]"
+            <button
+              type="button"
+              onClick={() => {
+                clearQuizProgressSnapshot(scenario)
+                setExerciseIndex(0)
+                setResults([])
+                resetExerciseState()
+                setCompleted(false)
+              }}
+              className="inline-flex h-11 items-center justify-center rounded-md border border-input bg-background px-4 text-sm font-medium text-foreground hover:bg-accent"
             >
               Try again
-            </Link>
+            </button>
           </div>
           <Link
             href={`/learning/scenarios/${scenario}`}
-            className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-[#a86d3f] hover:underline"
+            className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
           >
             <ArrowLeftIcon className="size-4" /> Back to scenario
           </Link>
@@ -390,13 +596,13 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
   }
 
   return (
-    <main className="flex min-h-dvh flex-col bg-[#f6f2e7] text-[#1f2f63]">
-      <header className="border-b border-[#dfd7c8] bg-[#f6f2e7]">
+    <main className="flex min-h-dvh flex-col bg-background text-foreground">
+      <header className="border-b border-border bg-background">
         <div className="mx-auto flex w-full max-w-3xl items-center gap-4 px-5 py-4 sm:px-8">
           <Link
             href={`/learning/scenarios/${scenario}`}
             aria-label="Exit practice and return to scenario"
-            className="flex size-9 shrink-0 items-center justify-center rounded-full text-[#7e7463] hover:bg-[#ebe4d6] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1f2f63]"
+            className="flex size-9 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             <ArrowLeftIcon aria-hidden="true" className="size-5" />
           </Link>
@@ -407,15 +613,15 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
               aria-valuemin={0}
               aria-valuemax={exercises.length}
               aria-valuenow={exerciseIndex}
-              className="h-2 overflow-hidden rounded-full bg-[#e5dece]"
+              className="h-2 overflow-hidden rounded-full bg-muted"
             >
               <div
-                className="h-full rounded-full bg-[#a86d3f] transition-[width] duration-300"
+                className="h-full rounded-full bg-primary transition-[width] duration-300"
                 style={{ width: `${progressValue}%` }}
               />
             </div>
           </div>
-          <span className="min-w-12 text-right text-xs tabular-nums text-[#7e7463]">
+          <span className="min-w-12 text-right text-xs tabular-nums text-muted-foreground">
             {exerciseIndex + 1} / {exercises.length}
           </span>
         </div>
@@ -423,30 +629,35 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
 
       <div className="mx-auto w-full max-w-3xl flex-1 px-5 py-7 pb-36 sm:px-8 sm:py-10">
         <div className="mb-7 flex items-center justify-between gap-3">
-          <p className="text-[11px] tracking-[0.16em] text-[#a86d3f] uppercase">
+          <p className="text-[11px] tracking-[0.16em] text-primary uppercase">
             {scenarioLabel(scenario)}
           </p>
           <Link
             href={`/learning/scenarios/${scenario}/review`}
-            className="text-xs font-medium text-[#7e7463] underline-offset-4 hover:text-[#1f2f63] hover:underline"
+            className="text-xs font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
           >
             Review past answers
           </Link>
         </div>
 
-        <p className="text-xs font-medium text-[#a86d3f]">
+        <p className="text-xs font-medium text-primary">
           Question {exerciseIndex + 1}
         </p>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">{exercise.title}</h1>
-        <p className="mt-2 text-sm leading-6 text-[#6f6b61] sm:text-base">{exercise.instruction}</p>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">{visibleExerciseTitle}</h1>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground sm:text-base">{visibleExerciseInstruction}</p>
 
         <div className="mt-7">
           {exercise.id === "build" ? (
             <div className="space-y-5">
-              <div className="inline-flex rounded-xl border border-[#d9ccb4] bg-[#fffdf8] px-4 py-3 text-base sm:text-lg">
-                I would like tea, please.
+              <div className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-base sm:text-lg">
+                <span>{restaurantMode ? "Polite order" : "I would like tea, please."}</span>
+                {restaurantMode ? (
+                  <span lang="ary" dir="rtl" className="font-[family-name:var(--font-simplified-arabic)] text-primary">
+                    {featuredMain.canonical}
+                  </span>
+                ) : null}
               </div>
-              <div className="min-h-20 rounded-xl border border-[#e4dccb] bg-[#faf6ee] p-3 sm:p-4">
+              <div className="min-h-20 rounded-xl border border-border bg-muted p-3 sm:p-4">
                 {selectedBuildWords.length ? (
                   <div className="flex flex-wrap gap-2">
                     {selectedBuildWords.map((word, index) => (
@@ -459,27 +670,27 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
                             current.filter((_, currentIndex) => currentIndex !== index)
                           )
                         }
-                        className="rounded-lg border border-[#cdbb9d] bg-white px-3 py-2 text-sm font-medium disabled:opacity-70"
+                        className="rounded-md border border-input bg-background px-3 py-2 text-sm font-medium disabled:opacity-70"
                       >
                         {word}
                       </button>
                     ))}
                   </div>
                 ) : (
-                  <p className="py-2 text-sm text-[#8f8068]">Choose words to build the sentence.</p>
+                  <p className="py-2 text-sm text-muted-foreground">Choose words to build the sentence.</p>
                 )}
               </div>
               <div className="flex flex-wrap gap-2">
-                {buildWords.map((word) => (
+                {(restaurantMode ? restaurantBuildChoices : buildWords).map((word, index) => (
                   <button
-                    key={word}
+                    key={`${word}-${index}`}
                     type="button"
                     disabled={Boolean(feedback) || selectedBuildWords.includes(word)}
                     onClick={() => setSelectedBuildWords((current) => [...current, word])}
                     className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors disabled:cursor-default ${
                       selectedBuildWords.includes(word)
-                        ? "border-[#d9ccb4] bg-[#eee8dc] text-[#9b927f]"
-                        : "border-[#d9ccb4] bg-[#fffdf8] hover:bg-[#f1eadb]"
+                        ? "border-border bg-muted text-muted-foreground"
+                        : "border-input bg-background hover:bg-accent"
                     }`}
                   >
                     {word}
@@ -489,14 +700,38 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
             </div>
           ) : null}
 
-          {exercise.id === "complete" ? (
+          {exercise.id === "complete" && restaurantMode ? (
+            <div className="space-y-5">
+              <p className="text-sm font-medium">Choose the item from the starter section.</p>
+              <div className="grid gap-2 sm:grid-cols-3">
+                {restaurantStarterChoices.map((item) => (
+                  <button
+                    key={`${item.pool}-${item.itemKey}`}
+                    type="button"
+                    disabled={Boolean(feedback)}
+                    aria-pressed={selectedCompleteWord === item.canonical}
+                    onClick={() => setSelectedCompleteWord(item.canonical)}
+                    className={`min-h-14 rounded-md border px-3 py-3 text-left text-sm ${
+                      selectedCompleteWord === item.canonical
+                        ? "border-primary bg-primary/10"
+                        : "border-input bg-card hover:bg-accent"
+                    }`}
+                  >
+                    <span lang="ary" dir="rtl" className="font-[family-name:var(--font-simplified-arabic)]">
+                      {item.canonical}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : exercise.id === "complete" ? (
             <div className="space-y-7">
-              <div className="inline-flex rounded-xl border border-[#d9ccb4] bg-[#fffdf8] px-4 py-3 text-base sm:text-lg">
+              <div className="inline-flex rounded-xl border border-border bg-card px-4 py-3 text-base sm:text-lg">
                 I would like tea, please.
               </div>
               <p className="text-center text-2xl sm:text-3xl">
                 Bghit{" "}
-                <span className="inline-flex min-w-28 justify-center rounded-lg border border-dashed border-[#cdbb9d] bg-[#faf6ee] px-3 py-2">
+                <span className="inline-flex min-w-28 justify-center rounded-md border border-dashed border-border bg-muted px-3 py-2">
                   {selectedCompleteWord ?? "…"}
                 </span>{" "}
                 ‘afak.
@@ -511,8 +746,8 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
                     onClick={() => setSelectedCompleteWord(word)}
                     className={`rounded-lg border px-4 py-2.5 text-sm font-medium ${
                       selectedCompleteWord === word
-                        ? "border-[#a86d3f] bg-[#f1e7d5]"
-                        : "border-[#d9ccb4] bg-[#fffdf8] hover:bg-[#f1eadb]"
+                        ? "border-primary bg-primary/10"
+                        : "border-input bg-background hover:bg-accent"
                     }`}
                   >
                     {word}
@@ -525,8 +760,10 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
           {exercise.id === "match" ? (
             <div className="grid gap-3 sm:grid-cols-2 sm:gap-5">
               <div className="space-y-2">
-                <p className="text-[10px] tracking-[0.18em] text-[#7e7463] uppercase">Darija</p>
-                {matchLeft.map((word) => (
+                <p className="text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
+                  {restaurantMode ? "Menu item" : "Darija"}
+                </p>
+                {activeMatchLeft.map((word) => (
                   <button
                     key={word}
                     type="button"
@@ -542,18 +779,20 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
                     }}
                     className={`flex min-h-12 w-full items-center justify-between rounded-lg border px-4 text-left text-sm ${
                       leftChoice === word
-                        ? "border-[#1f2f63] bg-[#eff2f8]"
-                        : "border-[#d9ccb4] bg-[#fffdf8]"
+                        ? "border-primary bg-primary/10"
+                        : "border-input bg-card"
                     }`}
                   >
                     {word}
-                    {matches[word] ? <span className="text-xs text-[#a86d3f]">Matched</span> : null}
+                    {matches[word] ? <span className="text-xs text-primary">Matched</span> : null}
                   </button>
                 ))}
               </div>
               <div className="space-y-2">
-                <p className="text-[10px] tracking-[0.18em] text-[#7e7463] uppercase">English</p>
-                {matchRight.map((word) => (
+                <p className="text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
+                  {restaurantMode ? "Other accepted form" : "English"}
+                </p>
+                {activeMatchRight.map((word) => (
                   <button
                     key={word}
                     type="button"
@@ -569,49 +808,55 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
                     }}
                     className={`flex min-h-12 w-full items-center rounded-lg border px-4 text-left text-sm ${
                       rightChoice === word
-                        ? "border-[#1f2f63] bg-[#eff2f8]"
-                        : "border-[#d9ccb4] bg-[#fffdf8]"
+                        ? "border-primary bg-primary/10"
+                        : "border-input bg-card"
                     }`}
                   >
                     {word}
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-[#7e7463] sm:col-span-2">
-                {Object.keys(matches).length} of {matchLeft.length} pairs matched
+              <p className="text-xs text-muted-foreground sm:col-span-2">
+                {Object.keys(matches).length} of {activeMatchLeft.length} pairs matched
               </p>
             </div>
           ) : null}
 
           {exercise.id === "listen" ? (
             <div className="space-y-5">
-              <div className="flex items-center gap-4 rounded-xl border border-[#d9ccb4] bg-[#fffdf8] p-5">
+              <div className="flex items-center gap-4 rounded-xl border border-border bg-card p-5">
                 <button
                   type="button"
                   aria-label="Play sample pronunciation"
                   onClick={() => {
                     if ("speechSynthesis" in window) {
                       window.speechSynthesis.cancel()
-                      window.speechSynthesis.speak(new SpeechSynthesisUtterance("Bghit atay afak"))
+                      const utterance = new SpeechSynthesisUtterance(
+                        restaurantMode ? featuredDrink.canonical : "Bghit atay afak"
+                      )
+                      utterance.lang = restaurantMode ? "ar-MA" : "en"
+                      window.speechSynthesis.speak(utterance)
                     }
                   }}
-                  className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#1f2f63] text-white"
+                  className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground"
                 >
                   <VolumeIcon aria-hidden="true" className="size-5" />
                 </button>
                 <div>
-                  <p className="text-sm font-semibold">Listen to the sentence</p>
-                  <p className="mt-1 text-xs text-[#a86d3f]">Tap to play the sample</p>
+                  <p className="text-sm font-semibold">
+                    {restaurantMode ? "Listen to this drink" : "Listen to the sentence"}
+                  </p>
+                  <p className="mt-1 text-xs text-primary">Tap to play the sample</p>
                 </div>
               </div>
               <label className="block">
-                <span className="text-[10px] tracking-[0.18em] text-[#7e7463] uppercase">Write what you hear</span>
+                <span className="text-[10px] tracking-[0.18em] text-muted-foreground uppercase">Write what you hear</span>
                 <textarea
                   value={listenText}
                   disabled={Boolean(feedback)}
                   onChange={(event) => setListenText(event.target.value)}
-                  className="mt-2 min-h-28 w-full resize-y rounded-xl border border-[#d9ccb4] bg-[#fffdf8] px-4 py-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#1f2f63]"
-                  placeholder="Type the sentence in Latin Darija…"
+                  className="mt-2 min-h-28 w-full resize-y rounded-md border border-input bg-background px-4 py-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  placeholder={restaurantMode ? "Type the Darija word in Arabic…" : "Type the sentence in Latin Darija…"}
                 />
               </label>
             </div>
@@ -619,24 +864,32 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
 
           {exercise.id === "speak" ? (
             <div className="space-y-4">
-              <div className="rounded-xl border border-[#d9ccb4] bg-[#fffdf8] p-5">
-                <p dir="rtl" className="font-[family-name:var(--font-simplified-arabic)] text-2xl font-semibold">بغيت أتاي عافاك</p>
-                <p className="mt-2 text-sm text-[#a86d3f]">Bghit atay ‘afak</p>
+              <div className="rounded-xl border border-border bg-card p-5">
+                <p dir="rtl" className="font-[family-name:var(--font-simplified-arabic)] text-2xl font-semibold">
+                  {restaurantMode ? restaurantOrderWords.join(" ") : "بغيت أتاي عافاك"}
+                </p>
+                <p className="mt-2 text-sm text-primary">
+                  {restaurantMode ? "Polite restaurant order" : "Bghit atay ‘afak"}
+                </p>
               </div>
               <Button
                 type="button"
                 onClick={() => {
                   if ("speechSynthesis" in window) {
                     window.speechSynthesis.cancel()
-                    window.speechSynthesis.speak(new SpeechSynthesisUtterance("Bghit atay afak"))
+                    const utterance = new SpeechSynthesisUtterance(
+                      restaurantMode ? restaurantOrderWords.join(" ") : "Bghit atay afak"
+                    )
+                    utterance.lang = restaurantMode ? "ar-MA" : "ar-MA"
+                    window.speechSynthesis.speak(utterance)
                   }
                 }}
-                className="h-12 w-full rounded-xl bg-[#1f2f63] text-white hover:bg-[#1a2858]"
+                className="h-12 w-full rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
               >
-                <MicIcon aria-hidden="true" className="mr-2 size-4" />
-                Listen and practise aloud
+                <VolumeIcon aria-hidden="true" className="mr-2 size-4" />
+                Play the phrase, then practise aloud
               </Button>
-              <p className="text-center text-xs text-[#7e7463]">
+              <p className="text-center text-xs text-muted-foreground">
                 Practise the phrase, then continue when you&apos;re ready.
               </p>
             </div>
@@ -645,17 +898,37 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
           {exercise.id === "image" ? (
             <div>
               <div className="mb-5 text-center">
-                <p className="text-[10px] tracking-[0.18em] text-[#7e7463] uppercase">Which picture means</p>
+                <p className="text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
+                  {restaurantMode ? "Menu item" : "Which picture means"}
+                </p>
                 <p className="mt-1 text-2xl font-semibold">
-                  atay <span lang="ary" dir="rtl" className="ml-1 font-[family-name:var(--font-simplified-arabic)] text-[#a86d3f]">أتاي</span>
+                  {restaurantMode ? (
+                    <span lang="ary" dir="rtl" className="font-[family-name:var(--font-simplified-arabic)]">
+                      {featuredMain.canonical}
+                    </span>
+                  ) : (
+                    <>
+                      atay{" "}
+                      <span lang="ary" dir="rtl" className="ml-1 font-[family-name:var(--font-simplified-arabic)] text-primary">
+                        أتاي
+                      </span>
+                    </>
+                  )}
                 </p>
               </div>
               <div className="grid grid-cols-3 gap-3">
-                {[
-                  { id: 1, emoji: "🥛", label: "Milk" },
-                  { id: 2, emoji: "🫖", label: "Tea" },
-                  { id: 3, emoji: "🥧", label: "Pie" },
-                ].map((item) => (
+                {(restaurantMode
+                  ? [
+                      { id: 1, emoji: "🥗", label: "Starters" },
+                      { id: 2, emoji: "🍲", label: "Main dishes" },
+                      { id: 3, emoji: "🥤", label: "Drinks" },
+                    ]
+                  : [
+                      { id: 1, emoji: "🥛", label: "Milk" },
+                      { id: 2, emoji: "🫖", label: "Tea" },
+                      { id: 3, emoji: "🥧", label: "Pie" },
+                    ]
+                ).map((item) => (
                   <button
                     key={item.id}
                     type="button"
@@ -663,14 +936,14 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
                     aria-label={item.label}
                     aria-pressed={selectedImage === item.id}
                     onClick={() => setSelectedImage(item.id)}
-                    className={`flex min-h-32 flex-col items-center justify-center rounded-xl border bg-[#fffdf8] p-3 transition-colors sm:min-h-40 ${
+                    className={`flex min-h-32 flex-col items-center justify-center rounded-xl border bg-card p-3 transition-colors sm:min-h-40 ${
                       selectedImage === item.id
-                        ? "border-[#1f2f63] bg-[#eff2f8] ring-1 ring-[#1f2f63]"
-                        : "border-[#d9ccb4] hover:bg-[#f1eadb]"
+                        ? "border-primary bg-primary/10 ring-1 ring-primary"
+                        : "border-border hover:bg-accent"
                     }`}
                   >
                     <span aria-hidden="true" className="text-5xl sm:text-6xl">{item.emoji}</span>
-                    <span className="mt-3 text-xs text-[#7e7463]">{item.label}</span>
+                    <span className="mt-3 text-xs text-muted-foreground">{item.label}</span>
                   </button>
                 ))}
               </div>
@@ -679,7 +952,7 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
         </div>
       </div>
 
-      <footer className="sticky bottom-0 mt-auto border-t border-[#dfd7c8] bg-[#f6f2e7]/95 px-5 py-4 backdrop-blur sm:px-8">
+      <footer className="sticky bottom-0 mt-auto border-t border-border bg-background/95 px-5 py-4 backdrop-blur sm:px-8">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-3">
           {feedback ? (
             <div
@@ -710,7 +983,7 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
               <Button
                 type="button"
                 onClick={continueAfterFeedback}
-                className="h-11 w-full shrink-0 rounded-xl bg-[#1f2f63] text-white hover:bg-[#1a2858] sm:w-auto sm:min-w-36"
+                className="h-11 w-full shrink-0 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 sm:w-auto sm:min-w-36"
               >
                 {exerciseIndex === exercises.length - 1 ? "See results" : "Continue"}
                 <ArrowRightIcon aria-hidden="true" className="ml-2 size-4" />
@@ -721,7 +994,7 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
               type="button"
               onClick={submitExercise}
               disabled={!canCheck()}
-              className="h-12 w-full rounded-xl bg-[#1f2f63] text-white hover:bg-[#1a2858] disabled:bg-[#ddd6c7] disabled:text-[#8f8068]"
+              className="h-12 w-full rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground"
             >
               {exercise.id === "speak" ? "Continue" : "Check answer"}
               <ArrowRightIcon aria-hidden="true" className="ml-2 size-4" />
@@ -759,46 +1032,46 @@ export function ScenarioReview({ scenario }: { scenario: ScenarioId }): React.JS
   const missed = attempt?.results.filter((result) => !result.correct) ?? []
 
   return (
-    <main className="min-h-dvh bg-[#f6f2e7] px-5 py-7 text-[#1f2f63] sm:px-8 sm:py-10">
+    <main className="min-h-dvh bg-background px-5 py-7 text-foreground sm:px-8 sm:py-10">
       <div className="mx-auto w-full max-w-2xl">
         <Link
           href={`/learning/scenarios/${scenario}`}
-          className="inline-flex items-center gap-2 text-sm text-[#a86d3f] hover:underline"
+          className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
         >
           <ArrowLeftIcon aria-hidden="true" className="size-4" /> Back to scenario
         </Link>
         <p className="mt-8 text-[11px] tracking-[0.18em] text-[#a86d3f] uppercase">Review</p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">Your practice, revisited.</h1>
-        <p className="mt-2 text-sm leading-6 text-[#6f6b61]">{scenarioLabel(scenario)}</p>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">{scenarioLabel(scenario)}</p>
 
         {!loaded ? (
-          <Card className="mt-6 animate-pulse rounded-xl border-[#d9ccb4] bg-[#fffdf8] p-6">
-            <div className="h-4 w-1/2 rounded bg-[#e9e1d2]" />
-            <div className="mt-3 h-4 w-3/4 rounded bg-[#e9e1d2]" />
+          <Card className="mt-6 animate-pulse rounded-xl border-border bg-card p-6">
+            <div className="h-4 w-1/2 rounded bg-muted" />
+            <div className="mt-3 h-4 w-3/4 rounded bg-muted" />
           </Card>
         ) : !attempt ? (
-          <Card className="mt-6 rounded-xl border-[#d9ccb4] bg-[#fffdf8] p-6 sm:p-8">
+          <Card className="mt-6 rounded-xl border-border bg-card p-6 sm:p-8">
             <p className="text-base font-semibold">Your review will appear here after your first practice.</p>
-            <p className="mt-2 text-sm leading-6 text-[#6f6b61]">
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
               Finish a scenario quiz and we&apos;ll keep the answers you missed on this device, ready to revisit.
             </p>
             <Link
               href={`/learning/scenarios/${scenario}/quiz`}
-              className="mt-5 inline-flex h-11 items-center justify-center rounded-xl bg-[#1f2f63] px-4 text-sm font-medium text-white hover:bg-[#1a2858]"
+              className="mt-5 inline-flex h-11 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
             >
               Start practice
             </Link>
           </Card>
         ) : (
           <>
-            <Card className="mt-6 rounded-xl border-[#d9ccb4] bg-[#fffdf8] p-5 sm:p-6">
-              <p className="text-xs text-[#7e7463]">
+            <Card className="mt-6 rounded-xl border-border bg-card p-5 sm:p-6">
+              <p className="text-xs text-muted-foreground">
                 Last practice · {new Date(attempt.completedAt).toLocaleDateString()}
               </p>
               <p className="mt-2 text-xl font-semibold">
                 {attempt.correctCount} of {attempt.totalCount} correct
               </p>
-              <p className="mt-1 text-sm text-[#6f6b61]">
+              <p className="mt-1 text-sm text-muted-foreground">
                 {missed.length
                   ? `${missed.length} answer${missed.length === 1 ? "" : "s"} to revisit`
                   : "Everything was correct — great work!"}
@@ -810,12 +1083,12 @@ export function ScenarioReview({ scenario }: { scenario: ScenarioId }): React.JS
                 <h2 id="missed-answers" className="text-lg font-semibold">Let&apos;s revisit these</h2>
                 <div className="mt-3 space-y-3">
                   {missed.map((result) => (
-                    <Card key={result.exerciseId} className="rounded-xl border-[#d9ccb4] bg-[#fffdf8] p-4 sm:p-5">
+                    <Card key={result.exerciseId} className="rounded-xl border-border bg-card p-4 sm:p-5">
                       <p className="text-sm font-semibold">{result.title}</p>
-                      <p className="mt-2 text-xs text-[#7e7463]">Your answer</p>
+                      <p className="mt-2 text-xs text-muted-foreground">Your answer</p>
                       <p className="mt-0.5 text-sm">{result.response || "No answer entered"}</p>
-                      <p className="mt-3 text-xs text-[#7e7463]">Correct answer</p>
-                      <p className="mt-0.5 text-sm font-medium text-emerald-800">{result.correctAnswer}</p>
+                      <p className="mt-3 text-xs text-muted-foreground">Correct answer</p>
+                      <p className="mt-0.5 text-sm font-medium text-emerald-700 dark:text-emerald-300">{result.correctAnswer}</p>
                     </Card>
                   ))}
                 </div>
@@ -824,7 +1097,7 @@ export function ScenarioReview({ scenario }: { scenario: ScenarioId }): React.JS
 
             <Link
               href={`/learning/scenarios/${scenario}/quiz`}
-              className="mt-6 inline-flex h-11 items-center justify-center rounded-xl bg-[#1f2f63] px-4 text-sm font-medium text-white hover:bg-[#1a2858]"
+              className="mt-6 inline-flex h-11 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
             >
               Practise again <ArrowRightIcon aria-hidden="true" className="ml-2 size-4" />
             </Link>

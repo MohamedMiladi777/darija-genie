@@ -4,6 +4,7 @@ import { notFound } from "next/navigation"
 
 import ScenarioChatLaunchLink from "@/components/scenario-chat-launch-link"
 import ScenarioPageChrome from "@/components/scenario-page-chrome"
+import { ArrowRightIcon } from "@/components/icons"
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
 
 import { isScenarioId, scenarioIds, type ScenarioId } from "../scenario-data"
@@ -71,27 +72,15 @@ function LearningOptionCard({
           </p>
         </div>
         {isFeatured ? (
-          <span className="flex size-8 items-center justify-center rounded-xl bg-[#1e40af] shadow-xs md:bg-[#162456]">
-            <Image
-              src="/assets/learning/scenario-arrow.svg"
-              alt=""
-              width={14}
-              height={14}
-              className="size-3.5"
-            />
+          <span className="flex size-8 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+            <ArrowRightIcon aria-hidden="true" className="size-4" />
           </span>
         ) : (
           <span
             aria-hidden="true"
-            className="flex size-8 items-center justify-center rounded-xl bg-[#1e40af] shadow-xs md:bg-[#162456]"
+            className="flex size-8 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground"
           >
-            <Image
-              src="/assets/learning/scenario-arrow.svg"
-              alt=""
-              width={14}
-              height={14}
-              className="size-3.5"
-            />
+            <ArrowRightIcon aria-hidden="true" className="size-4" />
           </span>
         )}
       </CardHeader>
@@ -186,12 +175,12 @@ function ActivityChart(): React.JSX.Element {
         </p>
       </header>
 
-      <div className="relative mx-auto h-[161px] w-[240px] md:mt-6 md:w-[448px]">
+        <div className="relative mx-auto h-[161px] w-[240px] md:mt-6 md:w-[448px]">
         <div className="relative h-32 border-b border-l border-border">
           {[0, 24, 48, 72, 95].map((top) => (
             <span
               key={top}
-              className="absolute right-0 left-0 h-px bg-[#e5e5e5]/20"
+              className="absolute right-0 left-0 h-px bg-border/50"
               style={{ top }}
             />
           ))}

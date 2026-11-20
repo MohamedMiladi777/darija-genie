@@ -129,9 +129,9 @@ export default function OnboardingPreference({
         : MessageIcon
 
   return (
-    <main className="flex min-h-svh items-center justify-center px-6 py-10">
+    <main className="flex min-h-svh items-center justify-center bg-background px-6 py-10 text-foreground">
       <div className="flex w-full max-w-4xl flex-col items-center gap-10 lg:flex-row lg:justify-center lg:gap-16">
-        <div className="flex size-44 shrink-0 items-center justify-center rounded-full bg-[#e0e7ff] text-blue-950 shadow-sm md:size-52">
+        <div className="flex size-44 shrink-0 items-center justify-center rounded-full bg-[#e0e7ff] text-blue-950 shadow-sm dark:bg-primary/15 dark:text-primary md:size-52">
           <Illustration
             aria-hidden="true"
             className="size-20 md:size-24"
@@ -140,10 +140,10 @@ export default function OnboardingPreference({
         </div>
 
         <section className="w-full max-w-md">
-          <h1 className="text-center text-2xl font-medium tracking-wide text-blue-950 md:text-left">
+          <h1 className="text-center text-2xl font-medium tracking-wide text-foreground md:text-left">
             {config.heading}
           </h1>
-          <p className="mt-3 text-center text-sm leading-6 text-blue-950/70 md:text-left">
+          <p className="mt-3 text-center text-sm leading-6 text-muted-foreground md:text-left">
             {config.description}
           </p>
 
@@ -163,12 +163,12 @@ export default function OnboardingPreference({
                   onClick={() => select(option.value)}
                   className={`flex min-h-16 items-center gap-4 rounded-2xl border bg-card px-4 py-3 text-left shadow-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 ${
                     selected
-                      ? "border-blue-950 ring-1 ring-blue-950"
-                      : "border-neutral-200"
+                       ? "border-blue-950 ring-1 ring-blue-950 dark:border-primary dark:ring-primary"
+                       : "border-neutral-200 dark:border-border"
                   }`}
                 >
                   <span
-                    className={`flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#e0e7ff] font-[family-name:var(--font-simplified-arabic)] font-semibold text-blue-950 ${option.preview}`}
+                    className={`flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#e0e7ff] font-[family-name:var(--font-simplified-arabic)] font-semibold text-blue-950 dark:bg-primary/15 dark:text-primary ${option.preview}`}
                   >
                     {kind === "script" && option.value === "arabic"
                       ? "ع"
@@ -179,11 +179,11 @@ export default function OnboardingPreference({
                         : "A"}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-medium text-blue-950">
+                    <span className="block text-sm font-medium text-foreground">
                       {option.label}
                     </span>
                     <span
-                      className="mt-0.5 block text-xs text-blue-950/60"
+                      className="mt-0.5 block text-xs text-muted-foreground"
                       dir={
                         kind === "script" && option.value === "arabic"
                           ? "rtl"
@@ -196,8 +196,8 @@ export default function OnboardingPreference({
                   <span
                     className={`flex size-5 shrink-0 items-center justify-center rounded-full border ${
                       selected
-                        ? "border-blue-950 bg-blue-950 text-white"
-                        : "border-neutral-300"
+                        ? "border-blue-950 bg-blue-950 text-white dark:border-primary dark:bg-primary dark:text-primary-foreground"
+                        : "border-neutral-300 dark:border-border"
                     }`}
                     aria-hidden="true"
                   >
@@ -211,7 +211,7 @@ export default function OnboardingPreference({
           <Button
             type="button"
             onClick={() => router.push(nextHref)}
-            className="mt-7 h-12 w-full rounded-full bg-blue-950 text-neutral-50 hover:bg-blue-900"
+            className="mt-7 h-12 w-full rounded-full bg-blue-950 text-neutral-50 hover:bg-blue-900 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90"
           >
             Continue <ArrowRightIcon aria-hidden="true" className="size-4" />
           </Button>

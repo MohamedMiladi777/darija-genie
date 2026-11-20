@@ -15,50 +15,78 @@ import {
 } from "@workspace/ui/components/card"
 
 import { ClockIcon } from "./icons"
+import {
+  getQuizProgressStorageKey,
+  LOCAL_RETENTION_CHANGE_EVENT,
+  RESTAURANT_CHAT_STORAGE_KEY,
+} from "@/lib/local-retention"
+import { scenarioIds } from "@/app/(main)/learning/scenarios/scenario-data"
 
-const sessions = [
-  {
-    id: "restaurant-quiz",
-    badge: "Scenario Quiz",
-    title: "Restaurant",
-    subtitle: "Order a tajine",
-    progress: 60,
-    image: "/assets/learning/sessions/restaurant.jpg",
-    accent: "#2fa6a3",
-    href: "/learning/scenarios/restaurant-1",
-    recent: true,
-  },
-  {
-    id: "darija-bot",
-    badge: "Chat Session",
-    title: "Darija Bot",
-    subtitle: "Free conversation",
-    image: "/assets/learning/sessions/darija-bot.jpg",
-    accent: "#4e9bd6",
-    href: "/learning/scenarios/restaurant-1/geniechat",
-    timestamp: "3 days ago",
-  },
-  {
-    id: "food-drinks",
-    badge: "Vocabulary",
-    title: "Food & Drinks",
-    subtitle: "50 words · Level 2",
-    progress: 45,
-    image: "/assets/learning/sessions/food-drinks.jpg",
-    accent: "#c06a2a",
-    href: "/learning/scenarios/shopping-1/preview",
-  },
-  {
-    id: "grammar-basics",
-    badge: "General Quiz",
-    title: "Grammar Basics",
-    subtitle: "Verb conjugation",
-    progress: 20,
-    image: "/assets/learning/sessions/grammar.jpg",
-    accent: "#b57452",
-    href: "/testing",
-  },
-] as const
+type ResumeSnapshot = {
+  chat: string | null
+  quizzes: Array<{ scenario: string; snapshot: string | null }>
+}
+
+type ResumeCard = {
+  id: string
+  badge: string
+  title: string
+  subtitle: string
+  image: string
+  accent: string
+  href: string
+  progress?: number
+  timestamp?: string
+  recent?: boolean
+  action: string
+}
+
+function getResumeSnapshot(): string {
+  try {
+    return JSON.stringify({
+      chat: window.localStorage.getItem(RESTAURANT_CHAT_STORAGE_KEY),
+      quizzes: scenarioIds.map((scenario) => ({
+        scenario,
+        snapshot: window.localStorage.getItem(getQuizProgressStorageKey(scenario)),
+      })),
+    } satisfies ResumeSnapshot)
+  } catch {
+    return JSON.stringify({ chat: null, quizzes: [] } satisfies ResumeSnapshot)
+  }
+}
+
+function subscribeToResumeData(onChange: () => void): () => void {
+  window.addEventListener("storage", onChange)
+  window.addEventListener(LOCAL_RETENTION_CHANGE_EVENT, onChange)
+  return () => {
+    window.removeEventListener("storage", onChange)
+    window.removeEventListener(LOCAL_RETENTION_CHANGE_EVENT, onChange)
+  }
+}
+
+function parseResumeSnapshot(value: string): ResumeSnapshot {
+  try {
+    const parsed: unknown = JSON.parse(value)
+    if (!parsed || typeof parsed !== "object") return { chat: null, quizzes: [] }
+    const record = parsed as Partial<ResumeSnapshot>
+    const quizzes = Array.isArray(record.quizzes)
+      ? record.quizzes.filter(
+          (item): item is { scenario: string; snapshot: string | null } =>
+            Boolean(item) &&
+            typeof item === "object" &&
+            typeof (item as { scenario?: unknown }).scenario === "string" &&
+            ((item as { snapshot?: unknown }).snapshot === null ||
+              typeof (item as { snapshot?: unknown }).snapshot === "string")
+        )
+      : []
+    return {
+      chat: typeof record.chat === "string" ? record.chat : null,
+      quizzes,
+    }
+  } catch {
+    return { chat: null, quizzes: [] }
+  }
+}
 
 const storageKey = "darija-genie:dismissed-sessions"
 const changeEvent = "darija-genie:dismissed-sessions-changed"
@@ -116,12 +144,91 @@ function saveDismissals(ids: string[]): void {
 export default function ContinueSessionSection(): React.JSX.Element {
   const [showAll, setShowAll] = useState(false)
   const [announcement, setAnnouncement] = useState("")
-  const snapshot = useSyncExternalStore(
+  const dismissedSnapshot = useSyncExternalStore(
     subscribeToDismissals,
     getDismissedSnapshot,
     () => "[]"
   )
-  const dismissedIds = parseDismissals(snapshot)
+  const resumeRaw = useSyncExternalStore(
+    subscribeToResumeData,
+    getResumeSnapshot,
+    () => JSON.stringify({ chat: null, quizzes: [] } satisfies ResumeSnapshot)
+  )
+  const resumeSnapshot = parseResumeSnapshot(resumeRaw)
+  const dismissedIds = parseDismissals(dismissedSnapshot)
+  const chatData = (() => {
+    try {
+      const value: unknown = JSON.parse(resumeSnapshot.chat ?? "null")
+      if (!value || typeof value !== "object") return null
+      const data = value as { updatedAt?: unknown; messages?: unknown }
+      return {
+        scenario:
+          typeof (data as { scenario?: unknown }).scenario === "string"
+            ? (data as { scenario: string }).scenario
+            : "restaurant-1",
+        updatedAt: typeof data.updatedAt === "string" ? data.updatedAt : null,
+        messageCount: Array.isArray(data.messages) ? data.messages.length : 0,
+      }
+    } catch {
+      return null
+    }
+  })()
+  const activeQuiz = resumeSnapshot.quizzes
+    .map(({ scenario, snapshot }) => {
+      if (!snapshot) return null
+      try {
+        const value: unknown = JSON.parse(snapshot)
+        if (!value || typeof value !== "object") return null
+        const data = value as { state?: { exerciseIndex?: unknown } }
+        const index =
+          typeof data.state?.exerciseIndex === "number"
+            ? Math.max(0, Math.min(5, data.state.exerciseIndex))
+            : 0
+        return { scenario, index }
+      } catch {
+        return null
+      }
+    })
+    .find((item): item is { scenario: string; index: number } => item !== null)
+  const activeQuizIsShopping = Boolean(activeQuiz?.scenario.startsWith("shopping"))
+
+  const sessions: ResumeCard[] = [
+    {
+      id: "restaurant-quiz",
+      badge: "Scenario Quiz",
+      title: activeQuizIsShopping ? "Shopping" : "Restaurant",
+      subtitle: activeQuiz
+        ? `Question ${activeQuiz.index + 1} of 6 · saved on this device`
+        : activeQuizIsShopping
+          ? "Practise prices, items, and everyday exchanges"
+          : "Practise ordering food and making requests",
+      image: activeQuizIsShopping
+        ? "/assets/learning/sessions/food-drinks.jpg"
+        : "/assets/learning/sessions/restaurant.jpg",
+      accent: "#c49a5a",
+      href: `/learning/scenarios/${activeQuiz?.scenario ?? "restaurant-1"}/quiz`,
+      progress: activeQuiz ? Math.round((activeQuiz.index / 6) * 100) : undefined,
+      timestamp: "Ready whenever you are",
+      action: activeQuiz ? "Continue quiz" : "Start quiz",
+    },
+    {
+      id: "darija-bot",
+      badge: "Chat Session",
+      title: "Restaurant chat",
+      subtitle: chatData
+        ? `${chatData.messageCount} messages · saved on this device`
+        : "Start a conversation and pick it up again later",
+      image: "/assets/learning/sessions/darija-bot.jpg",
+      accent: "#c49a5a",
+      href: `/learning/scenarios/${chatData?.scenario ?? "restaurant-1"}/geniechat`,
+      timestamp: chatData?.updatedAt
+        ? `Saved ${new Date(chatData.updatedAt).toLocaleString()}`
+        : "No saved conversation yet",
+      recent: Boolean(chatData),
+      action: chatData ? "Continue chat" : "Start chat",
+    },
+  ]
+
   const availableSessions = sessions.filter(
     ({ id }) => !dismissedIds.includes(id)
   )
@@ -230,9 +337,9 @@ export default function ContinueSessionSection(): React.JSX.Element {
                     </div>
                   </div>
                 ) : (
-                  <p className="flex items-center gap-1.5 text-[11px] leading-4 text-muted-foreground">
-                    <ClockIcon aria-hidden="true" className="size-3" />
-                    {session.timestamp}
+                    <p className="flex items-center gap-1.5 text-[11px] leading-4 text-muted-foreground">
+                      <ClockIcon aria-hidden="true" className="size-3" />
+                      {session.timestamp}
                   </p>
                 )}
               </CardContent>
@@ -244,7 +351,7 @@ export default function ContinueSessionSection(): React.JSX.Element {
                   nativeButton={false}
                   aria-label={`Continue ${session.title}`}
                 >
-                  Continue
+                  {session.action}
                 </Button>
                 <Button
                   size="sm"

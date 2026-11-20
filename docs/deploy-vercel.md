@@ -32,7 +32,10 @@ Recommended defaults:
 - `GEMINI_MODEL=gemini-2.5-flash`
 - `OPENAI_BASE_URL=https://api.openai.com/v1`
 - `VOCHAI_BASE_URL=https://aui-transcription-api.fly.dev/api/v1`
-- `GOOGLE_GENAI_USE_VERTEXAI=false`
+
+GenieChat uses the Gemini `generateContent` HTTPS API directly. Vertex ADC
+variables are not used by this route. After setting the key and redeploying,
+check `/api/geniechat` for a non-secret configuration status response.
 
 ## 3) Seed content before/after first deploy
 

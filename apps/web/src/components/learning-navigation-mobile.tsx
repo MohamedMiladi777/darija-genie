@@ -53,10 +53,10 @@ export default function LearningMobileNavigation(): React.JSX.Element | null {
         {navigationItems.map((item) => {
           const isActive = item.value === activeItem
           const Icon = item.icon
-          const className = `flex h-full min-w-0 items-center justify-center gap-1 rounded-md font-[family-name:var(--font-inter)] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-[#1447e6] ${
+          const className = `flex h-full min-w-0 items-center justify-center gap-1 rounded-md font-[family-name:var(--font-inter)] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-ring ${
             isActive
-              ? "bg-[#193cb8] text-base text-[#f2efe4]"
-              : "text-sm text-foreground hover:bg-white/35"
+              ? "bg-[#193cb8] text-base text-[#f2efe4] dark:bg-primary dark:text-primary-foreground"
+              : "text-sm text-foreground hover:bg-white/35 dark:hover:bg-sidebar-accent"
           }`
           const content = (
             <>

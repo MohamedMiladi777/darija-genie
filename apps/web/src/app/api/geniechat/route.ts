@@ -1,12 +1,8 @@
-import {
-  InMemoryRunner,
-  isFinalResponse,
-  LlmAgent,
-  stringifyContent,
-} from "@google/adk"
-
 import { GENIECHAT_SYSTEM_PROMPT } from "@/lib/geniechat-system-prompt"
 import { loadValueBankPrompt } from "@/lib/value-bank"
+
+export const runtime = "nodejs"
+export const maxDuration = 60
 
 type SlotState = Record<string, unknown>
 type HistoryEntry =
@@ -30,39 +26,25 @@ const openAiBaseUrl = (process.env.OPENAI_BASE_URL ?? "https://api.openai.com/v1
 const openAiModel = process.env.OPENAI_MODEL ?? process.env.GPT_MODEL ?? "gpt-4o-mini"
 const hasOpenAiCredentials = Boolean(openAiApiKey)
 
-const usesVertexAi = process.env.GOOGLE_GENAI_USE_VERTEXAI === "true"
-const apiKey = process.env.GOOGLE_GENAI_API_KEY ?? process.env.GEMINI_API_KEY
-const hasApiKey = Boolean(apiKey)
-const hasVertexTarget = Boolean(
-  process.env.GOOGLE_CLOUD_PROJECT && process.env.GOOGLE_CLOUD_LOCATION
-)
-const hasLocalVertexCredentials = Boolean(
-  process.env.GOOGLE_APPLICATION_CREDENTIALS ||
-    process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON
-)
-const runningOnGoogleInfra = Boolean(
-  process.env.K_SERVICE ||
-    process.env.FUNCTION_TARGET ||
-    process.env.GAE_SERVICE ||
-    process.env.CLOUD_RUN_JOB
-)
-const vertexReady =
-  usesVertexAi && hasVertexTarget && (hasLocalVertexCredentials || runningOnGoogleInfra)
-
-if (apiKey && !process.env.GOOGLE_GENAI_API_KEY) {
-  process.env.GOOGLE_GENAI_API_KEY = apiKey
-}
-
-if (!vertexReady) {
-  process.env.GOOGLE_GENAI_USE_VERTEXAI = "false"
-}
-
-const hasGeminiCredentials = vertexReady || hasApiKey
+const geminiApiKey = process.env.GOOGLE_GENAI_API_KEY ?? process.env.GEMINI_API_KEY
+const geminiModel = process.env.GEMINI_MODEL ?? "gemini-2.5-flash"
+const hasGeminiCredentials = Boolean(geminiApiKey)
 const hasCredentials = usesOpenAiProvider
   ? hasOpenAiCredentials
   : hasGeminiCredentials
 
 const DEFAULT_SCENARIO_SLUG = "restaurant"
+const MAX_HISTORY_ENTRIES = 120
+const MAX_HISTORY_ENTRY_LENGTH = 4_000
+
+class ProviderHttpError extends Error {
+  constructor(
+    message: string,
+    readonly status: number
+  ) {
+    super(message)
+  }
+}
 
 function withValueBankPrompt(basePrompt: string, valueBankPrompt: string | null): string {
   if (!valueBankPrompt) return basePrompt
@@ -74,19 +56,29 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function isHistory(value: unknown): value is HistoryEntry[] {
-  if (!Array.isArray(value) || value.length > 50) return false
-  return value.every((entry, index) => {
+  if (!Array.isArray(value) || value.length > MAX_HISTORY_ENTRIES) return false
+  let previousRole: "assistant" | "user" | null = null
+
+  return value.every((entry) => {
     if (!isRecord(entry) || Object.keys(entry).length !== 1) return false
-    if (index % 2 === 0) {
-      const assistant = entry.assistant
-      return (
-        isRecord(assistant) &&
-        typeof assistant.utterance === "string" &&
-        isRecord(assistant.slots)
-      )
+    if (isRecord(entry.assistant)) {
+      const valid =
+        previousRole !== "assistant" &&
+        typeof entry.assistant.utterance === "string" &&
+        entry.assistant.utterance.length <= MAX_HISTORY_ENTRY_LENGTH &&
+        isRecord(entry.assistant.slots)
+      if (valid) previousRole = "assistant"
+      return valid
     }
-    const user = entry.user
-    return isRecord(user) && typeof user.utterance === "string"
+    if (isRecord(entry.user)) {
+      const valid =
+        previousRole !== "user" &&
+        typeof entry.user.utterance === "string" &&
+        entry.user.utterance.length <= MAX_HISTORY_ENTRY_LENGTH
+      if (valid) previousRole = "user"
+      return valid
+    }
+    return false
   })
 }
 
@@ -281,52 +273,99 @@ function normalizeSlots(
   return normalized
 }
 
-async function runAgent(history: HistoryEntry[], systemPrompt: string): Promise<string> {
-  const agent = new LlmAgent({
-    name: "darija_genie",
-    description: "A Moroccan Darija restaurant conversation tutor.",
-    model: process.env.GEMINI_MODEL ?? "gemini-2.5-flash",
-    instruction: systemPrompt,
-    generateContentConfig: {
-      temperature: 0.45,
-      maxOutputTokens: 1024,
-    },
-  })
-  const runner = new InMemoryRunner({ agent, appName: "darija_genie" })
-  const maxAttempts = 3
+function compactHistory(history: HistoryEntry[]): HistoryEntry[] {
+  // Keep the latest 20 turns in the provider request. The browser may retain a
+  // longer transcript; slot state remains represented in each assistant entry.
+  let recent = history.slice(-40)
+  if (recent.length > 0 && "user" in recent[0]!) recent = recent.slice(1)
+  return recent.map((entry) =>
+    "user" in entry
+      ? { user: { utterance: entry.user.utterance.slice(-1_500) } }
+      : {
+          assistant: {
+            utterance: entry.assistant.utterance.slice(-2_000),
+            slots: entry.assistant.slots,
+          },
+        }
+  )
+}
+
+async function runGeminiAgent(history: HistoryEntry[], systemPrompt: string): Promise<string> {
+  if (!geminiApiKey) throw new Error("GOOGLE_GENAI_API_KEY is not configured.")
+
+  const prompt = `INPUT:\n${JSON.stringify(compactHistory(history))}\nEnd of input.`
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(geminiModel)}:generateContent`
   let lastError: unknown
 
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    let finalText = ""
+  for (let attempt = 0; attempt < 2; attempt += 1) {
     try {
-      for await (const event of runner.runEphemeral({
-        userId: crypto.randomUUID(),
-        newMessage: {
-          role: "user",
-          parts: [{ text: `INPUT:\n${JSON.stringify(history)}\nEnd of input.` }],
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": geminiApiKey,
         },
-      })) {
-        if (event.errorMessage) throw new Error(event.errorMessage)
-        if (isFinalResponse(event)) {
-          const text = stringifyContent(event).trim()
-          if (text) finalText = text
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.45, maxOutputTokens: 1024 },
+        }),
+        signal: AbortSignal.timeout(25_000),
+      })
+      const payload: unknown = await response.json().catch(() => null)
+
+      if (!response.ok) {
+        const message =
+          isRecord(payload) &&
+          isRecord(payload.error) &&
+          typeof payload.error.message === "string"
+            ? payload.error.message
+            : `Gemini request failed (${response.status}).`
+        const transient = response.status === 429 || response.status >= 500
+        if (transient && attempt < 1) {
+          await new Promise((resolve) => setTimeout(resolve, 500))
+          lastError = new Error(message)
+          continue
         }
+        throw new ProviderHttpError(message, response.status)
       }
+
+      if (!isRecord(payload) || !Array.isArray(payload.candidates)) {
+        throw new Error("Gemini returned an invalid response.")
+      }
+      const firstCandidate = payload.candidates[0]
+      const content =
+        isRecord(firstCandidate) && isRecord(firstCandidate.content)
+          ? firstCandidate.content
+          : null
+      const parts = content && Array.isArray(content.parts) ? content.parts : []
+      const text = parts
+        .map((part) => (isRecord(part) && typeof part.text === "string" ? part.text : ""))
+        .join("")
+        .trim()
+      if (!text) {
+        const reason =
+          isRecord(firstCandidate) && typeof firstCandidate.finishReason === "string"
+            ? firstCandidate.finishReason
+            : "unknown"
+        throw new Error(`Gemini returned no text (finish reason: ${reason}).`)
+      }
+      return text
     } catch (error) {
       lastError = error
-      // Brand-new models (e.g. gemini-3.8-flash) can return transient
-      // "high demand" 503s — retry briefly before surfacing the failure.
-      const message = error instanceof Error ? error.message : ""
-      const transient =
-        /high demand|UNAVAILABLE|overloaded|RESOURCE_EXHAUSTED/i.test(message)
-      if (transient && attempt < maxAttempts) {
-        await new Promise((resolve) => setTimeout(resolve, attempt * 2000))
+      const retryable =
+        (error instanceof Error &&
+          error.name !== "TimeoutError" &&
+          error.name !== "AbortError" &&
+          /fetch failed|ECONNRESET|ETIMEDOUT|UNAVAILABLE|overloaded|RESOURCE_EXHAUSTED/i.test(
+            error.message
+          ))
+      if (retryable && attempt < 1) {
+        await new Promise((resolve) => setTimeout(resolve, 500))
         continue
       }
       throw error
     }
-
-    return finalText
   }
 
   throw lastError
@@ -347,7 +386,7 @@ async function runOpenAiAgent(history: HistoryEntry[], systemPrompt: string): Pr
         { role: "system", content: systemPrompt },
         {
           role: "user",
-          content: `INPUT:\n${JSON.stringify(history)}\nEnd of input.`,
+          content: `INPUT:\n${JSON.stringify(compactHistory(history))}\nEnd of input.`,
         },
       ],
     }),
@@ -362,9 +401,9 @@ async function runOpenAiAgent(history: HistoryEntry[], systemPrompt: string): Pr
       isRecord(payload.error) &&
       typeof payload.error.message === "string"
     ) {
-      throw new Error(payload.error.message)
+      throw new ProviderHttpError(payload.error.message, response.status)
     }
-    throw new Error("GPT is unavailable.")
+    throw new ProviderHttpError("GPT is unavailable.", response.status)
   }
 
   if (!isRecord(payload) || !Array.isArray(payload.choices) || payload.choices.length === 0) {
@@ -401,7 +440,7 @@ async function runWithProvider(history: HistoryEntry[], systemPrompt: string): P
     return runOpenAiAgent(history, systemPrompt)
   }
 
-  return runAgent(history, systemPrompt)
+  return runGeminiAgent(history, systemPrompt)
 }
 
 export async function POST(request: Request): Promise<Response> {
@@ -418,9 +457,8 @@ export async function POST(request: Request): Promise<Response> {
 
     return Response.json(
       {
-        error: usesVertexAi
-          ? "Vertex AI is enabled but no local ADC credentials were found. Set GOOGLE_APPLICATION_CREDENTIALS, or switch to API key mode by setting GOOGLE_GENAI_USE_VERTEXAI=false and GOOGLE_GENAI_API_KEY."
-          : "GOOGLE_GENAI_API_KEY is not configured on the server.",
+        error:
+          "GOOGLE_GENAI_API_KEY is not configured on the server. Add it to Vercel Project Settings → Environment Variables, then redeploy.",
       },
       { status: 503 }
     )
@@ -441,7 +479,7 @@ export async function POST(request: Request): Promise<Response> {
       { status: 400 }
     )
   }
-  const history = body.history
+  const history = body.history.slice(-MAX_HISTORY_ENTRIES)
 
   try {
     const valueBankPrompt = await loadValueBankPrompt(DEFAULT_SCENARIO_SLUG)
@@ -474,7 +512,12 @@ export async function POST(request: Request): Promise<Response> {
         : usesOpenAiProvider
           ? "GPT is unavailable."
           : "Gemini is unavailable."
-    const timedOut = error instanceof Error && error.name === "AbortError"
+    const timedOut =
+      error instanceof Error &&
+      (error.name === "AbortError" || error.name === "TimeoutError")
+    const upstreamBusy =
+      error instanceof ProviderHttpError &&
+      (error.status === 429 || error.status === 503)
     return Response.json(
       {
         error: timedOut
@@ -483,7 +526,27 @@ export async function POST(request: Request): Promise<Response> {
             : "Gemini took too long to respond."
           : message,
       },
-      { status: timedOut ? 504 : 502 }
+      { status: timedOut ? 504 : upstreamBusy ? 503 : 502 }
     )
   }
+}
+
+/** A safe deployment diagnostic: reports configuration state, never secrets. */
+export function GET(): Response {
+  const provider = usesOpenAiProvider ? "openai" : "gemini"
+  const configured = usesOpenAiProvider
+    ? hasOpenAiCredentials
+    : hasGeminiCredentials
+  return Response.json(
+    {
+      ok: configured,
+      provider,
+      configured,
+      model: usesOpenAiProvider ? openAiModel : geminiModel,
+      message: configured
+        ? "GenieChat API is configured."
+        : `Missing ${usesOpenAiProvider ? "OPENAI_API_KEY" : "GOOGLE_GENAI_API_KEY"} in the Vercel project environment.`,
+    },
+    { status: configured ? 200 : 503 }
+  )
 }

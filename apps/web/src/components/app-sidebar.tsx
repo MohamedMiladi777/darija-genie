@@ -121,7 +121,7 @@ export function AppSidebar(): React.JSX.Element | null {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" tooltip="Darija Learner">
-              <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#c6b89b] text-xs font-bold text-[#162456]">
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sidebar-primary text-xs font-bold text-sidebar-primary-foreground">
                 DJ
               </div>
               <div className="grid min-w-0 flex-1 leading-tight">

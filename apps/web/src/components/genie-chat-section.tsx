@@ -1,23 +1,25 @@
 import Image from "next/image"
+import Link from "next/link"
 
 const navigationItems = [
-  { label: "Testing", icon: "/assets/genie-chat/testing.svg" },
+  { label: "Testing", icon: "/assets/genie-chat/testing.svg", href: "/testing" },
   {
     label: "Learning",
     icon: "/assets/genie-chat/learning.svg",
     active: true,
+    href: "/learning",
   },
-  { label: "Settings", icon: "/assets/genie-chat/settings.svg" },
+  { label: "Settings", icon: "/assets/genie-chat/settings.svg", href: "/settings" },
 ] as const
 
 export default function GenieChatSidebar(): React.JSX.Element {
   return (
-    <aside className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col bg-[#162456] md:flex">
-      <div className="flex h-[153px] flex-col items-center gap-3 border-b border-[#f2efe4]/15 pt-8">
+    <aside className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col bg-sidebar text-sidebar-foreground md:flex">
+      <div className="flex h-[153px] flex-col items-center gap-3 border-b border-sidebar-border pt-8">
         <button
           type="button"
           aria-label="Expand sidebar"
-          className="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2efe4]"
+          className="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-sidebar-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sidebar-ring"
         >
           <Image
             src="/assets/genie-chat/menu.svg"
@@ -27,7 +29,7 @@ export default function GenieChatSidebar(): React.JSX.Element {
             className="size-5"
           />
         </button>
-        <div className="flex size-10 items-center justify-center rounded-xl bg-[#1447e6] font-[family-name:var(--font-sans)] text-[22px] leading-7 font-semibold text-white">
+        <div className="flex size-10 items-center justify-center rounded-xl bg-sidebar-primary font-[family-name:var(--font-sans)] text-[22px] leading-7 font-semibold text-sidebar-primary-foreground">
           D
         </div>
       </div>
@@ -37,15 +39,15 @@ export default function GenieChatSidebar(): React.JSX.Element {
         className="flex flex-1 flex-col gap-1 p-4"
       >
         {navigationItems.map((item) => (
-          <button
+          <Link
             key={item.label}
-            type="button"
             aria-label={item.label}
             aria-current={"active" in item && item.active ? "page" : undefined}
-            className={`flex h-11 w-12 items-center justify-center rounded-xl transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2efe4] ${
+            href={item.href}
+            className={`flex h-11 w-12 items-center justify-center rounded-xl border-l-2 border-transparent transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sidebar-ring ${
               "active" in item && item.active
-                ? "bg-[#193cb8]"
-                : "hover:bg-white/8"
+                ? "border-sidebar-primary bg-sidebar-accent"
+                : "hover:bg-sidebar-accent"
             }`}
           >
             <Image
@@ -55,13 +57,13 @@ export default function GenieChatSidebar(): React.JSX.Element {
               height={20}
               className="size-5"
             />
-          </button>
+          </Link>
         ))}
       </nav>
 
       <div className="flex h-[108px] items-start justify-center pt-6">
         <div className="flex h-[60px] w-16 items-center justify-center rounded-xl bg-white/8">
-          <div className="flex size-9 items-center justify-center rounded-full bg-[#c6b89b] font-[family-name:var(--font-inter)] text-sm font-bold text-[#162456]">
+          <div className="flex size-9 items-center justify-center rounded-full bg-sidebar-primary font-[family-name:var(--font-inter)] text-sm font-bold text-sidebar-primary-foreground">
             DJ
           </div>
         </div>
