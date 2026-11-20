@@ -6,6 +6,7 @@ import {
 } from "@google/adk"
 
 import { GENIECHAT_SYSTEM_PROMPT } from "@/lib/geniechat-system-prompt"
+import { loadValueBankPrompt } from "@/lib/value-bank"
 
 type SlotState = Record<string, unknown>
 type HistoryEntry =
@@ -55,17 +56,12 @@ const hasCredentials = usesOpenAiProvider
   ? hasOpenAiCredentials
   : hasGeminiCredentials
 
-const agent = new LlmAgent({
-  name: "darija_genie",
-  description: "A Moroccan Darija restaurant conversation tutor.",
-  model: process.env.GEMINI_MODEL ?? "gemini-2.5-flash",
-  instruction: GENIECHAT_SYSTEM_PROMPT,
-  generateContentConfig: {
-    temperature: 0.45,
-    maxOutputTokens: 1024,
-  },
-})
-const runner = new InMemoryRunner({ agent, appName: "darija_genie" })
+const DEFAULT_SCENARIO_SLUG = "restaurant"
+
+function withValueBankPrompt(basePrompt: string, valueBankPrompt: string | null): string {
+  if (!valueBankPrompt) return basePrompt
+  return `${basePrompt}\n\n${valueBankPrompt}`
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value)
@@ -145,7 +141,18 @@ function parseReply(rawReply: string): {
   }
 }
 
-async function runAgent(history: HistoryEntry[]): Promise<string> {
+async function runAgent(history: HistoryEntry[], systemPrompt: string): Promise<string> {
+  const agent = new LlmAgent({
+    name: "darija_genie",
+    description: "A Moroccan Darija restaurant conversation tutor.",
+    model: process.env.GEMINI_MODEL ?? "gemini-2.5-flash",
+    instruction: systemPrompt,
+    generateContentConfig: {
+      temperature: 0.45,
+      maxOutputTokens: 1024,
+    },
+  })
+  const runner = new InMemoryRunner({ agent, appName: "darija_genie" })
   const maxAttempts = 3
   let lastError: unknown
 
@@ -185,7 +192,7 @@ async function runAgent(history: HistoryEntry[]): Promise<string> {
   throw lastError
 }
 
-async function runOpenAiAgent(history: HistoryEntry[]): Promise<string> {
+async function runOpenAiAgent(history: HistoryEntry[], systemPrompt: string): Promise<string> {
   const response = await fetch(`${openAiBaseUrl}/chat/completions`, {
     method: "POST",
     headers: {
@@ -197,7 +204,7 @@ async function runOpenAiAgent(history: HistoryEntry[]): Promise<string> {
       temperature: 0.45,
       max_tokens: 1024,
       messages: [
-        { role: "system", content: GENIECHAT_SYSTEM_PROMPT },
+        { role: "system", content: systemPrompt },
         {
           role: "user",
           content: `INPUT:\n${JSON.stringify(history)}\nEnd of input.`,
@@ -249,12 +256,12 @@ async function runOpenAiAgent(history: HistoryEntry[]): Promise<string> {
   throw new Error("GPT returned an empty response.")
 }
 
-async function runWithProvider(history: HistoryEntry[]): Promise<string> {
+async function runWithProvider(history: HistoryEntry[], systemPrompt: string): Promise<string> {
   if (usesOpenAiProvider) {
-    return runOpenAiAgent(history)
+    return runOpenAiAgent(history, systemPrompt)
   }
 
-  return runAgent(history)
+  return runAgent(history, systemPrompt)
 }
 
 export async function POST(request: Request): Promise<Response> {
@@ -296,7 +303,12 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   try {
-    const rawReply = await runWithProvider(body.history)
+    const valueBankPrompt = await loadValueBankPrompt(DEFAULT_SCENARIO_SLUG)
+    const systemPrompt = withValueBankPrompt(
+      GENIECHAT_SYSTEM_PROMPT,
+      valueBankPrompt
+    )
+    const rawReply = await runWithProvider(body.history, systemPrompt)
     if (!rawReply) {
       return Response.json(
         {
