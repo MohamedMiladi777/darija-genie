@@ -129,9 +129,73 @@ export const vocabularyAudio = pgTable(
   ],
 );
 
+/**
+ * Value banks: the authored vocabulary a scenario may draw from.
+ *
+ * A pool groups the forms that fill one dialogue slot (e.g. `mains` → `dish`).
+ * Items carry every accepted Darija variant; `canonical` is the first form and
+ * is what quizzes and word cards default to. `english` and `transliteration`
+ * are nullable until the author fills those columns in the workbook.
+ *
+ * `kind` separates literal vocabulary from generator-authored text:
+ *   vocab       — fixed Darija forms
+ *   instruction — staff behaviour the model writes in Darija (e.g. a wait time)
+ *   intent      — a customer question plus its answer, model-written
+ */
+export const valueItemKindEnum = pgEnum("value_item_kind", [
+  "vocab",
+  "instruction",
+  "intent",
+]);
+
+export const valuePools = pgTable(
+  "value_pools",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    scenarioSlug: text("scenario_slug").notNull(),
+    // pool key from the workbook, e.g. "mains"
+    key: text("key").notNull(),
+    // dialogue slot it feeds, e.g. "dish"
+    slot: text("slot").notNull(),
+    label: text("label").notNull(),
+    sortOrder: integer("sort_order").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("value_pools_scenario_key_unique").on(table.scenarioSlug, table.key),
+  ],
+);
+
+export const valueItems = pgTable(
+  "value_items",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    poolId: uuid("pool_id")
+      .notNull()
+      .references(() => valuePools.id, { onDelete: "cascade" }),
+    itemKey: text("item_key").notNull(),
+    category: text("category"),
+    kind: valueItemKindEnum("kind").notNull().default("vocab"),
+    canonical: text("canonical").notNull(),
+    forms: text("forms").array().notNull(),
+    english: text("english"),
+    transliteration: text("transliteration"),
+    sortOrder: integer("sort_order").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("value_items_pool_key_unique").on(table.poolId, table.itemKey),
+    index("value_items_pool_idx").on(table.poolId),
+  ],
+);
+
 export type Lesson = typeof lessons.$inferSelect;
 export type NewLesson = typeof lessons.$inferInsert;
 export type GrammarPoint = typeof grammarPoints.$inferSelect;
 export type VocabularyItem = typeof vocabulary.$inferSelect;
 export type Example = typeof examples.$inferSelect;
 export type AudioAsset = typeof audioAssets.$inferSelect;
+export type ValuePool = typeof valuePools.$inferSelect;
+export type NewValuePool = typeof valuePools.$inferInsert;
+export type ValueItem = typeof valueItems.$inferSelect;
+export type NewValueItem = typeof valueItems.$inferInsert;

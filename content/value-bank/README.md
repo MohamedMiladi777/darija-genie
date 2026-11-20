@@ -28,7 +28,24 @@ node scripts/import-value-bank.mjs \
 ```
 
 The script is read-only for the database: it validates and normalises rows and
-writes the JSON snapshot. Applying the snapshot to Postgres is a separate step.
+writes the JSON snapshot.
+
+## Apply to Postgres
+
+Review the JSON diff first, then:
+
+```sh
+cd apps/web
+pnpm db:migrate          # only when the schema changed
+pnpm db:seed:value-bank  # upsert the snapshot
+```
+
+The seed is idempotent. It matches pools on `(scenario_slug, key)` and items on
+`(pool_id, item_key)`, updates the rest, and deletes rows that no longer exist
+in the snapshot — so the database mirrors the reviewed JSON exactly.
+
+`english` and `transliteration` are nullable. When the workbook gains those
+columns, re-run both commands and they fill in.
 
 ## Workbook format
 

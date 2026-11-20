@@ -150,15 +150,25 @@ function readSheet(workbook) {
   const worksheet = workbook.worksheets[0];
   if (!worksheet) throw new Error("Workbook has no worksheets.");
 
-  const header = EXPECTED_HEADER.map((_, index) =>
-    cellText(worksheet.getRow(1).getCell(index + 1)).toLowerCase(),
-  );
+  const headerCells = [];
+  for (let column = 1; column <= 6; column += 1) {
+    headerCells.push(cellText(worksheet.getRow(1).getCell(column)).toLowerCase());
+  }
+
   const expected = EXPECTED_HEADER.map((value) => value.toLowerCase());
-  if (header.join("|") !== expected.join("|")) {
+  if (headerCells.slice(0, 4).join("|") !== expected.join("|")) {
     throw new Error(
-      `Unexpected header. Expected ${JSON.stringify(EXPECTED_HEADER)}, got ${JSON.stringify(header)}.`,
+      `Unexpected header. Expected ${JSON.stringify(EXPECTED_HEADER)}, got ${JSON.stringify(headerCells.slice(0, 4))}.`,
     );
   }
+
+  // Optional authoring columns; absent today, filled in later.
+  const columnOf = (name) => {
+    const index = headerCells.indexOf(name);
+    return index === -1 ? null : index + 1;
+  };
+  const englishColumn = columnOf("english");
+  const transliterationColumn = columnOf("transliteration");
 
   const rows = [];
   worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
@@ -169,6 +179,10 @@ function readSheet(workbook) {
       itemKey: cellText(row.getCell(2)),
       category: cellText(row.getCell(3)),
       formsRaw: cellText(row.getCell(4)),
+      english: englishColumn ? cellText(row.getCell(englishColumn)) : "",
+      transliteration: transliterationColumn
+        ? cellText(row.getCell(transliterationColumn))
+        : "",
     });
   });
 
@@ -260,6 +274,8 @@ function buildSnapshot(rows, options, sourceHash) {
       kind,
       canonical: forms[0],
       forms,
+      ...(row.english ? { english: row.english } : {}),
+      ...(row.transliteration ? { transliteration: row.transliteration } : {}),
       sortOrder: items.length,
     });
   }

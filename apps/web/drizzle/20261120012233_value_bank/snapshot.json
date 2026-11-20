@@ -1,0 +1,605 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "65bd6f37-6859-4c61-b647-d53fdd83c3a5",
+  "prevIds": [
+    "b62dcb36-b0b7-4011-841f-d7fc417b7e42"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "value_item_kind"
+      ],
+      "writes": [
+        "s|enum|public.value_item_kind",
+        "n|enum|public.value_item_kind",
+        "e|enum|public.value_item_kind",
+        "n|type|public.value_item_kind"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "value_items"
+      ],
+      "writes": [
+        "s|tbl|public.value_items",
+        "n|tbl|public.value_items",
+        "e|tbl|public.value_items",
+        "n|rel|public.value_items",
+        "n|type|public.value_items",
+        "n|rel|public.value_items_pkey"
+      ],
+      "reads": [
+        "n|sch|public",
+        "n|enum|public.value_item_kind"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "value_pools"
+      ],
+      "writes": [
+        "s|tbl|public.value_pools",
+        "n|tbl|public.value_pools",
+        "e|tbl|public.value_pools",
+        "n|rel|public.value_pools",
+        "n|type|public.value_pools",
+        "n|rel|public.value_pools_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "value_items",
+        "value_items_pool_key_unique"
+      ],
+      "writes": [
+        "s|idx|public.value_items_pool_key_unique",
+        "n|idx|public.value_items_pool_key_unique",
+        "e|idx|public.value_items_pool_key_unique",
+        "n|rel|public.value_items_pool_key_unique"
+      ],
+      "reads": [
+        "n|tbl|public.value_items",
+        "n|sch|public",
+        "n|col|public.value_items.pool_id",
+        "n|col|public.value_items.item_key"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "value_items",
+        "value_items_pool_idx"
+      ],
+      "writes": [
+        "s|idx|public.value_items_pool_idx",
+        "n|idx|public.value_items_pool_idx",
+        "e|idx|public.value_items_pool_idx",
+        "n|rel|public.value_items_pool_idx"
+      ],
+      "reads": [
+        "n|tbl|public.value_items",
+        "n|sch|public",
+        "n|col|public.value_items.pool_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "value_pools",
+        "value_pools_scenario_key_unique"
+      ],
+      "writes": [
+        "s|idx|public.value_pools_scenario_key_unique",
+        "n|idx|public.value_pools_scenario_key_unique",
+        "e|idx|public.value_pools_scenario_key_unique",
+        "n|rel|public.value_pools_scenario_key_unique"
+      ],
+      "reads": [
+        "n|tbl|public.value_pools",
+        "n|sch|public",
+        "n|col|public.value_pools.scenario_slug",
+        "n|col|public.value_pools.key"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "value_items"
+      ],
+      "writes": [
+        "s|fk|public.value_items.value_items_pool_id_value_pools_id_fkey",
+        "n|fk|public.value_items.value_items_pool_id_value_pools_id_fkey",
+        "e|fk|public.value_items.value_items_pool_id_value_pools_id_fkey",
+        "n|con|public.value_items.value_items_pool_id_value_pools_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.value_items",
+        "n|sch|public",
+        "n|tbl|public.value_pools",
+        "n|sch|public",
+        "n|col|public.value_items.pool_id",
+        "n|col|public.value_pools.id",
+        "e|uniqueness|public.value_pools.id"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "value_items",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "value_pools",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "value_item_kind",
+        "values": [
+          "vocab",
+          "instruction",
+          "intent"
+        ],
+        "entityType": "enums"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_items",
+        "name": "id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "gen_random_uuid()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_items",
+        "name": "pool_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_items",
+        "name": "item_key",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_items",
+        "name": "category",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_items",
+        "name": "kind",
+        "type": "value_item_kind",
+        "typeSchema": "public",
+        "notNull": true,
+        "dimensions": 0,
+        "default": "'vocab'",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_items",
+        "name": "canonical",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_items",
+        "name": "forms",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 1,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_items",
+        "name": "english",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_items",
+        "name": "transliteration",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_items",
+        "name": "sort_order",
+        "type": "integer",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "0",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_items",
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_pools",
+        "name": "id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "gen_random_uuid()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_pools",
+        "name": "scenario_slug",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_pools",
+        "name": "key",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_pools",
+        "name": "slot",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_pools",
+        "name": "label",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_pools",
+        "name": "sort_order",
+        "type": "integer",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "0",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_pools",
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_items",
+        "name": "value_items_pool_key_unique",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "pool_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          },
+          {
+            "value": "item_key",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": true,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_items",
+        "name": "value_items_pool_idx",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "pool_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": false,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_pools",
+        "name": "value_pools_scenario_key_unique",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "scenario_slug",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          },
+          {
+            "value": "key",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": true,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_items",
+        "name": "value_items_pool_id_value_pools_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "pool_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "value_pools",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "CASCADE",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_items",
+        "name": "value_items_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "value_pools",
+        "name": "value_pools_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    }
+  ]
+}
