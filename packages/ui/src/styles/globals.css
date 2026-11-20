@@ -65,6 +65,10 @@
 }
 
 :root {
+    /* Backward-compatible font aliases: all Latin UI copy uses Nunito. */
+    --font-inter: var(--font-sans);
+    --font-lato: var(--font-sans);
+    --font-montserrat: var(--font-sans);
     --border-radii-absolute-radius-8: 8px;
     --border-radii-absolute-radius-infinite: 9999px;
     --border-radii-rounded-full: var(--border-radii-absolute-radius-infinite);
@@ -130,19 +134,19 @@
     --tailwindcss-colors-blue-blue-950: rgba(22, 36, 86, 1);
     --tailwindcss-colors-indigo-indigo-100: rgba(224, 231, 255, 1);
     --tailwindcss-colors-stone-stone-500: rgba(121, 113, 107, 1);
-    --text-base-leading-regular-medium-font-family: var(--font-inter), Helvetica;
+    --text-base-leading-regular-medium-font-family: var(--font-sans), Helvetica;
     --text-base-leading-regular-medium-font-size: 16px;
     --text-base-leading-regular-medium-font-style: normal;
     --text-base-leading-regular-medium-font-weight: 500;
     --text-base-leading-regular-medium-letter-spacing: 0px;
     --text-base-leading-regular-medium-line-height: 24px;
-    --text-sm-leading-normal-medium-font-family: var(--font-inter), Helvetica;
+    --text-sm-leading-normal-medium-font-family: var(--font-sans), Helvetica;
     --text-sm-leading-normal-medium-font-size: 14px;
     --text-sm-leading-normal-medium-font-style: normal;
     --text-sm-leading-normal-medium-font-weight: 500;
     --text-sm-leading-normal-medium-letter-spacing: 0px;
     --text-sm-leading-normal-medium-line-height: 20px;
-    --text-sm-leading-normal-regular-font-family: var(--font-inter), Helvetica;
+    --text-sm-leading-normal-regular-font-family: var(--font-sans), Helvetica;
     --text-sm-leading-normal-regular-font-size: 14px;
     --text-sm-leading-normal-regular-font-style: normal;
     --text-sm-leading-normal-regular-font-weight: 400;

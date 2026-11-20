@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 
-import { TestingStudio } from "@/components/testing-studio"
+import { ScenarioReview } from "@/components/testing-studio"
 import { isScenarioId, scenarioIds } from "../../scenario-data"
 
 export function generateStaticParams(): Array<{ scenario: string }> {
@@ -17,5 +17,5 @@ export default async function ScenarioReviewPage({
     notFound()
   }
 
-  return <TestingStudio scenario={scenario} initialTab="scenario" />
+  return <ScenarioReview scenario={scenario} />
 }

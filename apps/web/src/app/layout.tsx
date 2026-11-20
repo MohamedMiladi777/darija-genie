@@ -1,10 +1,7 @@
 import {
   Geist_Mono,
-  Inter,
-  Lato,
-  Montserrat,
+  Nunito,
   Noto_Sans_Arabic,
-  Open_Sans,
 } from "next/font/google"
 
 import "@workspace/ui/globals.css"
@@ -13,28 +10,12 @@ import { cn } from "@workspace/ui/lib/utils"
 
 // Shared components are coded here
 
-// Code the sidebar.
-const openSans = Open_Sans({
+// Nunito is a friendly, rounded, highly legible Latin UI font. Keep one
+// typography family across the app; Noto Sans Arabic covers Arabic glyphs.
+const nunito = Nunito({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
   variable: "--font-sans",
-})
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-})
-
-const lato = Lato({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-lato",
-})
-
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  style: ["normal", "italic"],
-  variable: "--font-montserrat",
 })
 
 const fontMono = Geist_Mono({
@@ -59,10 +40,7 @@ export default function RootLayout({
       className={cn(
         "antialiased",
         fontMono.variable,
-        openSans.variable,
-        inter.variable,
-        lato.variable,
-        montserrat.variable,
+        nunito.variable,
         arabic.variable,
         "font-sans"
       )}

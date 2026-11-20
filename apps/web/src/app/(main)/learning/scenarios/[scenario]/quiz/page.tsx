@@ -17,5 +17,5 @@ export default async function ScenarioQuizPage({
     notFound()
   }
 
-  return <TestingStudio scenario={scenario} initialTab="scenario" />
+  return <TestingStudio scenario={scenario} />
 }

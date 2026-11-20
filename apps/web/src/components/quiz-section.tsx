@@ -1,51 +1,40 @@
-import { ArrowRightIcon } from "./icons"
+import Link from "next/link"
 
-const quizzes = [
-  { title: "General Quiz", subtitle: "All topics · Any level" },
-  { title: "Food", subtitle: "Level 1" },
-  { title: "Money", subtitle: "Level 2" },
-  { title: "Time", subtitle: "Level 3" },
-  { title: "Hotel", subtitle: "Level 1" },
-] as const
+import { ArrowRightIcon, TestingIcon } from "@/components/icons"
+import { Card, CardContent } from "@workspace/ui/components/card"
 
 const QuizSection = (): React.JSX.Element => (
   <section aria-labelledby="quizzes-heading" className="w-full min-w-0">
-    <div className="flex items-center justify-between">
-      <h2
-        id="quizzes-heading"
-        className="text-xl leading-7 font-bold text-foreground"
-      >
+    <div>
+      <h2 id="quizzes-heading" className="text-xl leading-7 font-bold text-foreground">
         Quizzes
       </h2>
-      <button
-        type="button"
-        className="font-[family-name:var(--font-lato)] text-base leading-6 text-muted-foreground hover:text-foreground"
-      >
-        See All
-      </button>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Practise what you&apos;ve learned with a short scenario quiz.
+      </p>
     </div>
-    <div className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      {quizzes.map((quiz) => (
-        <button
-          key={quiz.title}
-          type="button"
-          aria-label={`${quiz.title}, ${quiz.subtitle}`}
-          className="flex h-[85px] shrink-0 grow basis-[165px] snap-start items-center justify-between rounded-2xl border border-border bg-card px-4 text-left shadow-xs transition-colors hover:bg-muted"
-        >
-          <span className="min-w-0 font-[family-name:var(--font-inter)]">
-            <span className="block truncate text-[15px] leading-5 font-medium text-foreground">
-              {quiz.title}
-            </span>
-            <span className="mt-0.5 block truncate text-[13px] leading-4 text-muted-foreground">
-              {quiz.subtitle}
-            </span>
+    <Link
+      href="/testing"
+      className="group mt-3 block rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2"
+    >
+      <Card className="flex min-h-24 flex-row items-center gap-4 rounded-2xl border-border bg-card p-4 shadow-xs transition-colors group-hover:bg-muted">
+        <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#e8e1d3] text-[#a86d3f]">
+          <TestingIcon aria-hidden="true" className="size-5" />
+        </span>
+        <CardContent className="min-w-0 flex-1 p-0">
+          <span className="block font-[family-name:var(--font-inter)] text-sm font-semibold text-foreground">
+            Scenario practice
           </span>
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#1e40af] text-white">
-            <ArrowRightIcon aria-hidden="true" className="size-[14px]" />
+          <span className="mt-1 block text-sm text-muted-foreground">
+            Choose Restaurant or Shopping and practise one question at a time.
           </span>
-        </button>
-      ))}
-    </div>
+        </CardContent>
+        <ArrowRightIcon
+          aria-hidden="true"
+          className="size-4 shrink-0 text-[#1e40af] transition-transform group-hover:translate-x-0.5"
+        />
+      </Card>
+    </Link>
   </section>
 )
 
