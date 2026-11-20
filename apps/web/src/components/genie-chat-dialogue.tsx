@@ -6,6 +6,11 @@ import Image from "next/image"
 
 import { Button } from "@workspace/ui/components/button"
 import { Card } from "@workspace/ui/components/card"
+import {
+  clearLocalProfileAndRestaurantChat,
+  loadRestaurantChatSnapshot,
+  saveRestaurantChatSnapshot,
+} from "@/lib/local-retention"
 import { useStoredPreference } from "@/components/preference-selector"
 
 import {
@@ -237,8 +242,10 @@ export default function GenieChatDialogue({
   const recordedChunksRef = useRef<Blob[]>([])
   const holdActiveRef = useRef(false)
   const recordingStartedAtRef = useRef<number | null>(null)
+  const chatSessionIdRef = useRef<string | null>(null)
 
   const chatDisabled = loading || history.length === 0
+  const persistRestaurantChat = scenario.startsWith("restaurant")
 
   // Warm the TLS connection to Vochai while the page loads, so the first
   // voice note doesn't pay the handshake cost (~0.1–0.3 s).
@@ -455,6 +462,7 @@ export default function GenieChatDialogue({
   )
 
   const initialize = useCallback(async () => {
+    chatSessionIdRef.current = null
     setLoading(true)
     setError(null)
     setHistory([])
@@ -478,9 +486,47 @@ export default function GenieChatDialogue({
   }, [createMessage])
 
   useEffect(() => {
-    const timer = window.setTimeout(() => void initialize(), 0)
+    const timer = window.setTimeout(() => {
+      if (persistRestaurantChat) {
+        const snapshot = loadRestaurantChatSnapshot()
+        if (snapshot && snapshot.scenario === scenario) {
+          chatSessionIdRef.current = snapshot.sessionId
+          nextId.current = snapshot.nextId + 1
+          setHistory(snapshot.history)
+          setMessages(
+            snapshot.messages.map((message) => ({
+              id: message.id,
+              sender: message.sender,
+              text: message.text,
+              translation: message.translation,
+              timestamp: new Date(message.timestamp),
+            }))
+          )
+          setLoading(false)
+          return
+        }
+      }
+      void initialize()
+    }, 0)
     return () => window.clearTimeout(timer)
-  }, [initialize])
+  }, [initialize, persistRestaurantChat, scenario])
+
+  useEffect(() => {
+    if (!persistRestaurantChat || loading || history.length === 0) return
+
+    const timer = window.setTimeout(() => {
+      const sessionId = saveRestaurantChatSnapshot({
+        scenario,
+        sessionId: chatSessionIdRef.current ?? undefined,
+        history,
+        messages,
+        nextId: nextId.current,
+      })
+      chatSessionIdRef.current = sessionId
+    }, 120)
+
+    return () => window.clearTimeout(timer)
+  }, [history, loading, messages, persistRestaurantChat, scenario])
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" })
@@ -685,6 +731,21 @@ export default function GenieChatDialogue({
             >
               {recordingError}
             </p>
+          ) : null}
+          {persistRestaurantChat && history.length > 0 ? (
+            <div className="mt-2 flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  clearLocalProfileAndRestaurantChat()
+                  chatSessionIdRef.current = null
+                  void initialize()
+                }}
+                className="font-[family-name:var(--font-inter)] text-xs text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground"
+              >
+                Clear local profile + chat
+              </button>
+            </div>
           ) : null}
         </div>
       </footer>

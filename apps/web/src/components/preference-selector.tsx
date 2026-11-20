@@ -2,6 +2,10 @@
 
 import Image from "next/image"
 import * as React from "react"
+import {
+  loadProfileSnapshot,
+  saveProfileSnapshotFromLocalPreferences,
+} from "@/lib/local-retention"
 
 type PreferenceKind = "script" | "interaction" | "fontSize"
 
@@ -121,6 +125,7 @@ export function useStoredPreference(key: string, fallback: string): string {
 
 export function setStoredPreference(key: string, value: string): void {
   window.localStorage.setItem(key, value)
+  saveProfileSnapshotFromLocalPreferences()
   window.dispatchEvent(new Event(preferenceChangeEvent))
 }
 
@@ -160,6 +165,29 @@ export default function PreferenceSelector({
 }: {
   kind: PreferenceKind
 }): React.JSX.Element {
+  React.useEffect(() => {
+    const snapshot = loadProfileSnapshot()
+    if (!snapshot) return
+
+    const entries = [
+      ["darija-genie:text-script", snapshot.preferences.script],
+      ["darija-genie:interaction-modes", snapshot.preferences.interactionModes],
+      ["darija-genie:font-size", snapshot.preferences.fontSize],
+    ] as const
+
+    let updated = false
+    for (const [key, value] of entries) {
+      if (window.localStorage.getItem(key) !== value) {
+        window.localStorage.setItem(key, value)
+        updated = true
+      }
+    }
+
+    if (updated) {
+      window.dispatchEvent(new Event(preferenceChangeEvent))
+    }
+  }, [])
+
   const config = preferenceConfigs[kind]
   const fallbackValue = config.defaultValues.join(",")
   const storedValue = useStoredPreference(config.storageKey, fallbackValue)
