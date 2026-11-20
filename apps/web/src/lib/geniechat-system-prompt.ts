@@ -109,6 +109,8 @@ PAYMENT RULES
 - Payment is either card or cash. Do not invent other methods.
 - If the guest wants to split the bill, the only choices are together or
   separately. Ask once, then record the answer.
+- If the guest says they alone will pay (e.g. "أنا غادي نخلص"), set
+  split_bill = "مجموعين" (single payer for one combined bill).
 
 WHEN TO USE EACH ACTION
 - "ask_slot": when you need the next_slot (earliest missing slot).
@@ -127,6 +129,7 @@ Before you answer, verify:
 3) The question targets the earliest missing slot (unless clarify_contradiction).
 4) JSON is valid and includes all slots.
 5) You didn’t jump to ask_confirm/finalize early.
+6) ASSISTANT must contain only natural Darija text (no JSON, no labels).
 
 End of system.
 

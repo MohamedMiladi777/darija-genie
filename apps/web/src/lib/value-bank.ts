@@ -24,6 +24,12 @@ const SHOW_ALL_FORMS_MAX_ITEMS = 5;
 type Pool = typeof valuePools.$inferSelect;
 type Item = typeof valueItems.$inferSelect;
 
+function normalizeKnownTypos(form: string): string {
+  return form
+    .replace("ب لاكارط", "بالاكارط")
+    .replace("ب ليسپيس", "باليسپيس")
+}
+
 function formatPool(pool: Pool, items: Item[]): string | null {
   if (items.length === 0) return null;
 
@@ -46,9 +52,10 @@ function formatPool(pool: Pool, items: Item[]): string | null {
   }
 
   const showAllForms = items.length <= SHOW_ALL_FORMS_MAX_ITEMS;
-  const forms = items.map((item) =>
-    showAllForms ? item.forms.join(" / ") : item.canonical,
-  );
+  const forms = items.map((item) => {
+    const values = showAllForms ? item.forms : [item.canonical]
+    return values.map(normalizeKnownTypos).join(" / ")
+  });
 
   return `${pool.label} (${pool.slot}): ${forms.join(" | ")}`;
 }

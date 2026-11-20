@@ -13,6 +13,12 @@ type HistoryEntry =
   | { assistant: { utterance: string; slots: SlotState } }
   | { user: { utterance: string } }
 
+type ParsedReply = {
+  assistant: string
+  translation: string
+  slots: SlotState
+}
+
 const llmProvider = (process.env.GENIECHAT_PROVIDER ?? "gemini").toLowerCase()
 const usesOpenAiProvider = llmProvider === "openai" || llmProvider === "gpt"
 
@@ -84,11 +90,7 @@ function isHistory(value: unknown): value is HistoryEntry[] {
   })
 }
 
-function parseReply(rawReply: string): {
-  assistant: string
-  translation: string
-  slots: SlotState
-} {
+function parseReply(rawReply: string): ParsedReply {
   const translationMarker =
     /(?:^|\n)\s*(?:ENGLISH_TRANSLATION|TRANSLATION)\s*:?\s*/i
   const slotMarker =
@@ -99,7 +101,7 @@ function parseReply(rawReply: string): {
     translationMatch?.index ?? rawReply.length,
     slotMatch?.index ?? rawReply.length
   )
-  const assistant = rawReply
+  let assistant = rawReply
     .slice(0, assistantEnd)
     .replace(/^\s*(?:#+\s*)?\**\s*ASSISTANT\s*\**\s*:?\s*/i, "")
     .trim()
@@ -117,7 +119,13 @@ function parseReply(rawReply: string): {
         .trim()
     : ""
 
-  if (!slotMatch) return { assistant, translation, slots: {} }
+  if (!slotMatch) {
+    assistant = assistant
+      .replace(/```(?:json)?[\s\S]*?```/gi, "")
+      .replace(/\{[\s\S]*\}\s*$/g, "")
+      .trim()
+    return { assistant, translation, slots: {} }
+  }
 
   const slotBlock = rawReply
     .slice(slotMatch.index + slotMatch[0].length)
@@ -129,8 +137,11 @@ function parseReply(rawReply: string): {
   if (start < 0 || end < start) return { assistant, translation, slots: {} }
 
   try {
-    const parsed: unknown = JSON.parse(slotBlock.slice(start, end + 1))
+    const rawJson = slotBlock.slice(start, end + 1)
+    const parsed: unknown = JSON.parse(rawJson)
     if (!isRecord(parsed)) return { assistant, translation, slots: {} }
+    assistant = assistant.replace(rawJson, "").trim()
+    if (!assistant) assistant = "سمحو ليا، نكمل معاكم الطلب خطوة بخطوة."
     return {
       assistant,
       translation,
@@ -139,6 +150,135 @@ function parseReply(rawReply: string): {
   } catch {
     return { assistant, translation, slots: {} }
   }
+}
+
+const DEFAULT_SLOTS = {
+  greeting: null,
+  guest_name: null,
+  party_size: null,
+  seating: null,
+  diet: null,
+  food_category: null,
+  dish: null,
+  portion: null,
+  drink: null,
+  special_requests: null,
+  wait_time: null,
+  confirmation: null,
+  payment: null,
+  split_bill: null,
+  closing: null,
+} as const
+
+function asText(value: unknown): string | null {
+  if (typeof value !== "string") return null
+  const cleaned = value.trim()
+  return cleaned.length > 0 ? cleaned : null
+}
+
+function parseInteger(value: unknown): number | null {
+  if (typeof value === "number" && Number.isInteger(value)) return value
+  if (typeof value !== "string") return null
+  const match = value.match(/\d+/)
+  if (!match) return null
+  const parsed = Number.parseInt(match[0], 10)
+  return Number.isInteger(parsed) ? parsed : null
+}
+
+function normalizeNone(value: string | null): string | null {
+  if (!value) return null
+  if (/^(walou|walo|none|nope)$/i.test(value)) return "والو"
+  if (/^(ما?كاينش|بلا)$/i.test(value)) return "والو"
+  return value
+}
+
+function normalizePayment(value: string | null): string | null {
+  if (!value) return null
+  if (/(cash|كاش|ليسب|ليسپ|esp[eè]ce)/i.test(value)) return "كاش"
+  if (/(card|carte|كارط|بطاقة)/i.test(value)) return "بالاكارط"
+  return value.replace(/\bب\s+(?=[\u0600-\u06FF])/g, "ب")
+}
+
+function normalizeSplitBill(value: string | null, userUtterance: string | null): string | null {
+  const user = userUtterance ?? ""
+  if (/(^|\s)(ana|أنا)\b/i.test(user) && /(khal[il]?s|n[kg]h?al?l?is|نخلص)/i.test(user)) {
+    return "مجموعين"
+  }
+  if (!value) return null
+  if (/(separate|كل واحد|بوحدو)/i.test(value)) return "كل واحد بوحدو"
+  if (/(together|group|مجموع|مع بعض|أنا نخلص)/i.test(value)) return "مجموعين"
+  return value
+}
+
+function normalizeFoodCategory(value: string | null): string | null {
+  if (!value) return null
+  if (/(bjouj|bijouj|both|بجوج|بزوج)/i.test(value)) return "بجوج"
+  return value
+}
+
+function isAffirmative(text: string | null): boolean {
+  if (!text) return false
+  return /^(ok|okay|yes|yeah|yep|ah|eh|oui|safi|wakha|واخا|ايوا|نعم|آه)\b/i.test(
+    text.trim()
+  )
+}
+
+function getLatestAssistantSlots(history: HistoryEntry[]): SlotState {
+  for (let i = history.length - 1; i >= 0; i -= 1) {
+    const entry = history[i]
+    if (!entry) continue
+    if ("assistant" in entry && isRecord(entry.assistant.slots)) {
+      return entry.assistant.slots
+    }
+  }
+  return {}
+}
+
+function getLatestUserUtterance(history: HistoryEntry[]): string | null {
+  for (let i = history.length - 1; i >= 0; i -= 1) {
+    const entry = history[i]
+    if (!entry) continue
+    if ("user" in entry) return entry.user.utterance
+  }
+  return null
+}
+
+function normalizeSlots(
+  previousSlots: SlotState,
+  nextSlots: SlotState,
+  latestUserUtterance: string | null
+): SlotState {
+  const merged: SlotState = { ...previousSlots, ...nextSlots }
+
+  const normalized: SlotState = { ...DEFAULT_SLOTS }
+  normalized.greeting = asText(merged.greeting)
+  normalized.guest_name = asText(merged.guest_name)
+  normalized.party_size = parseInteger(merged.party_size)
+  normalized.seating = asText(merged.seating)
+  normalized.diet = normalizeNone(asText(merged.diet))
+  normalized.food_category = normalizeFoodCategory(asText(merged.food_category))
+  normalized.dish = asText(merged.dish)
+  normalized.portion = asText(merged.portion)
+  normalized.drink = normalizeNone(asText(merged.drink))
+  normalized.special_requests = normalizeNone(asText(merged.special_requests))
+  normalized.wait_time = asText(merged.wait_time)
+
+  const confirmation = asText(merged.confirmation)
+  normalized.confirmation =
+    confirmation === "confirmed" || confirmation === "not_confirmed" ? confirmation : null
+  if (normalized.confirmation === "not_confirmed" && isAffirmative(latestUserUtterance)) {
+    normalized.confirmation = "confirmed"
+  }
+
+  normalized.payment = normalizePayment(asText(merged.payment))
+  normalized.split_bill = normalizeSplitBill(asText(merged.split_bill), latestUserUtterance)
+  normalized.closing = asText(merged.closing)
+
+  if (normalized.payment && normalized.split_bill) {
+    normalized.confirmation = "confirmed"
+  }
+
+  return normalized
 }
 
 async function runAgent(history: HistoryEntry[], systemPrompt: string): Promise<string> {
@@ -301,6 +441,7 @@ export async function POST(request: Request): Promise<Response> {
       { status: 400 }
     )
   }
+  const history = body.history
 
   try {
     const valueBankPrompt = await loadValueBankPrompt(DEFAULT_SCENARIO_SLUG)
@@ -308,7 +449,7 @@ export async function POST(request: Request): Promise<Response> {
       GENIECHAT_SYSTEM_PROMPT,
       valueBankPrompt
     )
-    const rawReply = await runWithProvider(body.history, systemPrompt)
+    const rawReply = await runWithProvider(history, systemPrompt)
     if (!rawReply) {
       return Response.json(
         {
@@ -319,7 +460,13 @@ export async function POST(request: Request): Promise<Response> {
         { status: 502 }
       )
     }
-    return Response.json(parseReply(rawReply))
+    const parsed = parseReply(rawReply)
+    const slots = normalizeSlots(
+      getLatestAssistantSlots(history),
+      parsed.slots,
+      getLatestUserUtterance(history)
+    )
+    return Response.json({ ...parsed, slots })
   } catch (error) {
     const message =
       error instanceof Error
