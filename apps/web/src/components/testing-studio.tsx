@@ -3,7 +3,14 @@
 import Link from "next/link"
 import { useMemo, useState } from "react"
 
-import { ArrowLeftIcon, ArrowRightIcon, MicIcon, VolumeIcon } from "@/components/icons"
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  MicIcon,
+  RestaurantIcon,
+  ShoppingIcon,
+  VolumeIcon,
+} from "@/components/icons"
 import type { ScenarioId } from "@/app/(main)/learning/scenarios/scenario-data"
 import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent } from "@workspace/ui/components/card"
@@ -96,51 +103,82 @@ function normalizeText(value: string): string {
 export function TestingScenarioChooser(): React.JSX.Element {
   return (
     <main className="min-h-dvh w-full bg-[#f6f2e7] text-[#1f2f63]">
-      <div className="mx-auto w-full max-w-[1100px] px-6 py-8 md:px-10 md:py-12">
+      <div className="mx-auto w-full max-w-[1100px] px-5 py-7 sm:px-8 md:py-10">
         <p className="text-[11px] tracking-[0.2em] text-[#8f8068] uppercase">Learn / Testing</p>
-        <h1 className="mt-2 text-5xl font-bold tracking-tight text-[#1f2f63]">Test your Darija.</h1>
-        <p className="mt-2 text-lg text-[#6f6b61]">Put your knowledge to the test.</p>
+        <h1 className="mt-2 text-3xl font-bold tracking-tight text-[#1f2f63] sm:text-4xl">Test your Darija.</h1>
+        <p className="mt-1.5 text-sm text-[#6f6b61] sm:text-base">Put your knowledge to the test.</p>
 
-        <div className="mt-8 border-b border-[#dfd7c8]" />
-        <div className="mt-6 flex items-center gap-6 text-sm text-[#7e7463]">
+        <div className="mt-6 border-b border-[#dfd7c8]" />
+        <div className="mt-4 flex items-center gap-5 border-b border-[#dfd7c8] text-sm text-[#7e7463] sm:gap-7">
           {tabs.map((tab) => (
-            <span key={tab.id} className={tab.id === "scenario" ? "font-semibold text-[#1f2f63]" : ""}>
+            <span
+              key={tab.id}
+              className={`border-b-2 px-1 py-3 ${
+                tab.id === "scenario"
+                  ? "border-[#a86d3f] font-semibold text-[#1f2f63]"
+                  : "border-transparent"
+              }`}
+            >
               {tab.label} <span className="ml-1 text-[10px]">{tab.index}</span>
             </span>
           ))}
         </div>
 
-        <section className="mt-10">
+        <section className="mt-8">
           <p className="text-[11px] tracking-[0.2em] text-[#9b7a55] uppercase">Scenario Specific</p>
-          <h2 className="mt-3 text-5xl font-semibold text-[#1f2f63]">Choose your setting.</h2>
-          <p className="mt-4 text-lg text-[#6f6b61]">
+          <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[#1f2f63] sm:text-4xl">Choose your setting.</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-[#6f6b61] sm:text-base">
             Test your Darija in a situation you&apos;ve learned. Select a scenario to begin its exercises.
           </p>
-          <div className="mt-8 grid gap-6 md:grid-cols-2">
+          <div className="mt-6 grid gap-4 md:grid-cols-2 md:gap-6">
             {scenarioCards.map((scenario, index) => (
-              <Card key={scenario.id} className="overflow-hidden rounded-2xl border border-[#d9ccb4] bg-[#fffdf8] shadow-none">
-                <div className="bg-[#f3e8d1] px-6 py-8">
-                  <p className="text-sm text-[#b07a4c]">{String(index + 1).padStart(2, "0")}</p>
-                  <div className="mt-2 text-sm tracking-[0.1em] text-[#8f8068] uppercase">{scenario.lesson}</div>
-                </div>
-                <CardContent className="space-y-4 px-6 py-6">
-                  <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-4xl font-semibold text-[#1f2f63]">{scenario.title}</h3>
-                    <p className="text-3xl text-[#a86d3f]">{scenario.titleArabic}</p>
+              <Link
+                key={scenario.id}
+                href={`/learning/scenarios/${scenario.id}/quiz`}
+                aria-label={`Start ${scenario.title} exercises`}
+                className="group block rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-[#1f2f63] focus-visible:ring-offset-2"
+              >
+                <Card className="h-full overflow-hidden rounded-2xl border border-[#d2c3a7] bg-[#fffdf8] p-0 shadow-[0_2px_0_#cabb9e] transition-transform group-hover:-translate-y-0.5 group-focus-visible:ring-2 group-focus-visible:ring-[#1f2f63]">
+                  <div
+                    className={`relative flex h-36 items-center justify-center sm:h-40 ${
+                      scenario.id.startsWith("restaurant") ? "bg-[#ece1ca]" : "bg-[#e7e8dc]"
+                    }`}
+                  >
+                    <span className="absolute left-5 top-5 text-xs tracking-[0.18em] text-[#a86d3f]">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span className="flex size-20 items-center justify-center rounded-t-[40px] rounded-b-md border border-[#d8c8ab] bg-[#f8f3e7] text-[#a86d3f] shadow-[0_2px_0_#d3c4a8]">
+                      {scenario.id.startsWith("restaurant") ? (
+                        <RestaurantIcon aria-hidden="true" className="size-9" />
+                      ) : (
+                        <ShoppingIcon aria-hidden="true" className="size-9" />
+                      )}
+                    </span>
+                    <span className="absolute bottom-5 right-5 text-[10px] tracking-[0.16em] text-[#7e7463]">
+                      {scenario.lesson}
+                    </span>
                   </div>
-                  <p className="text-base text-[#6f6b61]">{scenario.subtitle}</p>
-                  <p className="text-sm text-[#a86d3f]">{scenario.tags}</p>
-                  <div className="flex items-center justify-between border-t border-[#e5decd] pt-4 text-sm text-[#7e7463]">
-                    <span>{scenario.exerciseCount} exercises · Beginner</span>
-                    <Link href={`/learning/scenarios/${scenario.id}/quiz`} className="font-semibold text-[#1f2f63]">
-                      Start exercises <ArrowRightIcon className="ml-1 inline size-4" />
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
+                  <CardContent className="flex min-h-[220px] flex-col px-5 py-5 sm:px-6">
+                    <div className="flex items-center justify-between gap-3">
+                      <h3 className="text-xl font-semibold text-[#1f2f63] sm:text-2xl">{scenario.title}</h3>
+                      <p lang="ary" dir="rtl" className="text-xl text-[#a86d3f] sm:text-2xl">
+                        {scenario.titleArabic}
+                      </p>
+                    </div>
+                    <p className="mt-2 text-sm leading-5 text-[#6f6b61]">{scenario.subtitle}</p>
+                    <p className="mt-3 text-xs text-[#a86d3f]">{scenario.tags}</p>
+                    <div className="mt-auto flex items-center justify-between gap-3 border-t border-[#e5decd] pt-4 text-xs text-[#7e7463] sm:text-sm">
+                      <span>{scenario.exerciseCount} exercises · Beginner</span>
+                      <span className="inline-flex shrink-0 items-center font-semibold text-[#1f2f63]">
+                        Start exercises <ArrowRightIcon aria-hidden="true" className="ml-1 size-4 transition-transform group-hover:translate-x-0.5" />
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
-          <p className="mt-8 text-sm text-[#756b5c]">
+          <p className="mt-6 border-t border-[#dfd7c8] pt-5 text-sm leading-6 text-[#756b5c]">
             Build sentences, complete phrases, match words, listen, speak, and recognize images.
           </p>
         </section>
@@ -277,10 +315,10 @@ export function TestingStudio({
   return (
     <main className="min-h-dvh w-full bg-[#f6f2e7] text-[#1f2f63]">
       <div className="mx-auto w-full max-w-[1200px] px-0 pb-8">
-        <header className="border-b border-[#dfd7c8] px-8 py-6">
+        <header className="border-b border-[#dfd7c8] px-5 py-5 sm:px-8">
           <p className="text-[11px] tracking-[0.2em] text-[#8f8068] uppercase">Learn / Testing</p>
-          <h1 className="mt-2 text-5xl font-bold tracking-tight">Test your Darija.</h1>
-          <p className="mt-2 text-lg text-[#6f6b61]">Put your knowledge to the test.</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Test your Darija.</h1>
+          <p className="mt-1.5 text-sm text-[#6f6b61] sm:text-base">Put your knowledge to the test.</p>
         </header>
 
         <div className="border-b border-[#dfd7c8] px-8">
@@ -322,8 +360,8 @@ export function TestingStudio({
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <p className="text-2xl font-semibold text-[#1f2f63]">{item.title}</p>
-                      <p className="mt-1 text-sm text-[#7e7463]">{item.subtitle}</p>
+                      <p className="text-sm font-semibold text-[#1f2f63]">{item.title}</p>
+                      <p className="mt-1 text-xs leading-4 text-[#7e7463]">{item.subtitle}</p>
                     </div>
                     <span className="pt-1 text-sm text-[#a86d3f]">{String(item.number).padStart(2, "0")}</span>
                   </div>
@@ -357,12 +395,12 @@ export function TestingStudio({
             <p className="mt-8 text-[11px] tracking-[0.2em] text-[#a86d3f] uppercase">
               {activeTab === "scenario" ? `Exercise ${String(exercise.number).padStart(2, "0")}` : sectionLabel}
             </p>
-            <h2 className="mt-2 text-6xl font-semibold text-[#1f2f63]">{exercise.title}</h2>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#1f2f63] sm:text-3xl">{exercise.title}</h2>
 
             {exercise.id === "build" ? (
               <>
-                <p className="mt-3 text-xl text-[#6f6b61]">Arrange the words to translate the sentence below.</p>
-                <div className="mt-6 inline-block rounded-xl border border-[#d9ccb4] bg-[#fffdf8] px-6 py-4 text-4xl">
+                <p className="mt-2 text-sm leading-6 text-[#6f6b61] sm:text-base">Arrange the words to translate the sentence below.</p>
+                <div className="mt-5 inline-block rounded-xl border border-[#d9ccb4] bg-[#fffdf8] px-4 py-3 text-base sm:px-5 sm:text-lg">
                   {activeTab === "grammar" ? "This tea is hot." : "I would like tea, please."}
                 </div>
                 <div className="mt-6 min-h-24 rounded-xl border border-[#e4dccb] bg-[#faf6ee] p-4">
@@ -373,7 +411,7 @@ export function TestingStudio({
                           key={word}
                           type="button"
                           onClick={() => toggleBuildWord(word)}
-                          className="rounded-xl border border-[#cdbb9d] bg-white px-4 py-2 text-4xl"
+                          className="rounded-xl border border-[#cdbb9d] bg-white px-4 py-2 text-base"
                         >
                           {word}
                         </button>
@@ -389,7 +427,7 @@ export function TestingStudio({
                       key={word}
                       type="button"
                       onClick={() => toggleBuildWord(word)}
-                      className={`rounded-xl border px-4 py-2 text-4xl ${
+                      className={`rounded-xl border px-4 py-2 text-base ${
                         selectedBuildWords.includes(word)
                           ? "border-[#a86d3f] bg-[#f6eddd]"
                           : "border-[#d9ccb4] bg-white"
@@ -404,11 +442,11 @@ export function TestingStudio({
 
             {exercise.id === "complete" ? (
               <>
-                <p className="mt-3 text-xl text-[#6f6b61]">Choose a word from the bank to fill the blank.</p>
-                <div className="mt-6 inline-block rounded-xl border border-[#d9ccb4] bg-[#fffdf8] px-6 py-4 text-4xl">
+                <p className="mt-2 text-sm leading-6 text-[#6f6b61] sm:text-base">Choose a word from the bank to fill the blank.</p>
+                <div className="mt-5 inline-block rounded-xl border border-[#d9ccb4] bg-[#fffdf8] px-4 py-3 text-base sm:px-5 sm:text-lg">
                   {activeTab === "grammar" ? "This tea is hot." : "I would like tea, please."}
                 </div>
-                <div className="mt-8 text-center text-6xl">
+                <div className="mt-8 text-center text-2xl sm:text-3xl">
                   Bghit{" "}
                   <span className="inline-block min-w-40 rounded-xl border border-dashed border-[#d9ccb4] px-4 py-2">
                     {selectedCompleteWord ?? "..."}
@@ -421,7 +459,7 @@ export function TestingStudio({
                       key={word}
                       type="button"
                       onClick={() => setSelectedCompleteWord(word)}
-                      className={`rounded-xl border px-4 py-2 text-4xl ${
+                      className={`rounded-xl border px-4 py-2 text-base ${
                         selectedCompleteWord === word
                           ? "border-[#a86d3f] bg-[#f6eddd]"
                           : "border-[#d9ccb4] bg-white"
@@ -436,7 +474,7 @@ export function TestingStudio({
 
             {exercise.id === "match" ? (
               <>
-                <p className="mt-3 text-xl text-[#6f6b61]">Connect each Darija word with its English meaning.</p>
+                <p className="mt-2 text-sm leading-6 text-[#6f6b61] sm:text-base">Connect each Darija word with its English meaning.</p>
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
                   <div className="space-y-3">
                     <p className="text-[11px] tracking-[0.2em] text-[#7e7463] uppercase">Darija</p>
@@ -445,7 +483,7 @@ export function TestingStudio({
                         key={word}
                         type="button"
                         onClick={() => chooseMatchLeft(word)}
-                        className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left text-4xl ${
+                        className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left text-base ${
                           leftChoice === word ? "border-[#1f2f63] bg-[#eff2f8]" : "border-[#d9ccb4] bg-white"
                         }`}
                       >
@@ -461,7 +499,7 @@ export function TestingStudio({
                         key={word}
                         type="button"
                         onClick={() => chooseMatchRight(word)}
-                        className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left text-4xl ${
+                        className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left text-base ${
                           rightChoice === word ? "border-[#1f2f63] bg-[#eff2f8]" : "border-[#d9ccb4] bg-white"
                         }`}
                       >
@@ -475,20 +513,20 @@ export function TestingStudio({
 
             {exercise.id === "listen" ? (
               <>
-                <p className="mt-3 text-xl text-[#6f6b61]">Play the audio, then type what you hear.</p>
+                <p className="mt-2 text-sm leading-6 text-[#6f6b61] sm:text-base">Play the audio, then type what you hear.</p>
                 <div className="mt-8 flex items-center gap-6 rounded-xl border border-[#d9ccb4] bg-white px-6 py-6">
                   <button className="flex size-14 items-center justify-center rounded-full bg-[#1f2f63] text-white">
                     <VolumeIcon className="size-7" />
                   </button>
                   <div>
-                    <p className="text-4xl font-semibold text-[#1f2f63]">Listen to the sentence</p>
-                    <p className="text-base text-[#a86d3f]">Play slowly</p>
+                    <p className="text-base font-semibold text-[#1f2f63]">Listen to the sentence</p>
+                    <p className="mt-1 text-sm text-[#a86d3f]">Play slowly</p>
                   </div>
                 </div>
                 <textarea
                   value={listenText}
                   onChange={(event) => setListenText(event.target.value)}
-                  className="mt-6 min-h-30 w-full rounded-xl border border-[#d9ccb4] bg-white px-4 py-3 text-4xl outline-none"
+                  className="mt-6 min-h-30 w-full rounded-xl border border-[#d9ccb4] bg-white px-4 py-3 text-base outline-none"
                   placeholder="Type the sentence in Latin Darija..."
                 />
               </>
@@ -496,12 +534,12 @@ export function TestingStudio({
 
             {exercise.id === "speak" ? (
               <>
-                <p className="mt-3 text-xl text-[#6f6b61]">Listen to the phrase, then say it aloud.</p>
+                <p className="mt-2 text-sm leading-6 text-[#6f6b61] sm:text-base">Listen to the phrase, then say it aloud.</p>
                 <div className="mt-8 rounded-xl border border-[#d9ccb4] bg-white px-6 py-6">
-                  <p className="text-6xl font-semibold text-[#1f2f63]">بغيت أتاي عافاك</p>
-                  <p className="mt-2 text-4xl text-[#a86d3f]">Bghit atay ‘afak</p>
+                  <p dir="rtl" className="text-2xl font-semibold text-[#1f2f63] sm:text-3xl">بغيت أتاي عافاك</p>
+                  <p className="mt-2 text-base text-[#a86d3f]">Bghit atay ‘afak</p>
                 </div>
-                <button className="mt-6 flex h-20 w-full items-center justify-center gap-3 rounded-xl border border-[#d9ccb4] bg-white text-3xl font-semibold text-[#1f2f63]">
+                <button type="button" className="mt-6 flex h-16 w-full items-center justify-center gap-3 rounded-xl border border-[#d9ccb4] bg-white text-sm font-semibold tracking-wide text-[#1f2f63]">
                   <MicIcon className="size-6" /> TAP TO SPEAK
                 </button>
               </>
@@ -509,10 +547,10 @@ export function TestingStudio({
 
             {exercise.id === "image" ? (
               <>
-                <p className="mt-3 text-xl text-[#6f6b61]">Choose the picture that matches the Darija word.</p>
+                <p className="mt-2 text-sm leading-6 text-[#6f6b61] sm:text-base">Choose the picture that matches the Darija word.</p>
                 <div className="mt-6 text-center">
                   <p className="text-[11px] tracking-[0.2em] text-[#7e7463] uppercase">Darija Word</p>
-                  <p className="mt-2 text-6xl font-semibold">
+                  <p className="mt-2 text-2xl font-semibold sm:text-3xl">
                     atay <span className="ml-2 text-[#a86d3f]">أتاي</span>
                   </p>
                 </div>
@@ -537,7 +575,7 @@ export function TestingStudio({
                               : "border-[#d9ccb4]"
                         }`}
                       >
-                        <p className="text-[82px]">{item.emoji}</p>
+                        <p className="text-5xl sm:text-6xl">{item.emoji}</p>
                         <p className="mt-4 inline-flex size-8 items-center justify-center rounded-md border border-[#d9ccb4] text-sm">
                           {item.id}
                         </p>
@@ -557,10 +595,10 @@ export function TestingStudio({
                 }`}
               >
                 <div>
-                  <p className="text-4xl font-semibold">
+                  <p className="text-lg font-semibold">
                     {feedback === "success" ? "That’s right." : "Not quite this time."}
                   </p>
-                  <p className="mt-1 text-base">
+                  <p className="mt-1 text-sm leading-5">
                     {feedback === "success"
                       ? exercise.id === "image"
                         ? "Ready for the next exercise?"
@@ -596,7 +634,13 @@ export function TestingStudio({
             ) : null}
 
             <div className="mt-8 flex items-center justify-between border-t border-[#dfd7c8] pt-5">
-              <p className="text-sm text-[#7e7463]">Reset exercise</p>
+              <button
+                type="button"
+                onClick={resetExerciseState}
+                className="text-xs text-[#a86d3f] underline-offset-4 hover:underline"
+              >
+                Reset exercise
+              </button>
               <Button
                 type="button"
                 onClick={submitExercise}
