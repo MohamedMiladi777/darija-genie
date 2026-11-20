@@ -139,9 +139,12 @@ function restaurantPool(key: string): RestaurantVocab[] {
 const restaurantStarters = restaurantPool("starters")
 const restaurantMains = restaurantPool("mains")
 const restaurantDrinks = restaurantPool("drinks")
-const restaurantVariants = restaurantVocab
-  .filter((item) => item.forms.length > 1)
-  .slice(0, 4)
+const restaurantVariants = [
+  "diet_options",
+  "split_options",
+  "guest_names",
+  "desserts",
+].flatMap((pool) => restaurantPool(pool).filter((item) => item.forms.length > 1).slice(0, 1))
 
 function normalizeArabic(value: string): string {
   return value.trim().replace(/\s+/g, " ")
@@ -401,7 +404,7 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
       : exercise.title
   const visibleExerciseInstruction =
     restaurantMode && exercise.id === "match"
-      ? "Match each menu item to another accepted form from the workbook."
+      ? "Match each restaurant phrase to another accepted form from the workbook."
       : restaurantMode && exercise.id === "image"
         ? "Choose which section of the menu contains this item."
         : restaurantMode && exercise.id === "complete"
@@ -761,7 +764,7 @@ export function TestingStudio({ scenario }: { scenario: ScenarioId }): React.JSX
             <div className="grid gap-3 sm:grid-cols-2 sm:gap-5">
               <div className="space-y-2">
                 <p className="text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
-                  {restaurantMode ? "Menu item" : "Darija"}
+                  {restaurantMode ? "Darija phrase" : "Darija"}
                 </p>
                 {activeMatchLeft.map((word) => (
                   <button

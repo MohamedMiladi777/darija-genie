@@ -18,7 +18,7 @@ const QuizSection = (): React.JSX.Element => (
       className="group mt-3 block rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2"
     >
       <Card className="flex min-h-24 flex-row items-center gap-4 rounded-2xl border-border bg-card p-4 shadow-xs transition-colors group-hover:bg-muted">
-        <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#e8e1d3] text-[#a86d3f]">
+        <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-muted text-primary">
           <TestingIcon aria-hidden="true" className="size-5" />
         </span>
         <CardContent className="min-w-0 flex-1 p-0">
@@ -31,7 +31,7 @@ const QuizSection = (): React.JSX.Element => (
         </CardContent>
         <ArrowRightIcon
           aria-hidden="true"
-          className="size-4 shrink-0 text-[#1e40af] transition-transform group-hover:translate-x-0.5"
+          className="size-4 shrink-0 text-primary transition-transform group-hover:translate-x-0.5"
         />
       </Card>
     </Link>
