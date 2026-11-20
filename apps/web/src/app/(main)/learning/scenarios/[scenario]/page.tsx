@@ -145,9 +145,21 @@ function LearningOptionCard({
   if (option.id === "quiz") {
     return (
       <Link
-        href={`/testing?scenario=${scenario}`}
+        href={`/learning/scenarios/${scenario}/quiz`}
         aria-label="Open Scenario Quiz"
         className="group col-span-2 w-[300px] justify-self-center rounded-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 md:w-[calc(50%-8px)] md:rounded-2xl [&_[data-slot=card]]:group-hover:-translate-y-0.5"
+      >
+        {card}
+      </Link>
+    )
+  }
+
+  if (option.id === "review") {
+    return (
+      <Link
+        href={`/learning/scenarios/${scenario}/review`}
+        aria-label="Open Review"
+        className="group min-w-0 rounded-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 md:rounded-2xl [&_[data-slot=card]]:group-hover:-translate-y-0.5"
       >
         {card}
       </Link>
