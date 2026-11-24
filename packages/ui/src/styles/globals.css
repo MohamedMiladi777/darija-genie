@@ -205,6 +205,13 @@
     @apply bg-background text-foreground;
     }
 }
+
+@media (width < 48rem) {
+  html:has(.mobile-primary-navigation) {
+    scroll-padding-block-end: calc(4rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 @keyframes quiz-card-exit-left {
   from { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); opacity: 1; }
   to { transform: translate3d(-112%, 7%, 0) rotate(-9deg) scale(0.98); opacity: 0; }

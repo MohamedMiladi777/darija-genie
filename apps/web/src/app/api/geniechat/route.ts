@@ -19,14 +19,15 @@ const llmProvider = (process.env.GENIECHAT_PROVIDER ?? "gemini").toLowerCase()
 const usesOpenAiProvider = llmProvider === "openai" || llmProvider === "gpt"
 
 const openAiApiKey = process.env.OPENAI_API_KEY ?? process.env.GPT_API_KEY
-const openAiBaseUrl = (process.env.OPENAI_BASE_URL ?? "https://api.openai.com/v1").replace(
-  /\/+$/,
-  ""
-)
-const openAiModel = process.env.OPENAI_MODEL ?? process.env.GPT_MODEL ?? "gpt-4o-mini"
+const openAiBaseUrl = (
+  process.env.OPENAI_BASE_URL ?? "https://api.openai.com/v1"
+).replace(/\/+$/, "")
+const openAiModel =
+  process.env.OPENAI_MODEL ?? process.env.GPT_MODEL ?? "gpt-4o-mini"
 const hasOpenAiCredentials = Boolean(openAiApiKey)
 
-const geminiApiKey = process.env.GOOGLE_GENAI_API_KEY ?? process.env.GEMINI_API_KEY
+const geminiApiKey =
+  process.env.GOOGLE_GENAI_API_KEY ?? process.env.GEMINI_API_KEY
 const geminiModel = process.env.GEMINI_MODEL ?? "gemini-2.5-flash"
 const hasGeminiCredentials = Boolean(geminiApiKey)
 const hasCredentials = usesOpenAiProvider
@@ -46,7 +47,10 @@ class ProviderHttpError extends Error {
   }
 }
 
-function withValueBankPrompt(basePrompt: string, valueBankPrompt: string | null): string {
+function withValueBankPrompt(
+  basePrompt: string,
+  valueBankPrompt: string | null
+): string {
   if (!valueBankPrompt) return basePrompt
   return `${basePrompt}\n\n${valueBankPrompt}`
 }
@@ -191,9 +195,15 @@ function normalizePayment(value: string | null): string | null {
   return value.replace(/\bب\s+(?=[\u0600-\u06FF])/g, "ب")
 }
 
-function normalizeSplitBill(value: string | null, userUtterance: string | null): string | null {
+function normalizeSplitBill(
+  value: string | null,
+  userUtterance: string | null
+): string | null {
   const user = userUtterance ?? ""
-  if (/(^|\s)(ana|أنا)\b/i.test(user) && /(khal[il]?s|n[kg]h?al?l?is|نخلص)/i.test(user)) {
+  if (
+    /(^|\s)(ana|أنا)\b/i.test(user) &&
+    /(khal[il]?s|n[kg]h?al?l?is|نخلص)/i.test(user)
+  ) {
     return "مجموعين"
   }
   if (!value) return null
@@ -257,16 +267,38 @@ function normalizeSlots(
 
   const confirmation = asText(merged.confirmation)
   normalized.confirmation =
-    confirmation === "confirmed" || confirmation === "not_confirmed" ? confirmation : null
-  if (normalized.confirmation === "not_confirmed" && isAffirmative(latestUserUtterance)) {
+    confirmation === "confirmed" || confirmation === "not_confirmed"
+      ? confirmation
+      : null
+
+  normalized.payment = normalizePayment(asText(merged.payment))
+  normalized.split_bill = normalizeSplitBill(
+    asText(merged.split_bill),
+    latestUserUtterance
+  )
+  normalized.closing = asText(merged.closing)
+
+  const readyForConfirmation = [
+    normalized.party_size,
+    normalized.seating,
+    normalized.diet,
+    normalized.food_category,
+    normalized.dish,
+    normalized.portion,
+    normalized.drink,
+    normalized.special_requests,
+  ].every((value) => value !== null)
+
+  if (!readyForConfirmation) {
+    normalized.confirmation = null
+  } else if (
+    normalized.confirmation === "not_confirmed" &&
+    isAffirmative(latestUserUtterance)
+  ) {
     normalized.confirmation = "confirmed"
   }
 
-  normalized.payment = normalizePayment(asText(merged.payment))
-  normalized.split_bill = normalizeSplitBill(asText(merged.split_bill), latestUserUtterance)
-  normalized.closing = asText(merged.closing)
-
-  if (normalized.payment && normalized.split_bill) {
+  if (readyForConfirmation && normalized.payment && normalized.split_bill) {
     normalized.confirmation = "confirmed"
   }
 
@@ -290,7 +322,10 @@ function compactHistory(history: HistoryEntry[]): HistoryEntry[] {
   )
 }
 
-async function runGeminiAgent(history: HistoryEntry[], systemPrompt: string): Promise<string> {
+async function runGeminiAgent(
+  history: HistoryEntry[],
+  systemPrompt: string
+): Promise<string> {
   if (!geminiApiKey) throw new Error("GOOGLE_GENAI_API_KEY is not configured.")
 
   const prompt = `INPUT:\n${JSON.stringify(compactHistory(history))}\nEnd of input.`
@@ -340,12 +375,15 @@ async function runGeminiAgent(history: HistoryEntry[], systemPrompt: string): Pr
           : null
       const parts = content && Array.isArray(content.parts) ? content.parts : []
       const text = parts
-        .map((part) => (isRecord(part) && typeof part.text === "string" ? part.text : ""))
+        .map((part) =>
+          isRecord(part) && typeof part.text === "string" ? part.text : ""
+        )
         .join("")
         .trim()
       if (!text) {
         const reason =
-          isRecord(firstCandidate) && typeof firstCandidate.finishReason === "string"
+          isRecord(firstCandidate) &&
+          typeof firstCandidate.finishReason === "string"
             ? firstCandidate.finishReason
             : "unknown"
         throw new Error(`Gemini returned no text (finish reason: ${reason}).`)
@@ -354,12 +392,12 @@ async function runGeminiAgent(history: HistoryEntry[], systemPrompt: string): Pr
     } catch (error) {
       lastError = error
       const retryable =
-        (error instanceof Error &&
-          error.name !== "TimeoutError" &&
-          error.name !== "AbortError" &&
-          /fetch failed|ECONNRESET|ETIMEDOUT|UNAVAILABLE|overloaded|RESOURCE_EXHAUSTED/i.test(
-            error.message
-          ))
+        error instanceof Error &&
+        error.name !== "TimeoutError" &&
+        error.name !== "AbortError" &&
+        /fetch failed|ECONNRESET|ETIMEDOUT|UNAVAILABLE|overloaded|RESOURCE_EXHAUSTED/i.test(
+          error.message
+        )
       if (retryable && attempt < 1) {
         await new Promise((resolve) => setTimeout(resolve, 500))
         continue
@@ -371,7 +409,10 @@ async function runGeminiAgent(history: HistoryEntry[], systemPrompt: string): Pr
   throw lastError
 }
 
-async function runOpenAiAgent(history: HistoryEntry[], systemPrompt: string): Promise<string> {
+async function runOpenAiAgent(
+  history: HistoryEntry[],
+  systemPrompt: string
+): Promise<string> {
   const response = await fetch(`${openAiBaseUrl}/chat/completions`, {
     method: "POST",
     headers: {
@@ -406,7 +447,11 @@ async function runOpenAiAgent(history: HistoryEntry[], systemPrompt: string): Pr
     throw new ProviderHttpError("GPT is unavailable.", response.status)
   }
 
-  if (!isRecord(payload) || !Array.isArray(payload.choices) || payload.choices.length === 0) {
+  if (
+    !isRecord(payload) ||
+    !Array.isArray(payload.choices) ||
+    payload.choices.length === 0
+  ) {
     throw new Error("GPT returned an invalid response.")
   }
 
@@ -435,12 +480,248 @@ async function runOpenAiAgent(history: HistoryEntry[], systemPrompt: string): Pr
   throw new Error("GPT returned an empty response.")
 }
 
-async function runWithProvider(history: HistoryEntry[], systemPrompt: string): Promise<string> {
+async function runWithProvider(
+  history: HistoryEntry[],
+  systemPrompt: string
+): Promise<string> {
   if (usesOpenAiProvider) {
     return runOpenAiAgent(history, systemPrompt)
   }
 
   return runGeminiAgent(history, systemPrompt)
+}
+
+async function openGeminiStream(
+  history: HistoryEntry[],
+  systemPrompt: string
+): Promise<Response> {
+  if (!geminiApiKey) throw new Error("GOOGLE_GENAI_API_KEY is not configured.")
+
+  const prompt = `INPUT:\n${JSON.stringify(compactHistory(history))}\nEnd of input.`
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(geminiModel)}:streamGenerateContent?alt=sse`
+  let lastError: unknown
+
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": geminiApiKey,
+          Accept: "text/event-stream",
+        },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.45, maxOutputTokens: 1024 },
+        }),
+        signal: AbortSignal.timeout(25_000),
+      })
+
+      if (response.ok) {
+        if (!response.body) throw new Error("Gemini returned an empty stream.")
+        return response
+      }
+
+      const payload: unknown = await response.json().catch(() => null)
+      const message =
+        isRecord(payload) &&
+        isRecord(payload.error) &&
+        typeof payload.error.message === "string"
+          ? payload.error.message
+          : `Gemini request failed (${response.status}).`
+      if ((response.status === 429 || response.status >= 500) && attempt < 1) {
+        await new Promise((resolve) => setTimeout(resolve, 500))
+        lastError = new Error(message)
+        continue
+      }
+      throw new ProviderHttpError(message, response.status)
+    } catch (error) {
+      lastError = error
+      const retryable =
+        error instanceof Error &&
+        error.name !== "TimeoutError" &&
+        error.name !== "AbortError" &&
+        /fetch failed|ECONNRESET|ETIMEDOUT|UNAVAILABLE|overloaded|RESOURCE_EXHAUSTED/i.test(
+          error.message
+        )
+      if (retryable && attempt < 1) {
+        await new Promise((resolve) => setTimeout(resolve, 500))
+        continue
+      }
+      throw error
+    }
+  }
+
+  throw lastError
+}
+
+async function openOpenAiStream(
+  history: HistoryEntry[],
+  systemPrompt: string
+): Promise<Response> {
+  const response = await fetch(`${openAiBaseUrl}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${openAiApiKey}`,
+      Accept: "text/event-stream",
+    },
+    body: JSON.stringify({
+      model: openAiModel,
+      temperature: 0.45,
+      max_tokens: 1024,
+      stream: true,
+      messages: [
+        { role: "system", content: systemPrompt },
+        {
+          role: "user",
+          content: `INPUT:\n${JSON.stringify(compactHistory(history))}\nEnd of input.`,
+        },
+      ],
+    }),
+    signal: AbortSignal.timeout(45_000),
+  })
+
+  if (!response.ok) {
+    const payload: unknown = await response.json().catch(() => null)
+    if (
+      isRecord(payload) &&
+      isRecord(payload.error) &&
+      typeof payload.error.message === "string"
+    ) {
+      throw new ProviderHttpError(payload.error.message, response.status)
+    }
+    throw new ProviderHttpError("GPT is unavailable.", response.status)
+  }
+
+  if (!response.body) throw new Error("GPT returned an empty stream.")
+  return response
+}
+
+async function openProviderStream(
+  history: HistoryEntry[],
+  systemPrompt: string
+): Promise<Response> {
+  return usesOpenAiProvider
+    ? openOpenAiStream(history, systemPrompt)
+    : openGeminiStream(history, systemPrompt)
+}
+
+async function* readSseData(
+  body: ReadableStream<Uint8Array>
+): AsyncGenerator<string> {
+  const reader = body.getReader()
+  const decoder = new TextDecoder()
+  let buffer = ""
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read()
+      buffer += decoder.decode(value, { stream: !done })
+      const lines = buffer.split("\n")
+      buffer = lines.pop() ?? ""
+
+      for (const line of lines) {
+        const normalizedLine = line.replace(/\r$/, "")
+        if (normalizedLine.startsWith("data:")) {
+          yield normalizedLine.slice(5).replace(/^ /, "")
+        }
+      }
+
+      if (done) break
+    }
+
+    if (buffer.startsWith("data:")) {
+      yield buffer.slice(5).replace(/^ /, "")
+    }
+  } finally {
+    reader.releaseLock()
+  }
+}
+
+function getProviderText(payload: unknown): string {
+  if (!isRecord(payload)) return ""
+
+  if (Array.isArray(payload.candidates)) {
+    const candidate = payload.candidates[0]
+    const content =
+      isRecord(candidate) && isRecord(candidate.content)
+        ? candidate.content
+        : null
+    const parts = content && Array.isArray(content.parts) ? content.parts : []
+    return parts
+      .map((part) =>
+        isRecord(part) && typeof part.text === "string" ? part.text : ""
+      )
+      .join("")
+  }
+
+  if (Array.isArray(payload.choices)) {
+    const choice = payload.choices[0]
+    const delta =
+      isRecord(choice) && isRecord(choice.delta) ? choice.delta : null
+    const content = delta?.content
+    if (typeof content === "string") return content
+    if (Array.isArray(content)) {
+      return content
+        .map((part) =>
+          isRecord(part) && typeof part.text === "string" ? part.text : ""
+        )
+        .join("")
+    }
+  }
+
+  if (isRecord(payload.error) && typeof payload.error.message === "string") {
+    throw new Error(payload.error.message)
+  }
+
+  return ""
+}
+
+function getStreamableAssistantText(rawReply: string): string {
+  const assistantHeader = /^\s*(?:#+\s*)?\**\s*ASSISTANT\s*\**\s*:\s*/i
+  const assistantHeaderPrefix = "ASSISTANT:"
+  const trimmed = rawReply.trimStart()
+
+  if (
+    !assistantHeader.test(rawReply) &&
+    assistantHeaderPrefix.toLowerCase().startsWith(trimmed.toLowerCase())
+  ) {
+    return ""
+  }
+
+  let assistantText = rawReply.replace(assistantHeader, "")
+  const outputMarker =
+    /(?:^|\n)\s*(?:ENGLISH_TRANSLATION|TRANSLATION|SLOT_STATE_JSON|SLOT_STATE|SLOT_JSON)\s*:?\s*/i
+  const markerMatch = outputMarker.exec(assistantText)
+
+  if (markerMatch) {
+    assistantText = assistantText.slice(0, markerMatch.index)
+  } else {
+    const newlineIndex = assistantText.lastIndexOf("\n")
+    if (newlineIndex >= 0) {
+      const possibleMarker = assistantText
+        .slice(newlineIndex + 1)
+        .trimStart()
+        .toUpperCase()
+      const markerNames = [
+        "ENGLISH_TRANSLATION",
+        "TRANSLATION",
+        "SLOT_STATE_JSON",
+        "SLOT_STATE",
+        "SLOT_JSON",
+      ]
+      if (
+        possibleMarker &&
+        markerNames.some((marker) => marker.startsWith(possibleMarker))
+      ) {
+        assistantText = assistantText.slice(0, newlineIndex)
+      }
+    }
+  }
+
+  return assistantText.trimStart()
 }
 
 export async function POST(request: Request): Promise<Response> {
@@ -487,6 +768,102 @@ export async function POST(request: Request): Promise<Response> {
       GENIECHAT_SYSTEM_PROMPT,
       valueBankPrompt
     )
+
+    if (body.stream === true) {
+      const upstreamResponse = await openProviderStream(history, systemPrompt)
+      const upstreamBody = upstreamResponse.body
+      if (!upstreamBody) throw new Error("The model returned an empty stream.")
+
+      const encoder = new TextEncoder()
+      const stream = new ReadableStream<Uint8Array>({
+        async start(controller) {
+          let rawReply = ""
+          let sentAssistantText = ""
+
+          const sendEvent = (event: Record<string, unknown>) => {
+            controller.enqueue(encoder.encode(`${JSON.stringify(event)}\n`))
+          }
+
+          try {
+            for await (const data of readSseData(upstreamBody)) {
+              if (data === "[DONE]") break
+              if (!data) continue
+
+              let payload: unknown
+              try {
+                payload = JSON.parse(data)
+              } catch {
+                throw new Error("The model returned an invalid stream event.")
+              }
+
+              const text = getProviderText(payload)
+              if (!text) continue
+
+              rawReply += text
+              const assistantText = getStreamableAssistantText(rawReply)
+              if (assistantText.startsWith(sentAssistantText)) {
+                const delta = assistantText.slice(sentAssistantText.length)
+                if (delta) sendEvent({ type: "delta", text: delta })
+              } else {
+                sendEvent({ type: "replace", text: assistantText })
+              }
+              sentAssistantText = assistantText
+            }
+
+            if (!rawReply.trim()) {
+              throw new Error(
+                usesOpenAiProvider
+                  ? "GPT returned an empty response."
+                  : "Gemini returned an empty response."
+              )
+            }
+
+            const parsed = parseReply(rawReply)
+            const slots = normalizeSlots(
+              getLatestAssistantSlots(history),
+              parsed.slots,
+              getLatestUserUtterance(history)
+            )
+            if (parsed.assistant !== sentAssistantText) {
+              sendEvent({ type: "replace", text: parsed.assistant })
+            }
+            sendEvent({
+              type: "done",
+              reply: { ...parsed, slots },
+            })
+          } catch (error) {
+            try {
+              sendEvent({
+                type: "error",
+                error:
+                  error instanceof Error
+                    ? error.message
+                    : usesOpenAiProvider
+                      ? "GPT is unavailable."
+                      : "Gemini is unavailable.",
+              })
+            } catch {
+              // The browser may have cancelled the stream.
+            }
+          } finally {
+            try {
+              controller.close()
+            } catch {
+              // The browser may have cancelled the stream.
+            }
+          }
+        },
+      })
+
+      return new Response(stream, {
+        headers: {
+          "Cache-Control": "no-cache, no-transform",
+          "Content-Type": "application/x-ndjson; charset=utf-8",
+          "X-Accel-Buffering": "no",
+        },
+      })
+    }
+
     const rawReply = await runWithProvider(history, systemPrompt)
     if (!rawReply) {
       return Response.json(

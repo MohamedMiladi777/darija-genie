@@ -54,20 +54,20 @@ function LearningOptionCard({
     <Card
       className={`gap-0 rounded-[14px] bg-card py-0 shadow-[0_1px_2px_rgba(0,0,0,0.05)] ring-border transition-transform md:rounded-2xl ${
         isFeatured
-          ? "h-[164px] w-full md:h-[306px]"
-          : "h-[204px] min-w-0 md:h-[271px]"
+          ? "min-h-[164px] w-full md:min-h-[306px]"
+          : "min-h-[204px] min-w-0 md:min-h-[271px]"
       }`}
     >
       <CardHeader
-        className={`grid-cols-[1fr_auto] gap-2 px-4 py-4 ${
-          isFeatured ? "h-20" : "h-[100px] md:h-20"
+        className={`grid-cols-[minmax(0,1fr)_auto] gap-2 px-3 py-3 sm:px-4 sm:py-4 ${
+          isFeatured ? "min-h-20" : "min-h-[100px] md:min-h-20"
         }`}
       >
         <div className="min-w-0 font-[family-name:var(--font-inter)]">
-          <h2 className="text-base leading-6 font-medium text-foreground">
+          <h2 className="min-w-0 text-sm leading-5 font-medium text-foreground sm:text-base sm:leading-6">
             {option.title}
           </h2>
-          <p className="mt-1 text-sm leading-5 font-normal text-muted-foreground">
+          <p className="mt-1 line-clamp-2 text-xs leading-4 font-normal text-muted-foreground sm:text-sm sm:leading-5">
             {option.description}
           </p>
         </div>
@@ -88,7 +88,9 @@ function LearningOptionCard({
       <CardContent className="px-4 pb-4">
         <div
           className={`relative overflow-hidden rounded-[10px] border border-border md:rounded-xl ${
-            isFeatured ? "h-[68px] md:h-[209px]" : "h-[88px] md:h-[174px]"
+            isFeatured
+              ? "min-h-[68px] md:min-h-[209px]"
+              : "min-h-[88px] md:min-h-[174px]"
           }`}
         >
           <Image
@@ -112,7 +114,7 @@ function LearningOptionCard({
       <ScenarioChatLaunchLink
         scenario={scenario}
         ariaLabel="Open GenieChat"
-        className="group col-span-2 w-[300px] justify-self-center rounded-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 md:w-full md:rounded-2xl [&_[data-slot=card]]:group-hover:-translate-y-0.5"
+        className="group w-full max-w-[668px] rounded-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 md:rounded-2xl [&_[data-slot=card]]:group-hover:-translate-y-0.5"
       >
         {card}
       </ScenarioChatLaunchLink>
@@ -124,7 +126,7 @@ function LearningOptionCard({
       <Link
         href={`/learning/scenarios/${scenario}/preview`}
         aria-label="Open Preview"
-        className="group min-w-0 rounded-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 md:rounded-2xl [&_[data-slot=card]]:group-hover:-translate-y-0.5"
+        className="group h-full w-full min-w-0 rounded-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 md:rounded-2xl [&_[data-slot=card]]:group-hover:-translate-y-0.5"
       >
         {card}
       </Link>
@@ -136,7 +138,7 @@ function LearningOptionCard({
       <Link
         href={`/learning/scenarios/${scenario}/quiz`}
         aria-label="Open Scenario Quiz"
-        className="group col-span-2 w-[300px] justify-self-center rounded-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 md:w-[calc(50%-8px)] md:rounded-2xl [&_[data-slot=card]]:group-hover:-translate-y-0.5"
+        className="group w-full max-w-[476px] rounded-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 md:rounded-2xl [&_[data-slot=card]]:group-hover:-translate-y-0.5"
       >
         {card}
       </Link>
@@ -148,7 +150,7 @@ function LearningOptionCard({
       <Link
         href={`/learning/scenarios/${scenario}/review`}
         aria-label="Open Review"
-        className="group min-w-0 rounded-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 md:rounded-2xl [&_[data-slot=card]]:group-hover:-translate-y-0.5"
+        className="group h-full w-full min-w-0 rounded-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#1447e6] focus-visible:ring-offset-2 md:rounded-2xl [&_[data-slot=card]]:group-hover:-translate-y-0.5"
       >
         {card}
       </Link>
@@ -175,7 +177,7 @@ function ActivityChart(): React.JSX.Element {
         </p>
       </header>
 
-        <div className="relative mx-auto h-[161px] w-[240px] md:mt-6 md:w-[448px]">
+      <div className="relative mx-auto h-[161px] w-[240px] md:mt-6 md:w-[448px]">
         <div className="relative h-32 border-b border-l border-border">
           {[0, 24, 48, 72, 95].map((top) => (
             <span
@@ -254,14 +256,29 @@ export default async function ScenarioHomePage({
               </p>
             </div>
 
-            <div className="mt-6 grid grid-cols-2 gap-x-[10px] gap-y-4 px-[15px] md:gap-4 md:px-0">
-              {learningOptions.map((option) => (
-                <LearningOptionCard
-                  key={option.id}
-                  option={option}
-                  scenario={scenario}
-                />
-              ))}
+            <div className="mx-auto mt-6 flex w-full max-w-[668px] flex-col items-center gap-4 px-4 md:px-0">
+              <LearningOptionCard
+                option={learningOptions[0]}
+                scenario={scenario}
+              />
+              <div className="grid w-full grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
+                {learningOptions
+                  .filter(
+                    (option) =>
+                      option.id === "preview" || option.id === "review"
+                  )
+                  .map((option) => (
+                    <LearningOptionCard
+                      key={option.id}
+                      option={option}
+                      scenario={scenario}
+                    />
+                  ))}
+              </div>
+              <LearningOptionCard
+                option={learningOptions[3]}
+                scenario={scenario}
+              />
             </div>
           </section>
 

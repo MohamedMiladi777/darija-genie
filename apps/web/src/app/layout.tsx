@@ -1,14 +1,17 @@
-import {
-  Geist_Mono,
-  Nunito,
-  Noto_Sans_Arabic,
-} from "next/font/google"
+import { Geist_Mono, Nunito, Noto_Sans_Arabic } from "next/font/google"
+import type { Viewport } from "next"
 
 import "@workspace/ui/globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@workspace/ui/lib/utils"
 
 // Shared components are coded here
+
+export const viewport: Viewport & { viewportFit: "cover" } = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+}
 
 // Nunito is a friendly, rounded, highly legible Latin UI font. Keep one
 // typography family across the app; Noto Sans Arabic covers Arabic glyphs.

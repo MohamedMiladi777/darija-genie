@@ -1,20 +1,9 @@
+import Image from "next/image"
 import Link from "next/link"
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@workspace/ui/components/accordion"
 import { Button } from "@workspace/ui/components/button"
 
-import {
-  ChevronDownIcon,
-  DirectionsIcon,
-  MarketIcon,
-  RestaurantIcon,
-  ShoppingIcon,
-} from "./icons"
+import { ArrowRightIcon } from "./icons"
 
 const scenarios = [
   {
@@ -22,36 +11,38 @@ const scenarios = [
     title: "Restaurant",
     description: "Learn how to order a tajine",
     href: "/learning/scenarios/restaurant-1",
-    icon: RestaurantIcon,
-    accent: "#2fa6a3",
+    image: "/assets/learning/scenarios/restaurant.jpg",
+    imageWidth: 720,
+    imageHeight: 688,
   },
   {
     id: "shopping",
     title: "Shopping",
     description: "Become immune to scammers",
     href: "/learning/scenarios/shopping-1",
-    icon: ShoppingIcon,
-    accent: "#c06a2a",
+    image: "/assets/learning/scenarios/shopping.jpg",
+    imageWidth: 735,
+    imageHeight: 919,
   },
   {
     id: "directions",
     title: "Directions",
     description: "Navigate the medina like a local",
     href: "/learning/scenarios",
-    icon: DirectionsIcon,
-    accent: "#4e9bd6",
+    image: "/assets/learning/scenarios/directions.jpg",
+    imageWidth: 1200,
+    imageHeight: 1629,
   },
   {
     id: "market",
     title: "Market",
     description: "Haggle with confidence",
     href: "/learning/scenarios",
-    icon: MarketIcon,
-    accent: "#b57452",
+    image: "/assets/learning/scenarios/market.jpg",
+    imageWidth: 1200,
+    imageHeight: 1200,
   },
 ] as const
-
-const columns = [scenarios.slice(0, 2), scenarios.slice(2)]
 
 export const ScenarioSection = (): React.JSX.Element => (
   <section aria-labelledby="scenarios-heading" className="w-full min-w-0">
@@ -72,58 +63,38 @@ export const ScenarioSection = (): React.JSX.Element => (
       </Button>
     </div>
 
-    <div className="mt-3 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2">
-      {columns.map((column, columnIndex) => (
-        <Accordion
-          key={columnIndex}
-          multiple
-          defaultValue={columnIndex === 0 ? [scenarios[0].id] : []}
-          className="bg-card"
+    <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+      {scenarios.map((scenario) => (
+        <Link
+          key={scenario.id}
+          href={scenario.href}
+          className="group block h-full rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
-          {column.map((scenario) => {
-            const Icon = scenario.icon
-
-            return (
-              <AccordionItem key={scenario.id} value={scenario.id}>
-                <AccordionTrigger className="group">
-                  <span
-                    aria-hidden="true"
-                    className="flex size-8 shrink-0 items-center justify-center rounded-lg"
-                    style={{
-                      backgroundColor: `color-mix(in oklab, ${scenario.accent} 15%, transparent)`,
-                      color: scenario.accent,
-                    }}
-                  >
-                    <Icon aria-hidden="true" className="size-4" />
-                  </span>
-                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
-                    {scenario.title}
-                  </span>
-                  <ChevronDownIcon
-                    aria-hidden="true"
-                    className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-data-[panel-open]:rotate-180 motion-reduce:transition-none"
-                  />
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="px-4 pt-3 pb-4 pl-[60px]">
-                    <p className="text-sm leading-5 text-muted-foreground">
-                      {scenario.description}
-                    </p>
-                    <Button
-                      size="sm"
-                      className="mt-3"
-                      render={<Link href={scenario.href} />}
-                      nativeButton={false}
-                      aria-label={`Start ${scenario.title} scenario`}
-                    >
-                      Start scenario
-                    </Button>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            )
-          })}
-        </Accordion>
+          <article className="flex h-full min-h-24 items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-sm transition-[border-color,box-shadow,transform] group-hover:-translate-y-0.5 group-hover:border-primary/30 group-hover:shadow-md motion-reduce:transition-none">
+            <Image
+              src={scenario.image}
+              alt=""
+              width={scenario.imageWidth}
+              height={scenario.imageHeight}
+              sizes="72px"
+              className="size-[72px] shrink-0 rounded-lg object-cover"
+            />
+            <div className="min-w-0 flex-1">
+              <h3 className="truncate text-sm leading-5 font-semibold text-foreground">
+                {scenario.title}
+              </h3>
+              <p className="mt-1 line-clamp-2 text-xs leading-4 text-muted-foreground">
+                {scenario.description}
+              </p>
+            </div>
+            <span
+              aria-hidden="true"
+              className="flex size-9 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-700 transition-transform group-hover:translate-x-0.5 group-focus-visible:translate-x-0.5 motion-reduce:transition-none dark:bg-blue-950/40 dark:text-blue-300"
+            >
+              <ArrowRightIcon className="size-5" />
+            </span>
+          </article>
+        </Link>
       ))}
     </div>
   </section>

@@ -102,7 +102,7 @@ const fallbackProfiles: Record<ScenarioFamily, ScenarioProfile> = {
         darija: "أتاي",
         transliteration: "atay",
         english: "mint tea",
-        image: "/assets/images/atay.svg",
+        image: "/assets/images/atay.webp",
         grammar: ["M", "S", "cultural staple"],
         cue: "A strong culture marker in Moroccan hospitality.",
       },

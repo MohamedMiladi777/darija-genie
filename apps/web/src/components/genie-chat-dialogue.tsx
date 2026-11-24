@@ -13,12 +13,7 @@ import {
 } from "@/lib/local-retention"
 import { useStoredPreference } from "@/components/preference-selector"
 
-import {
-  LoaderIcon,
-  MicIcon,
-  RefreshIcon,
-  SendIcon,
-} from "@/components/icons"
+import { LoaderIcon, MicIcon, RefreshIcon, SendIcon } from "@/components/icons"
 
 type SlotState = Record<string, unknown>
 type HistoryEntry =
@@ -46,15 +41,21 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value)
 }
 
-async function requestReply(history: HistoryEntry[]): Promise<ChatReply> {
+async function requestReply(
+  history: HistoryEntry[],
+  onAssistantText?: (text: string) => void
+): Promise<ChatReply> {
   const response = await fetch("/api/geniechat", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ history }),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/x-ndjson, application/json",
+    },
+    body: JSON.stringify({ history, stream: true }),
   })
-  const payload: unknown = await response.json().catch(() => null)
 
   if (!response.ok) {
+    const payload: unknown = await response.json().catch(() => null)
     throw new Error(
       isRecord(payload) && typeof payload.error === "string"
         ? payload.error
@@ -62,16 +63,82 @@ async function requestReply(history: HistoryEntry[]): Promise<ChatReply> {
     )
   }
 
-  if (!isRecord(payload) || typeof payload.assistant !== "string") {
-    throw new Error("GenieChat returned an invalid response.")
+  const parseReplyPayload = (payload: unknown): ChatReply => {
+    if (!isRecord(payload) || typeof payload.assistant !== "string") {
+      throw new Error("GenieChat returned an invalid response.")
+    }
+    return {
+      assistant: payload.assistant,
+      translation:
+        typeof payload.translation === "string" ? payload.translation : "",
+      slots: isRecord(payload.slots) ? payload.slots : {},
+    }
   }
 
-  return {
-    assistant: payload.assistant,
-    translation:
-      typeof payload.translation === "string" ? payload.translation : "",
-    slots: isRecord(payload.slots) ? payload.slots : {},
+  if (response.headers.get("content-type")?.includes("application/json")) {
+    const reply = parseReplyPayload(await response.json().catch(() => null))
+    onAssistantText?.(reply.assistant)
+    return reply
   }
+
+  const reader = response.body?.getReader()
+  if (!reader) throw new Error("GenieChat returned an empty stream.")
+
+  const decoder = new TextDecoder()
+  let buffer = ""
+  let streamedAssistant = ""
+  const streamState: { reply?: ChatReply } = {}
+
+  const processLine = (line: string) => {
+    if (!line.trim()) return
+
+    let event: unknown
+    try {
+      event = JSON.parse(line)
+    } catch {
+      throw new Error("GenieChat returned an invalid stream event.")
+    }
+    if (!isRecord(event) || typeof event.type !== "string") {
+      throw new Error("GenieChat returned an invalid stream event.")
+    }
+
+    if (event.type === "delta" && typeof event.text === "string") {
+      streamedAssistant += event.text
+      onAssistantText?.(streamedAssistant)
+      return
+    }
+    if (event.type === "replace" && typeof event.text === "string") {
+      streamedAssistant = event.text
+      onAssistantText?.(streamedAssistant)
+      return
+    }
+    if (event.type === "error" && typeof event.error === "string") {
+      throw new Error(event.error)
+    }
+    if (event.type === "done") {
+      streamState.reply = parseReplyPayload(event.reply)
+    }
+  }
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read()
+      buffer += decoder.decode(value, { stream: !done })
+      const lines = buffer.split("\n")
+      buffer = lines.pop() ?? ""
+      for (const line of lines) processLine(line)
+      if (done) break
+    }
+    if (buffer.trim()) processLine(buffer)
+  } finally {
+    reader.releaseLock()
+  }
+
+  if (!streamState.reply) {
+    throw new Error("GenieChat ended before completing its reply.")
+  }
+  onAssistantText?.(streamState.reply.assistant)
+  return streamState.reply
 }
 
 async function transcribeAudio(file: File): Promise<AsrReply> {
@@ -104,9 +171,13 @@ async function transcribeAudio(file: File): Promise<AsrReply> {
     transcript: payload.transcript,
     audioUri: payload.audioUri,
     durationSeconds:
-      typeof payload.durationSeconds === "number" ? payload.durationSeconds : null,
+      typeof payload.durationSeconds === "number"
+        ? payload.durationSeconds
+        : null,
     processingTime:
-      typeof payload.processingTime === "number" ? payload.processingTime : null,
+      typeof payload.processingTime === "number"
+        ? payload.processingTime
+        : null,
   }
 }
 
@@ -230,6 +301,7 @@ export default function GenieChatDialogue({
   const [history, setHistory] = useState<HistoryEntry[]>([])
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState("")
+  const [streamingText, setStreamingText] = useState("")
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [recordingState, setRecordingState] = useState<RecordingState>("idle")
@@ -388,9 +460,7 @@ export default function GenieChatDialogue({
           }
 
           try {
-            const extension = recorder.mimeType.includes("mp4")
-              ? "m4a"
-              : "webm"
+            const extension = recorder.mimeType.includes("mp4") ? "m4a" : "webm"
             const file = new File([blob], `geniechat-voice.${extension}`, {
               type: blob.type,
             })
@@ -435,16 +505,10 @@ export default function GenieChatDialogue({
       resetRecorder()
       setRecordingState("idle")
       setRecordingError(
-        caught instanceof Error
-          ? caught.message
-          : "Microphone access failed."
+        caught instanceof Error ? caught.message : "Microphone access failed."
       )
     }
-  }, [
-    recordingActive,
-    resetRecorder,
-    transcriptionPending,
-  ])
+  }, [recordingActive, resetRecorder, transcriptionPending])
 
   const createMessage = useCallback(
     (
@@ -464,23 +528,54 @@ export default function GenieChatDialogue({
   const initialize = useCallback(async () => {
     chatSessionIdRef.current = null
     setLoading(true)
+    setStreamingText("")
     setError(null)
     setHistory([])
     setMessages([])
+    const assistantMessage = createMessage("assistant", "")
 
     try {
-      const reply = await requestReply([])
+      const reply = await requestReply([], (text) => {
+        setStreamingText(text)
+        setMessages((current) => {
+          const updatedMessage = { ...assistantMessage, text }
+          const existing = current.some(
+            (message) => message.id === assistantMessage.id
+          )
+          return existing
+            ? current.map((message) =>
+                message.id === assistantMessage.id ? updatedMessage : message
+              )
+            : [...current, updatedMessage]
+        })
+      })
       setHistory([
         { assistant: { utterance: reply.assistant, slots: reply.slots } },
       ])
-      setMessages([
-        createMessage("assistant", reply.assistant, reply.translation),
-      ])
+      setMessages((current) => {
+        const completedMessage = {
+          ...assistantMessage,
+          text: reply.assistant,
+          translation: reply.translation,
+        }
+        const existing = current.some(
+          (message) => message.id === assistantMessage.id
+        )
+        return existing
+          ? current.map((message) =>
+              message.id === assistantMessage.id ? completedMessage : message
+            )
+          : [...current, completedMessage]
+      })
     } catch (caught) {
+      setMessages((current) =>
+        current.filter((message) => message.id !== assistantMessage.id)
+      )
       setError(
         caught instanceof Error ? caught.message : "Unable to start GenieChat."
       )
     } finally {
+      setStreamingText("")
       setLoading(false)
     }
   }, [createMessage])
@@ -529,7 +624,10 @@ export default function GenieChatDialogue({
   }, [history, loading, messages, persistRestaurantChat, scenario])
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" })
+    endRef.current?.scrollIntoView({
+      behavior: loading ? "auto" : "smooth",
+      block: "nearest",
+    })
   }, [messages, loading])
 
   useEffect(() => {
@@ -552,36 +650,67 @@ export default function GenieChatDialogue({
 
     const previousHistory = history
     const userTurn: HistoryEntry = { user: { utterance: text } }
+    const userMessage = createMessage("user", text)
+    const assistantMessage = createMessage("assistant", "")
     let nextHistory = [...history, userTurn]
     if (nextHistory.length > 120) {
       nextHistory = nextHistory.slice(-120)
     }
 
     setInput("")
+    setStreamingText("")
     setError(null)
     setLoading(true)
     setHistory(nextHistory)
-    setMessages((current) => [...current, createMessage("user", text)])
+    setMessages((current) => [...current, userMessage])
 
     try {
-      const reply = await requestReply(nextHistory)
+      const reply = await requestReply(nextHistory, (streamedText) => {
+        setStreamingText(streamedText)
+        setMessages((current) => {
+          const streamedMessage = { ...assistantMessage, text: streamedText }
+          const existing = current.some(
+            (message) => message.id === assistantMessage.id
+          )
+          return existing
+            ? current.map((message) =>
+                message.id === assistantMessage.id ? streamedMessage : message
+              )
+            : [...current, streamedMessage]
+        })
+      })
       const assistantTurn: HistoryEntry = {
         assistant: { utterance: reply.assistant, slots: reply.slots },
       }
       setHistory((current) => [...current, assistantTurn])
-      setMessages((current) => [
-        ...current,
-        createMessage("assistant", reply.assistant, reply.translation),
-      ])
+      setMessages((current) => {
+        const completedMessage = {
+          ...assistantMessage,
+          text: reply.assistant,
+          translation: reply.translation,
+        }
+        const existing = current.some(
+          (message) => message.id === assistantMessage.id
+        )
+        return existing
+          ? current.map((message) =>
+              message.id === assistantMessage.id ? completedMessage : message
+            )
+          : [...current, completedMessage]
+      })
     } catch (caught) {
       setHistory(previousHistory)
       setMessages((current) =>
-        current.at(-1)?.sender === "user" ? current.slice(0, -1) : current
+        current.filter(
+          (message) =>
+            message.id !== userMessage.id && message.id !== assistantMessage.id
+        )
       )
       setError(
         caught instanceof Error ? caught.message : "Unable to retrieve a reply."
       )
     } finally {
+      setStreamingText("")
       setLoading(false)
     }
   }
@@ -597,14 +726,13 @@ export default function GenieChatDialogue({
           {messages.map((message) => (
             <MessageBubble key={message.id} message={message} />
           ))}
-          {loading ? (
+          {loading && !streamingText ? (
             <div className="flex items-center gap-2.5 text-muted-foreground">
               <span className="flex size-8 items-center justify-center rounded-full bg-sidebar text-sidebar-foreground">
                 S
               </span>
               <span className="flex items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3 text-xs">
-                <LoaderIcon className="size-4 animate-spin" /> Genie is
-                thinking
+                <LoaderIcon className="size-4 animate-spin" /> Genie is thinking
               </span>
             </div>
           ) : null}
@@ -652,13 +780,15 @@ export default function GenieChatDialogue({
             placeholder="Write your response..."
             rows={1}
             disabled={loading || history.length === 0}
-          className="max-h-32 min-h-12 flex-1 resize-none rounded-xl border border-input bg-background px-3 py-2.5 font-[family-name:var(--font-simplified-arabic)] text-base leading-7 text-foreground outline-none placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 disabled:cursor-not-allowed disabled:opacity-60"
+            className="max-h-32 min-h-12 flex-1 resize-none rounded-xl border border-input bg-background px-3 py-2.5 font-[family-name:var(--font-simplified-arabic)] text-base leading-7 text-foreground outline-none placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 disabled:cursor-not-allowed disabled:opacity-60"
           />
           <Button
             type="button"
             size="icon"
             aria-label={
-              recordingActive ? "Release to stop recording" : "Hold to record voice"
+              recordingActive
+                ? "Release to stop recording"
+                : "Hold to record voice"
             }
             disabled={transcriptionPending}
             onPointerDown={(event) => {
@@ -674,7 +804,10 @@ export default function GenieChatDialogue({
             }}
             onPointerCancel={stopRecording}
             onKeyDown={(event) => {
-              if ((event.key === "Enter" || event.key === " ") && !event.repeat) {
+              if (
+                (event.key === "Enter" || event.key === " ") &&
+                !event.repeat
+              ) {
                 event.preventDefault()
                 void startRecording()
               }
@@ -687,7 +820,7 @@ export default function GenieChatDialogue({
             }}
             className={`size-10 rounded-xl border border-border p-0 text-primary hover:bg-muted ${
               recordingState === "recording"
-                ? "border-destructive bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                ? "text-destructive-foreground border-destructive bg-destructive hover:bg-destructive/90"
                 : "bg-card"
             }`}
           >
@@ -701,7 +834,12 @@ export default function GenieChatDialogue({
             type="submit"
             size="icon"
             aria-label="Send message"
-            disabled={chatDisabled || recordingActive || transcriptionPending || !input.trim()}
+            disabled={
+              chatDisabled ||
+              recordingActive ||
+              transcriptionPending ||
+              !input.trim()
+            }
             className="size-10 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90"
           >
             {loading ? (

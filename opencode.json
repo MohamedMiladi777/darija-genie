@@ -11,7 +11,27 @@
           "drizzle-kit",
           "mcp"
         ]
+      },
+      "shadcn": {
+        "type": "local",
+        "command": [
+          "npx",
+          "-y",
+          "shadcn@latest",
+          "mcp"
+        ],
+        "cwd": "apps/web"
+      },
+      "next-devtools": {
+        "type": "local",
+        "command": [
+          "npx",
+          "-y",
+          "next-devtools-mcp@latest"
+        ],
+        "environment": {}
       }
     }
-  }
+  },
+  "$schema": "https://opencode.ai/config.json"
 }
