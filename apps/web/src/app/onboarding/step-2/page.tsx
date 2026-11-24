@@ -3,56 +3,46 @@ import LogoMark from "@/components/assets/logo"
 import Link from "next/link"
 import { buttonVariants } from "@workspace/ui/components/button"
 
+import { OnboardingShell } from "@/components/onboarding-shell"
+
 function MainContent() {
   return (
-    <div className="flex flex-col items-center justify-center gap-8 overflow-visible px-16 pb-8 lg:flex-row xl:flex-row 2xl:flex-row">
-      <div className="size- flex flex-col items-center justify-center rounded-lg px-8 py-3">
-        <div className="justify-start text-base leading-6 font-medium text-neutral-50">
+    <OnboardingShell>
+      <div className="flex flex-col items-center justify-center rounded-lg px-8 py-3">
+        <div className="text-base leading-6 font-medium">
           <ViewTransition name="darija-genie-logo" share="logo-morph">
-            <LogoMark className="w-60 sm:w-64 md:w-72 lg:w-80" priority />
+            <LogoMark
+              className="h-[clamp(8rem,26dvh,16rem)] w-auto max-w-full"
+              priority
+            />
           </ViewTransition>
         </div>
       </div>
-      <div className="inline-flex max-w-96 flex-col gap-6 md:items-start md:justify-start">
-        <div className="flex w-96 text-center font-sans text-3xl leading-10 font-bold tracking-tight text-foreground md:text-left">
+      <div className="flex w-full max-w-96 flex-col gap-6 lg:items-start">
+        <h1 className="w-full text-center font-sans text-3xl leading-10 font-bold tracking-tight text-balance text-foreground lg:text-left">
           Learn Moroccan Darija with DarijaGenie
-        </div>
-        <div className="flex flex-col justify-start opacity-80 md:items-start">
-          <div className="justify-start text-center font-sans text-lg leading-7 font-normal text-foreground md:text-left">
-            A Darija Friendly learning platform to enhance your listening and
-            reading skills.
-          </div>
-        </div>
-        {/* <div className="flex flex-col items-center justify-center rounded-lg bg-blue-950 px-8 py-3"> */}
-        {/* <div className="justify-start text-center font-sans text-base leading-6 font-medium text-neutral-50">
+        </h1>
+        <p className="text-center font-sans text-lg leading-7 font-normal text-pretty text-foreground/80 lg:text-left">
+          A Darija Friendly learning platform to enhance your listening and
+          reading skills.
+        </p>
+        <div className="flex flex-col items-center lg:items-start">
+          <Link
+            href="/onboarding/step-3"
+            className={buttonVariants({
+              variant: "default",
+              size: "lg",
+              className: "bg-sky-950 text-white",
+            })}
+          >
             Get Started
-          </div> */}
-        <div className="flex flex-col items-center">
-          <div className="flex">
-            <Link
-              href="/onboarding/step-3"
-              className={buttonVariants({
-                variant: "default",
-                size: "lg",
-                className: "bg-sky-950 text-white",
-              })}
-            >
-              {" "}
-              Get Started{" "}
-            </Link>
-          </div>
+          </Link>
         </div>
       </div>
-    </div>
+    </OnboardingShell>
   )
 }
 
 export default function WelcomeScreen() {
-  return (
-    <main className="flex min-h-svh items-center justify-center">
-      <div>
-        <MainContent />
-      </div>
-    </main>
-  )
+  return <MainContent />
 }

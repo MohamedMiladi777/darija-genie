@@ -3,10 +3,11 @@ import { buttonVariants } from "@workspace/ui/components/button"
 import Link from "next/link"
 
 import { MoonIcon, SunIcon } from "@/components/icons"
+import { OnboardingShell } from "@/components/onboarding-shell"
 
 function MainContent() {
   return (
-    <div className="flex flex-col items-center justify-center gap-10 px-6 pb-8 lg:flex-row lg:items-start lg:gap-16 lg:px-16">
+    <OnboardingShell className="lg:items-start lg:gap-16">
       <LampMark />
 
       <div className="flex max-w-96 flex-col gap-8">
@@ -48,14 +49,10 @@ function MainContent() {
           </Link>
         </div>
       </div>
-    </div>
+    </OnboardingShell>
   )
 }
 
 export default function WelcomeScreen() {
-  return (
-    <main className="flex min-h-svh items-center justify-center">
-      <MainContent />
-    </main>
-  )
+  return <MainContent />
 }
